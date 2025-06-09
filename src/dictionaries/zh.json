@@ -1,0 +1,30 @@
+{
+  "header": {
+    "title": "疯狂游戏",
+    "language": "中文"
+  },
+  "home": {
+    "welcome": "欢迎来到疯狂游戏",
+    "feature1": "免费游戏",
+    "feature2": "手机游戏",
+    "feature3": "浏览器游戏",
+    "feature4": "多人游戏",
+    "feature5": "无需下载"
+  },
+  "sections": {
+    "featured": "精选游戏",
+    "originals": "原创游戏",
+    "viewMore": "查看更多"
+  },
+  "controllerNotice": {
+    "title": "使用手柄玩游戏",
+    "description": "许多游戏支持手柄输入。连接您的手柄开始游戏！"
+  },
+  "playWithFriends": {
+    "title": "与朋友一起玩",
+    "local": "本地多人游戏",
+    "localDesc": "在同一设备上一起玩",
+    "online": "在线多人游戏",
+    "onlineDesc": "与朋友在线游戏"
+  }
+} 

@@ -1,0 +1,33 @@
+{
+  "header": {
+    "title": "MiniPlayGame",
+    "language": "English"
+  },
+  "home": {
+    "welcome": "Welcome to MiniPlayGame!",
+    "feature1": "4000+ games",
+    "feature2": "No install needed",
+    "feature3": "On any device",
+    "feature4": "Play with friends",
+    "feature5": "All for free"
+  },
+  "sections": {
+    "featured": "Featured games",
+    "originals": "CrazyGames Originals",
+    "new": "New games",
+    "casual": "Casual Games",
+    "driving": "Driving Games",
+    "viewMore": "View more ¡ú"
+  },
+  "controllerNotice": {
+    "title": "Controller detected",
+    "description": "Explore our controller compatible games"
+  },
+  "playWithFriends": {
+    "title": "Play with friends!",
+    "local": "Local multiplayer",
+    "localDesc": "Play on the same device",
+    "online": "Online multiplayer",
+    "onlineDesc": "Play on separate devices"
+  }
+}

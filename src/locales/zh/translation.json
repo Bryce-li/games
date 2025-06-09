@@ -1,0 +1,33 @@
+{
+  "header": {
+    "title": "MiniPlayGame",
+    "language": "中文"
+  },
+  "home": {
+    "welcome": "欢迎来到MiniPlayGame!",
+    "feature1": "4000+款游戏",
+    "feature2": "无需安装",
+    "feature3": "支持所有设备",
+    "feature4": "与朋友一起玩",
+    "feature5": "全部免费"
+  },
+  "sections": {
+    "featured": "精选游戏",
+    "originals": "原创游戏",
+    "new": "新游戏",
+    "casual": "休闲游戏",
+    "driving": "驾驶游戏",
+    "viewMore": "查看更多 →"
+  },
+  "controllerNotice": {
+    "title": "检测到控制器",
+    "description": "探索支持控制器的游戏"
+  },
+  "playWithFriends": {
+    "title": "与朋友一起玩!",
+    "local": "本地多人游戏",
+    "localDesc": "在同一设备上玩",
+    "online": "在线多人游戏",
+    "onlineDesc": "在不同设备上玩"
+  }
+}
