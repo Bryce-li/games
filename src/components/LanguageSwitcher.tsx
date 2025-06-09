@@ -1,69 +1,77 @@
 "use client";
 
-import { Globe, ChevronDown } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { i18n } from "@/lib/i18n-config";
-import { useState, useRef, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Languages } from "lucide-react";
+import { useRouter, useSearchParams } from 'next/navigation';
 
-interface LanguageSwitcherProps {
-  currentLang: string;
-}
+// 语言选项配置
+const languages = [
+  { code: 'zh', label: '中文' },
+  { code: 'en', label: 'English' }
+];
 
-export default function LanguageSwitcher({ currentLang }: LanguageSwitcherProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+export default function LanguageSwitcher() {
+  const { i18n } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // 切换语言
-  const switchLanguage = (locale: string) => {
-    const newPathname = pathname.replace(`/${currentLang}`, `/${locale}`);
-    router.push(newPathname);
-    setIsOpen(false);
+  // 获取当前语言的显示标签
+  const getCurrentLanguageLabel = () => {
+    const currentLang = languages.find(lang => lang.code === i18n.language);
+    return currentLang?.label || 'English';
   };
 
-  // 点击外部关闭下拉菜单
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
+  // 切换语言
+  const handleLanguageChange = async (langCode: string) => {
+    if (langCode === i18n.language) return;
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    // 更新 i18next 语言
+    await i18n.changeLanguage(langCode);
+    
+    // 更新 localStorage
+    localStorage.setItem('i18nextLng', langCode);
+    
+    // 更新 URL 参数
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('lang', langCode);
+    
+    // 使用 replace 而不是 push 来避免在历史记录中创建新条目
+    router.replace(`?${params.toString()}`);
+    
+    // 更新 cookie（可选，因为我们现在主要依赖 URL 参数和 localStorage）
+    document.cookie = `i18next=${langCode};path=/;max-age=31536000`;
+  };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-      >
-        <Globe className="w-4 h-4" />
-        <span>{currentLang === 'en' ? 'English' : '中文'}</span>
-        <ChevronDown className="w-4 h-4" />
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-          {i18n.locales.map((locale) => (
-            <button
-              key={locale}
-              onClick={() => switchLanguage(locale)}
-              className={`block w-full text-left px-4 py-2 text-sm ${
-                currentLang === locale
-                  ? 'bg-purple-50 text-purple-600'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              {locale === 'en' ? 'English' : '中文'}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="w-[120px] flex justify-between items-center"
+        >
+          <span>{getCurrentLanguageLabel()}</span>
+          <Languages className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[120px]">
+        {languages.map((lang) => (
+          <DropdownMenuItem
+            key={lang.code}
+            onClick={() => handleLanguageChange(lang.code)}
+            className="justify-center"
+          >
+            {lang.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 } 

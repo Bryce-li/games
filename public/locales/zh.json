@@ -1,0 +1,100 @@
+{
+    "common": {
+      "header": {
+        "title": "疯狂游戏",
+        "language": "中文"
+      },
+      "footer": {
+        "copyright": "© 2024 疯狂游戏。保留所有权利。",
+        "terms": "服务条款",
+        "privacy": "隐私政策"
+      }
+    },
+    "home": {
+      "welcome": "欢迎来到疯狂游戏",
+      "features": {
+        "feature1": "免费游戏",
+        "feature2": "手机游戏",
+        "feature3": "浏览器游戏",
+        "feature4": "多人游戏",
+        "feature5": "无需下载"
+      },
+      "sections": {
+        "featured": "精选游戏",
+        "originals": "原创游戏",
+        "new": "最新游戏",
+        "viewMore": "查看更多"
+      }
+    },
+    "navigation": {
+      "home": "首页",
+      "recentlyPlayed": "最近玩过",
+      "new": "最新",
+      "trending": "热门",
+      "updated": "已更新",
+      "originals": "原创",
+      "multiplayer": "多人游戏",
+      "twoPlayer": "双人游戏"
+    },
+    "categories": {
+      "action": "动作",
+      "adventure": "冒险",
+      "basketball": "篮球",
+      "beauty": "美妆",
+      "bike": "自行车",
+      "car": "汽车",
+      "card": "卡牌",
+      "casual": "休闲",
+      "clicker": "点击",
+      "controller": "手柄",
+      "dressUp": "换装",
+      "driving": "驾驶",
+      "escape": "密室逃脱",
+      "flash": "Flash",
+      "fps": "射击",
+      "horror": "恐怖",
+      "io": ".io",
+      "mahjong": "麻将",
+      "minecraft": "我的世界",
+      "pool": "台球",
+      "puzzle": "益智",
+      "shooting": "射击",
+      "soccer": "足球",
+      "sports": "体育",
+      "stickman": "火柴人",
+      "towerDefense": "塔防"
+    },
+    "games": {
+      "categories": {
+        "action": "动作游戏",
+        "adventure": "冒险游戏",
+        "puzzle": "益智游戏",
+        "sports": "体育游戏",
+        "strategy": "策略游戏"
+      },
+      "playWithFriends": {
+        "title": "与朋友一起玩",
+        "local": "本地多人游戏",
+        "localDesc": "在同一设备上一起玩",
+        "online": "在线多人游戏",
+        "onlineDesc": "与朋友在线游戏"
+      }
+    },
+    "ui": {
+      "buttons": {
+        "play": "立即游戏",
+        "download": "下载",
+        "share": "分享",
+        "favorite": "添加收藏"
+      },
+      "notifications": {
+        "success": "成功",
+        "error": "错误",
+        "loading": "加载中..."
+      },
+      "controllerNotice": {
+        "title": "检测到手柄",
+        "description": "许多游戏支持手柄输入。连接您的手柄开始游戏！"
+      }
+    }
+  }
