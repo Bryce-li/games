@@ -67,8 +67,8 @@ export default function Home() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
   
   useEffect(() => {
-    console.log("初始侧边栏状态:", isSidebarCollapsed ? "收起" : "展开")
-  }, [])
+    console.log("初始侧边栏状态:", isSidebarCollapsed ? "收起" : "展开");
+  }, [isSidebarCollapsed])
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(prev => {

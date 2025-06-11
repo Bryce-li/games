@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
 import { useEffect, useState } from "react"
+import i18n from "@/lib/i18n"
 
 // 支持的语言列表
 const languages = [
@@ -18,15 +19,14 @@ const languages = [
 
 export function LanguageSelector() {
   const { i18n, t } = useTranslation()
-  const [mounted, setMounted] = useState(false)
+  const [isReady, setIsReady] = useState(false)
   const [isChanging, setIsChanging] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    // 从localStorage获取上次的语言设置
-    const savedLang = localStorage.getItem('i18nextLng')
-    if (savedLang && savedLang !== i18n.language) {
-      changeLanguage(savedLang)
+    if (!i18n.isInitialized) {
+      i18n.on("initialized", () => setIsReady(true))
+    } else {
+      setIsReady(true)
     }
   }, [])
 
@@ -34,27 +34,18 @@ export function LanguageSelector() {
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
 
   // 切换语言
-  const changeLanguage = async (langCode: string) => {
-    try {
+  const changeLanguage = (lng: string) => {
+    if (isReady) {
       setIsChanging(true)
-      await i18n.changeLanguage(langCode)
-      localStorage.setItem('i18nextLng', langCode)
-      console.log('Language changed successfully to:', langCode)
-    } catch (error) {
-      console.error('Failed to change language:', error)
-    } finally {
-      setIsChanging(false)
+      i18n.changeLanguage(lng)
+      localStorage.setItem('i18nextLng', lng)
+      console.log('Language changed successfully to:', lng)
     }
   }
 
   // 服务端渲染时返回默认值
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-2 text-sm text-gray-600">
-        <Globe className="w-4 h-4" />
-        <span suppressHydrationWarning>English</span>
-      </div>
-    )
+  if (!isReady) {
+    return <div>Loading languages...</div>
   }
 
   return (
