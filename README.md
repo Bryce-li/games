@@ -1,22 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MiniPlayGame
+
+A Next.js 15 based mini game platform.
+
+## Features
+
+- Next.js 15 with App Router
+- TypeScript support
+- Tailwind CSS for styling
+- Internationalization (i18n) support
+  - English and Simplified Chinese
+  - Easy to add more languages
+  - Language detection and switching
+- Modern UI components with Shadcn UI
+- Responsive design
+- Game categories and filtering
+- Featured games section
+- Original games showcase
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Internationalization
+
+The project uses react-i18next for internationalization. Currently supported languages:
+
+- English (en)
+- Simplified Chinese (zh)
+
+Language files are located in `src/lib/i18n/locales/`.
+
+To add a new language:
+1. Create a new JSON file in the locales directory
+2. Add the language to the languages array in `src/components/LanguageSelector.tsx`
+3. Import and add the translation in `src/lib/i18n/config.ts`
+
+## Project Structure
+
+```
+src/
+  ├── app/              # Next.js app router pages
+  ├── components/       # React components
+  ├── lib/             # Utilities and configurations
+  │   └── i18n/        # Internationalization setup
+  └── styles/          # Global styles
+```
+
+## Contributing
+
+Feel free to open issues and pull requests!
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

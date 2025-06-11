@@ -1,0 +1,72 @@
+{
+  "common": {
+    "language": "简体中文",
+    "selectLanguage": "选择语言",
+    "welcome": "欢迎来到 MiniPlayGame",
+    "featuredGames": "精选游戏",
+    "newGames": "新游戏",
+    "allGames": "所有游戏",
+    "categories": "游戏分类",
+    "search": "搜索游戏...",
+    "casualGames":"休闲游戏",
+    "drivingGames":"赛车游戏"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于",
+    "contact": "联系我们",
+    "recentlyPlayed": "最近游玩",
+    "new": "新游戏",
+    "trending": "热门",
+    "updated": "更新",
+    "originals": "原创",
+    "multiplayer": "多人游戏",
+    "twoPlayer": "双人游戏"
+  },
+ "categories": {
+    "action": "动作", 
+    "adventure": "冒险",
+    "basketball": "篮球",
+    "beauty": "美妆",
+    "bike": "自行车",
+    "car": "赛车",
+    "card": "卡牌",
+    "casual": "休闲",
+    "clicker": "点击",
+    "controller": "控制",
+    "dressUp": "装扮",
+    "driving": "赛车",
+    "escape": "逃脱",
+    "flash": "闪避",
+    "fps": "射击",
+    "horror": "恐怖",
+    "io": "IO",
+    "mahjong": "麻将",
+    "minecraft": "我的世界",
+    "pool": "台球",
+    "puzzle": "解谜",
+    "shooting": "射击",
+    "soccer": "足球",
+    "sports": "体育",
+    "stickman": "火柴人",
+    "towerDefense": "塔防"
+  },
+  "features": {
+    "games": "海量游戏",
+    "noInstall": "无需安装",
+    "anyDevice": "多设备支持",
+    "withFriends": "与朋友一起玩",
+    "allFree": "全部免费"
+  },
+  "playWithFriends": {
+    "title": "与朋友一起玩！",
+    "localMultiplayer": {
+      "title": "本地多人游戏",
+      "description": "在同一设备上玩"
+    },
+    "onlineMultiplayer": {
+      "title": "在线多人游戏",
+      "description": "在不同设备上玩"
+    }
+  }
+} 

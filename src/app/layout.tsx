@@ -1,41 +1,35 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ClientBody from "./ClientBody";
-import { cookies } from 'next/headers';
-import { headers } from 'next/headers';
+import { I18nProvider } from "../components/I18nProvider";
 
-const inter = Inter({
+const geistSans = Geist({
     subsets: ["latin"],
-    display: 'swap',
+    variable: "--font-geist-sans",
+});
+
+const geistMono = Geist_Mono({
+    subsets: ["latin"],
+    variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
-    title: "Free Online Games on CrazyGames | Play Now!",
-    description: "Play free online games at CrazyGames, the best place to play high-quality browser games. We add new games every day. Have fun!",
+    title: "MiniPlayGame",
+    description: "A Next.js 15 based mini game platform",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
-    searchParams,
-}: Readonly<{
-    children: React.ReactNode;
-    searchParams?: { [key: string]: string | string[] | undefined };
-}>) {
-    // 获取请求中的语言参数
-    const urlLang = typeof searchParams?.lang === 'string' ? searchParams.lang : undefined;
-    
-    // 从 cookie 中获取语言设置
-    const cookieStore = await cookies();
-    const cookieLang = cookieStore.get('i18next')?.value;
-    
-    // 按优先级使用：URL参数 > cookie > 默认值'en'
-    const lang = urlLang || cookieLang || 'en';
-
+}: {
+    children: React.ReactNode
+}) {
     return (
-        <html lang={lang} className={inter.className}>
-            <body suppressHydrationWarning className="antialiased">
-                <ClientBody lang={lang}>{children}</ClientBody>
+        <html lang="en" suppressHydrationWarning>
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+                suppressHydrationWarning
+            >
+                <I18nProvider>{children}</I18nProvider>
             </body>
         </html>
     );
