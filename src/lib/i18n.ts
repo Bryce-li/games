@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
+import enTranslations from '../../public/locales/en.json';
+import zhTranslations from '../../public/locales/zh.json';
 
 // 检查是否在客户端环境
 const isClient = typeof window !== 'undefined';
@@ -9,11 +11,11 @@ const isClient = typeof window !== 'undefined';
 // 预加载翻译资源
 const resources = {
   en: {
-    common: require('../../public/locales/en.json')
+    common: enTranslations,
   },
   zh: {
-    common: require('../../public/locales/zh.json')
-  }
+    common: zhTranslations,
+  },
 };
 
 // 创建 i18n 实例
