@@ -79,19 +79,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Clarity 访问统计脚本 */}
+      {/* Google Analytics 跟踪代码 */}
       <Script
-        id="clarity-analytics"
+        id="google-analytics"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "rvs0cxrtby");
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EMGT22HG1L');
           `,
         }}
+      />
+      <Script
+        id="google-analytics-script"
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-EMGT22HG1L"
       />
 
       {/* Header */}
