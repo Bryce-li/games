@@ -11,8 +11,32 @@ const featuredGames = [
   { 
     id: "leap-and-avoid-2", 
     title: "Leap and Avoid 2", 
-    image: "https://imgs.crazygames.com/leap-and-avoid-2_16x9/20250513041850/leap-and-avoid-2_16x9-cover?metadata=none&quality=85&width=273&fit=crop",
-    url: "/leap-and-avoid-2"
+    image: "/images/game-thumbnails/leap-and-avoid-2_16x9-cover.jpg",
+    url: "/games/leap-and-avoid-2"
+  },
+  {
+    id: "stone-grass-mowing-simulator",
+    title: "Stone Grass: Mowing Simulator",
+    image: "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg",
+    url: "/games/stone-grass-mowing-simulator"
+  },
+  {
+    id: "ragdoll-archers",
+    title: "Ragdoll Archers",
+    image: "/images/game-thumbnails/ragdoll-archers_16x9-cover.jpg",
+    url: "/games/ragdoll-archers"
+  },
+  {
+    id: "count-masters-stickman-games",
+    title: "Count Masters: Stickman Games",
+    image: "/images/game-thumbnails/count-masters-stickman-games_16x9-cover.jpg",
+    url: "/games/count-masters-stickman-games"
+  },
+  {
+    id: "zombie-horde-build-survive",
+    title: "Zombie Horde: Build & Survive",
+    image: "/images/game-thumbnails/zombie-horde-build-survive_16x9-cover.jpg",
+    url: "/games/zombie-horde-build-survive"
   },
   // { id: "stone-grass", title: "Stone Grass: Mowing Simulator", image: "https://imgs.crazygames.com/stone-grass-mowing-simulator_16x9/20250410062107/stone-grass-mowing-simulator_16x9-cover" },
   // { id: "ragdoll-archers", title: "Ragdoll Archers", image: "https://imgs.crazygames.com/ragdoll-archers_16x9/20240205020743/ragdoll-archers_16x9-cover", badge: "HOT" },
@@ -344,7 +368,7 @@ export default function Home() {
                 </div> */}
               </div>
               <div className="border-t border-gray-200 pt-6 text-center text-sm text-gray-600">
-                © 2025 CrazyGames
+                © 2025 MiniPlayGame
               </div>
             </div>
           </footer>
