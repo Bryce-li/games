@@ -2,71 +2,100 @@
   "common": {
     "language": "简体中文",
     "selectLanguage": "选择语言",
-    "welcome": "欢迎来到 MiniPlayGame",
+    "welcome": "欢迎来到迷你游戏！",
     "featuredGames": "精选游戏",
     "newGames": "新游戏",
     "allGames": "所有游戏",
-    "categories": "游戏分类",
+    "categories": "分类",
     "search": "搜索游戏...",
-    "casualGames":"休闲游戏",
-    "drivingGames":"赛车游戏"
+    "casualGames": "休闲游戏",
+    "drivingGames": "驾驶游戏",
+    "recommendedGames": "推荐游戏",
+    "gameTags": "游戏标签",
+    "aboutGame": "关于游戏",
+    "gameFeatures": "游戏特色",
+    "gameDescription": "游戏介绍",
+    "howToPlay": "操作方式",
+    "mouseControls": "鼠标控制",
+    "keyboardControls": "键盘控制",
+    "gameControls": "游戏控制",
+    "header": {
+      "title": "迷你游戏"
+    }
   },
-  "nav": {
+  "navigation": {
     "home": "首页",
     "about": "关于",
     "contact": "联系我们",
     "recentlyPlayed": "最近游玩",
     "new": "新游戏",
-    "trending": "热门",
-    "updated": "更新",
-    "originals": "原创",
+    "trending": "热门趋势",
+    "updated": "最新更新",
+    "originals": "原创游戏",
     "multiplayer": "多人游戏",
     "twoPlayer": "双人游戏"
   },
- "categories": {
-    "action": "动作", 
+  "categories": {
+    "action": "动作",
     "adventure": "冒险",
     "basketball": "篮球",
     "beauty": "美妆",
     "bike": "自行车",
-    "car": "赛车",
+    "car": "汽车",
     "card": "卡牌",
     "casual": "休闲",
     "clicker": "点击",
-    "controller": "控制",
-    "dressUp": "装扮",
-    "driving": "赛车",
+    "controller": "手柄",
+    "dressUp": "换装",
+    "driving": "驾驶",
     "escape": "逃脱",
-    "flash": "闪避",
-    "fps": "射击",
+    "flash": "Flash",
+    "fps": "第一人称射击",
     "horror": "恐怖",
-    "io": "IO",
+    "io": ".io游戏",
     "mahjong": "麻将",
     "minecraft": "我的世界",
     "pool": "台球",
-    "puzzle": "解谜",
+    "puzzle": "益智",
     "shooting": "射击",
     "soccer": "足球",
     "sports": "体育",
     "stickman": "火柴人",
     "towerDefense": "塔防"
   },
+  "home": {
+    "welcome": "欢迎来到迷你游戏！",
+    "features": {
+      "feature1": "4000+游戏",
+      "feature2": "无需下载",
+      "feature3": "跨平台支持",
+      "feature4": "与朋友同玩",
+      "feature5": "完全免费"
+    },
+    "sections": {
+      "featured": "精选游戏",
+      "new": "新游戏",
+      "originals": "原创游戏",
+      "casual": "休闲游戏",
+      "viewMore": "查看更多"
+    }
+  },
   "features": {
-    "games": "海量游戏",
+    "games": "4000+游戏",
     "noInstall": "无需安装",
-    "anyDevice": "多设备支持",
-    "withFriends": "与朋友一起玩",
-    "allFree": "全部免费"
+    "anyDevice": "任意设备",
+    "withFriends": "与朋友同玩",
+    "allFree": "完全免费"
   },
   "playWithFriends": {
     "title": "与朋友一起玩！",
     "localMultiplayer": {
-      "title": "本地多人游戏",
-      "description": "在同一设备上玩"
+      "title": "本地多人",
+      "description": "在同一设备上游玩"
     },
     "onlineMultiplayer": {
-      "title": "在线多人游戏",
-      "description": "在不同设备上玩"
+      "title": "在线多人",
+      "description": "在不同设备上游玩"
     }
   }
 } 

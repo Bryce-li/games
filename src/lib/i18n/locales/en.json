@@ -8,13 +8,23 @@
     "allGames": "All Games",
     "categories": "Categories",
     "search": "Search games...",
-    "casyulGames":"Casual Games",
-    "drivingGames":"Driving Games"
+    "casualGames": "Casual Games",
+    "drivingGames": "Driving Games",
+    "recommendedGames": "Recommended Games",
+    "gameTags": "Game Tags",
+    "aboutGame": "About the Game",
+    "gameFeatures": "Game Features",
+    "gameDescription": "Game Description",
+    "howToPlay": "How to Play",
+    "mouseControls": "Mouse Controls",
+    "keyboardControls": "Keyboard Controls",
+    "gameControls": "Game Controls",
+    "header": {
+      "title": "MiniPlayGame"
+    }
   },
-  "nav": {
+  "navigation": {
     "home": "Home",
-    "about": "About",
-    "contact": "Contact",
     "recentlyPlayed": "Recently Played",
     "new": "New",
     "trending": "Trending Now",
@@ -51,6 +61,23 @@
     "stickman": "Stickman",
     "towerDefense": "Tower Defense"
   },
+  "home": {
+    "welcome": "Welcome to MiniPlayGame!",
+    "features": {
+      "feature1": "4000+ Games",
+      "feature2": "No Download Required", 
+      "feature3": "Cross Platform",
+      "feature4": "Play with Friends",
+      "feature5": "All for Free"
+    },
+    "sections": {
+      "featured": "Featured Games",
+      "new": "New Games",
+      "originals": "Original Games",
+      "casual": "Casual Games",
+      "viewMore": "View More"
+    }
+  },
   "features": {
     "games": "4000+ games",
     "noInstall": "No Install Needed",
@@ -58,16 +85,15 @@
     "withFriends": "Play with Friends",
     "allFree": "All for Free"
   },
-    "playWithFriends": {
+  "playWithFriends": {
     "title": "Play with friends!",
     "localMultiplayer": {
       "title": "Local multiplayer",
       "description": "Play on the same device"
     },
     "onlineMultiplayer": {
-      "title": "Online multiplayer",
+      "title": "Online multiplayer", 
       "description": "Play on separate devices"
     }
   }
-
 } 
