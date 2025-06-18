@@ -1,10 +1,8 @@
 "use client"
 
-import { SearchBar } from "../components/SearchBar"
-import { ThemeToggle } from "../components/ThemeToggle"
+import { Header } from "../components/Header"
 import { HeroSection } from "../components/HeroSection"
 import { HorizontalGamesList } from "../components/HorizontalGamesList"
-import { LanguageSelector } from "../components/LanguageSelector"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import Script from "next/script"
@@ -123,45 +121,16 @@ export default function Home() {
         src="https://www.googletagmanager.com/gtag/js?id=G-EMGT22HG1L"
       />
 
-      {/* 现代化头部导航 */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            {/* Logo */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">MP</span>
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="font-bold text-xl text-gray-900 dark:text-white">MiniPlayGame</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Play & Enjoy</p>
-              </div>
-            </div>
+      {/* 统一头部导航 */}
+      <Header onSearch={handleSearch} />
 
-            {/* 中央搜索栏 */}
-            <div className="flex-1 max-w-2xl mx-4">
-              <SearchBar 
-                onSearch={handleSearch}
-                className="w-full"
-              />
-            </div>
-
-            {/* 右侧工具栏 */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <ThemeToggle />
-              <LanguageSelector />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 主要内容 */}
-      <main className="container mx-auto px-4 py-8">
+      {/* 主要内容 - 添加顶部间距以避免被固定头部遮挡 */}
+      <main className="container mx-auto px-4 py-8 pt-24">
         {/* Hero 轮播区域 */}
         <HeroSection games={heroGames} />
 
         {/* 游戏分类列表 */}
-        <div className="space-y-12">
+        <div className="space-y-6">
           {/* 精选游戏 */}
           <HorizontalGamesList
             title={t("categories.featured", "Featured Games")}

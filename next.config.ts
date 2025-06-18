@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
             },
         },
     },
+    // 启用字体优化
+    optimizeFonts: true,
     images: {
         unoptimized: true,
         domains: [
@@ -42,5 +44,5 @@ const nextConfig: NextConfig = {
         ],
     },
 };
+
 export default nextConfig;
-module.exports = nextConfig;

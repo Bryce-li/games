@@ -70,7 +70,7 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
   };
 
   return (
-    <section className="mb-8">
+    <section className="mb-4">
       {/* 标题栏 */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
@@ -107,7 +107,7 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+          className="flex gap-2 overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {games.map((game) => (
