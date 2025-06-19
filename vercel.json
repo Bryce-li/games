@@ -1,20 +1,5 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
   "regions": ["hkg1"],
-  "functions": {
-    "app/**/*.{ts,tsx}": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/games/(.*)",
-      "destination": "/games/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
