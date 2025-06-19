@@ -5,7 +5,6 @@ import { HeroSection } from "../components/HeroSection"
 import { HorizontalGamesList } from "../components/HorizontalGamesList"
 import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
-import Script from "next/script"
 import { heroGames, getNewGames, getGamesByCategory, BaseGame } from "@/lib/games"
 
 export default function Home() {
@@ -62,22 +61,7 @@ export default function Home() {
   }, [])
 
   return (
-    <>
-      {/* Google Analytics 脚本 */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX');
-        `}
-      </Script>
-
-      <MainLayout onSearch={handleSearch}>
+    <MainLayout onSearch={handleSearch}>
         {/* 主要内容 */}
         <div className="container mx-auto px-4 py-8">
           {/* Hero 轮播区域 */}
@@ -133,11 +117,9 @@ export default function Home() {
           <div className="container mx-auto px-4 py-8">
             <div className="text-center text-gray-600 dark:text-gray-400">
               <p>&copy; 2024 MiniPlayGame. All rights reserved.</p>
-              <p className="text-sm mt-2">Built with Next.js 15 & TypeScript</p>
             </div>
           </div>
         </footer>
       </MainLayout>
-    </>
   )
 }
