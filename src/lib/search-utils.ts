@@ -30,6 +30,15 @@ export function getAllGames(): Game[] {
   return allGames;
 }
 
+// 获取所有分类列表
+export function getAllCategories(): string[] {
+  const categories = new Set<string>();
+  gameCategories.forEach(category => {
+    categories.add(category.id);
+  });
+  return Array.from(categories);
+}
+
 // 高亮匹配文本
 export function highlightText(text: string, query: string): string {
   if (!query.trim()) return text;

@@ -4,12 +4,12 @@ import { MainLayout } from '@/components/MainLayout';
 import { CategoryPageContent } from './CategoryPageContent';
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams?: {
+  }>;
+  searchParams?: Promise<{
     tag?: string;
-  };
+  }>;
 }
 
 // 分类标题映射
@@ -51,8 +51,10 @@ const categoryTitles: Record<string, string> = {
 };
 
 export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
-  const categorySlug = params.slug;
-  const tag = searchParams?.tag;
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const categorySlug = resolvedParams.slug;
+  const tag = resolvedSearchParams?.tag;
   const categoryTitle = categoryTitles[categorySlug] || `${categorySlug} Games`;
   
   const title = tag 
@@ -69,7 +71,10 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
   };
 }
 
-export default function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
   return (
     <MainLayout>
       <Suspense fallback={
@@ -85,8 +90,8 @@ export default function CategoryPage({ params, searchParams }: CategoryPageProps
         </div>
       }>
         <CategoryPageContent 
-          categorySlug={params.slug}
-          tag={searchParams?.tag}
+          categorySlug={resolvedParams.slug}
+          tag={resolvedSearchParams?.tag}
         />
       </Suspense>
     </MainLayout>

@@ -28,7 +28,7 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **UI Components**: Shadcn/ui + Radix UI
 - **Icons**: Lucide React
 - **Internationalization**: react-i18next
-- **Deployment**: Vercel/Netlify Ready
+- **Deployment**: Vercel Ready
 
 ## 📁 Project Structure
 
@@ -59,6 +59,42 @@ src/
 ```
 
 ## 🔧 最新错误修复和更新
+
+### 🧹 Vercel部署准备 - 项目清理 (2024-12-19)
+
+#### ✅ **清理完成的无用文件**:
+1. **删除空文件**:
+   - ❌ `src/components/HomePage.tsx` - 完全空的文件，只有一个空格
+   
+2. **删除冲突的国际化配置**:
+   - ❌ `src/lib/dictionary.ts` - 有linter错误且与react-i18next系统冲突
+   - ❌ 缺失的 `src/dictionaries/en.json`, `zh.json` 文件引用
+
+3. **删除错误的部署配置**:
+   - ❌ `netlify.toml` - 项目要部署到Vercel，不需要Netlify配置
+
+4. **新增Vercel优化配置**:
+   - ✅ 创建 `vercel.json` - 专门的Vercel部署配置
+   - ✅ 设置香港地区节点 (hkg1) 加速访问
+   - ✅ 配置静态资源缓存策略
+   - ✅ 添加安全头部设置
+
+#### 🎯 **清理后的项目状态**:
+- ✅ **0个linter错误**: 删除了导致TypeScript错误的缺失模块引用
+- ✅ **单一国际化系统**: 只保留react-i18next，删除冲突的Next.js字典系统
+- ✅ **Vercel优化**: 专门为Vercel平台优化的配置和缓存策略
+- ✅ **更新文档**: README中移除Netlify相关内容，更新为Vercel部署指南
+
+#### 📋 **清理的技术债务**:
+```typescript
+// 修复前的错误 (src/lib/dictionary.ts)
+❌ import('../dictionaries/en.json') // 找不到模块错误
+❌ import('../dictionaries/zh.json') // 找不到模块错误
+
+// 修复后 - 完全删除冲突系统，使用统一的react-i18next
+✅ 使用 src/lib/i18n/locales/en.json, zh.json
+✅ 通过 useTranslation() hook 统一访问翻译
+```
 
 ### 🛠️ 主页深色模式滚动条完全修复 (2024-12-19 终极修复)
 
@@ -370,10 +406,10 @@ npm run build
 vercel --prod
 ```
 
-### Netlify Deployment
+### Manual Deployment
 ```bash
 npm run build
-# Deploy dist folder to Netlify
+npm start
 ```
 
 ## 📝 Configuration

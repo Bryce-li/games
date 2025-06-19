@@ -3,15 +3,16 @@ import { Suspense } from 'react';
 import { SearchPageContent } from './SearchPageContent';
 
 interface SearchPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     category?: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
-  const query = searchParams.q || '';
-  const category = searchParams.category || '';
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.q || '';
+  const category = resolvedSearchParams.category || '';
   
   return {
     title: query 
@@ -25,7 +26,9 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   };
 }
 
-export default function SearchPage({ searchParams }: SearchPageProps) {
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const resolvedSearchParams = await searchParams;
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
@@ -42,8 +45,8 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
       </div>
     }>
       <SearchPageContent 
-        query={searchParams.q || ''} 
-        category={searchParams.category || ''}
+        query={resolvedSearchParams.q || ''} 
+        category={resolvedSearchParams.category || ''}
       />
     </Suspense>
   );

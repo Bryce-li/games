@@ -1,0 +1,99 @@
+{
+  "common": {
+    "language": "English",
+    "selectLanguage": "Select Language",
+    "welcome": "Welcome to MiniPlayGame!",
+    "featuredGames": "Featured Games",
+    "newGames": "New Games",
+    "allGames": "All Games",
+    "categories": "Categories",
+    "search": "Search games...",
+    "casualGames": "Casual Games",
+    "drivingGames": "Driving Games",
+    "recommendedGames": "Recommended Games",
+    "gameTags": "Game Tags",
+    "aboutGame": "About the Game",
+    "gameFeatures": "Game Features",
+    "gameDescription": "Game Description",
+    "howToPlay": "How to Play",
+    "mouseControls": "Mouse Controls",
+    "keyboardControls": "Keyboard Controls",
+    "gameControls": "Game Controls",
+    "header": {
+      "title": "MiniPlayGame"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "recentlyPlayed": "Recently Played",
+    "new": "New",
+    "trending": "Trending Now",
+    "updated": "Updated",
+    "originals": "Originals",
+    "multiplayer": "Multiplayer",
+    "twoPlayer": "2 Player"
+  },
+  "categories": {
+    "action": "Action",
+    "adventure": "Adventure",
+    "basketball": "Basketball",
+    "beauty": "Beauty",
+    "bike": "Bike",
+    "car": "Car",
+    "card": "Card",
+    "casual": "Casual",
+    "clicker": "Clicker",
+    "controller": "Controller",
+    "dressUp": "Dress Up",
+    "driving": "Driving",
+    "escape": "Escape",
+    "flash": "Flash",
+    "fps": "FPS",
+    "horror": "Horror",
+    "io": ".io",
+    "mahjong": "Mahjong",
+    "minecraft": "Minecraft",
+    "pool": "Pool",
+    "puzzle": "Puzzle",
+    "shooting": "Shooting",
+    "soccer": "Soccer",
+    "sports": "Sports",
+    "stickman": "Stickman",
+    "towerDefense": "Tower Defense"
+  },
+  "home": {
+    "welcome": "Welcome to MiniPlayGame!",
+    "features": {
+      "feature1": "4000+ Games",
+      "feature2": "No Download Required", 
+      "feature3": "Cross Platform",
+      "feature4": "Play with Friends",
+      "feature5": "All for Free"
+    },
+    "sections": {
+      "featured": "Featured Games",
+      "new": "New Games",
+      "originals": "Original Games",
+      "casual": "Casual Games",
+      "viewMore": "View More"
+    }
+  },
+  "features": {
+    "games": "4000+ games",
+    "noInstall": "No Install Needed",
+    "anyDevice": "On Any Device",
+    "withFriends": "Play with Friends",
+    "allFree": "All for Free"
+  },
+  "playWithFriends": {
+    "title": "Play with friends!",
+    "localMultiplayer": {
+      "title": "Local multiplayer",
+      "description": "Play on the same device"
+    },
+    "onlineMultiplayer": {
+      "title": "Online multiplayer", 
+      "description": "Play on separate devices"
+    }
+  }
+} 
