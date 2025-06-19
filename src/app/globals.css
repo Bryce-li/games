@@ -12,6 +12,54 @@
     display: none;
   }
   
+  /* 深色模式滚动条样式 */
+  .scrollbar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 4px;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+  
+  /* 浅色模式滚动条样式 */
+  .scrollbar-light {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f9fafb;
+  }
+  
+  .scrollbar-light::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-light::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 4px;
+  }
+  
+  .scrollbar-light::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+  
+  .scrollbar-light::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
   .line-clamp-2 {
     overflow: hidden;
     display: -webkit-box;
@@ -81,7 +129,53 @@
   * {
     @apply border-border;
   }
+  
+  /* 默认为浅色模式滚动条 */
   body {
     @apply bg-background text-foreground;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f9fafb;
+  }
+  
+  body::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  body::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 4px;
+  }
+  
+  body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+  
+  body::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* 深色模式下的滚动条样式 */
+  .dark body {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+  }
+  
+  .dark body::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .dark body::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 4px;
+  }
+  
+  .dark body::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+  }
+  
+  .dark body::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
   }
 }

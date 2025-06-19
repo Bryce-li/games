@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { GameConfig } from '@/lib/games-config';
+import { GameConfig } from '@/lib/games';
 
 interface GameSidebarProps {
   games: GameConfig[];
@@ -17,7 +17,7 @@ function GameCard({ game, size = "normal" }: { game: GameConfig; size?: "normal"
   return (
     <Link 
       href={`/games/${game.id}`}
-      className={`${cardClass} block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 group`}
+      className={`${cardClass} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group`}
     >
       <div className="relative w-full h-full">
         <img
@@ -52,7 +52,7 @@ export function GameSidebar({ games, className = "" }: GameSidebarProps) {
       <div className={`hidden xl:block ${className}`}>
         {/* 两列布局，最大宽度340px */}
         <div className="w-[340px] space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended Games</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recommended Games</h3>
           <div className="grid grid-cols-2 gap-3">
             {games.slice(0, 8).map((game) => (
               <GameCard key={game.id} game={game} />
@@ -64,7 +64,7 @@ export function GameSidebar({ games, className = "" }: GameSidebarProps) {
       {/* 中等屏幕：一列布局 */}
       <div className={`hidden lg:block xl:hidden ${className}`}>
         <div className="w-[170px] space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recommended</h3>
           <div className="space-y-3">
             {games.slice(0, 6).map((game) => (
               <GameCard key={game.id} game={game} />
@@ -75,7 +75,7 @@ export function GameSidebar({ games, className = "" }: GameSidebarProps) {
 
       {/* 小屏幕：游戏下方4x3布局 */}
       <div className="block lg:hidden w-full">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended Games</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recommended Games</h3>
         <div className="grid gap-3" style={{
           gridTemplateColumns: 'repeat(auto-fit, minmax(153px, 1fr))'
         }}>

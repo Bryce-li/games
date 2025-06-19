@@ -5,64 +5,12 @@ import { Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { gameCategories } from '@/lib/games-data';
-import { gamesConfig } from '@/lib/games-config';
+import { searchGames, BaseGame } from '@/lib/games';
 
-// 搜索结果接口
-interface SearchResult {
-  id: string;
-  title: string;
-  image: string;
-  category: string;
-  badge?: string;
-  isOriginal?: boolean;
-}
-
+// SearchBarProps 接口
 interface SearchBarProps {
   className?: string;
   onSearch?: (query: string) => void;
-}
-
-// 获取所有游戏数据的函数
-function getAllGames() {
-  const allGames: any[] = [];
-  
-  gameCategories.forEach((category: any) => {
-    category.games.forEach((game: any) => {
-      if (!allGames.find(g => g.id === game.id)) {
-        allGames.push(game);
-      }
-    });
-  });
-  
-  return allGames;
-}
-
-// 搜索函数 - 只搜索标题
-function searchGames(query: string, limit: number = 5): SearchResult[] {
-  if (!query.trim() || query.length < 1) return [];
-  
-  const allGames = getAllGames();
-  const searchTerm = query.toLowerCase().trim();
-  const results: SearchResult[] = [];
-  
-  allGames.forEach((game: any) => {
-    // 只匹配标题
-    const titleMatch = game.title.toLowerCase().includes(searchTerm);
-    
-    if (titleMatch) {
-      results.push({
-        id: game.id,
-        title: game.title,
-        image: game.image,
-        category: game.category,
-        badge: game.badge,
-        isOriginal: game.isOriginal
-      });
-    }
-  });
-  
-  return results.slice(0, limit);
 }
 
 // 高亮文本组件
@@ -91,7 +39,7 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
+  const [suggestions, setSuggestions] = useState<BaseGame[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -175,7 +123,7 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
     }
   };
 
-  const handleSuggestionClick = (suggestion: SearchResult) => {
+  const handleSuggestionClick = (suggestion: BaseGame) => {
     setQuery(suggestion.title);
     setIsFocused(false);
     setSuggestions([]);

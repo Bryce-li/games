@@ -1,50 +1,59 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getGameConfig, getRecommendedGames } from '@/lib/games-config';
+import { MainLayout } from '@/components/MainLayout';
 import { GamePageContent } from './GamePageContent';
+import { getGameConfig, getRecommendedGames } from '@/lib/games';
 
 interface GamePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // 生成页面元数据
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
-  const gameConfig = getGameConfig(params.slug);
+  const { slug } = await params;
+  const game = getGameConfig(slug);
 
-  if (!gameConfig) {
+  if (!game) {
     return {
-      title: 'Game Not Found',
+      title: 'Game Not Found - MiniPlayGame',
       description: 'The requested game could not be found.',
     };
   }
 
   return {
-    title: `${gameConfig.title} - MiniPlayGame`,
-    description: gameConfig.description,
+    title: `${game.title} - Play Free Online Game - MiniPlayGame`,
+    description: game.description,
     openGraph: {
-      title: gameConfig.title,
-      description: gameConfig.description,
-      images: [gameConfig.thumbnail],
+      title: game.title,
+      description: game.description,
+      type: 'website',
+      images: [game.thumbnail],
     },
   };
 }
 
-export default function GamePage({ params }: GamePageProps) {
-  const gameConfig = getGameConfig(params.slug);
-
-  if (!gameConfig) {
+export default async function GamePage({ params }: GamePageProps) {
+  const { slug } = await params;
+  
+  // 获取游戏配置
+  const game = getGameConfig(slug);
+  
+  if (!game) {
     notFound();
   }
 
-  const recommendedGames = getRecommendedGames(gameConfig.id);
+  // 获取推荐游戏（排除当前游戏）
+  const recommendedGames = getRecommendedGames(game.id, 8);
 
   return (
-    <GamePageContent 
-      game={gameConfig} 
-      recommendedGames={recommendedGames} 
-    />
+    <MainLayout>
+      <GamePageContent 
+        game={game} 
+        recommendedGames={recommendedGames}
+      />
+    </MainLayout>
   );
 }
 

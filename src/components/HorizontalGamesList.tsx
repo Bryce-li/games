@@ -69,6 +69,9 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
     }
   };
 
+  // 生成唯一的key前缀，基于title生成一个简短的标识符
+  const keyPrefix = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+
   return (
     <section className="mb-4">
       {/* 标题栏 */}
@@ -111,7 +114,7 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {games.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCard key={`${keyPrefix}-${game.id}`} game={game} />
           ))}
         </div>
       </div>
