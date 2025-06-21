@@ -1,5 +1,4 @@
-import { Game, gameCategories } from './games-data';
-import { gamesConfig } from './games-config';
+import { getAllGames, getGamesByCategory, BaseGame, GameConfig, gameCategories } from './games';
 
 export interface SearchResult {
   id: string;
@@ -12,31 +11,9 @@ export interface SearchResult {
   matchType: 'title' | 'category' | 'description';
 }
 
-// 获取所有游戏数据
-export function getAllGames(): Game[] {
-  const allGames: Game[] = [];
-  
-  gameCategories.forEach(category => {
-    category.games.forEach(game => {
-      if (!allGames.find(g => g.id === game.id)) {
-        allGames.push({
-          ...game,
-          description: gamesConfig[game.id]?.description || `A fun ${game.category} game`
-        });
-      }
-    });
-  });
-  
-  return allGames;
-}
-
 // 获取所有分类列表
 export function getAllCategories(): string[] {
-  const categories = new Set<string>();
-  gameCategories.forEach(category => {
-    categories.add(category.id);
-  });
-  return Array.from(categories);
+  return Object.keys(gameCategories);
 }
 
 // 高亮匹配文本
@@ -58,7 +35,9 @@ export function searchGames(query: string, limit: number = 20): SearchResult[] {
   allGames.forEach(game => {
     const titleMatch = game.title.toLowerCase().includes(searchTerm);
     const categoryMatch = game.category.toLowerCase().includes(searchTerm);
-    const descriptionMatch = game.description?.toLowerCase().includes(searchTerm);
+    // 由于BaseGame没有description，我们需要从gamesConfig获取
+    const gameConfig = require('./games').getGameConfig(game.id);
+    const descriptionMatch = gameConfig?.description?.toLowerCase().includes(searchTerm);
     
     if (titleMatch || categoryMatch || descriptionMatch) {
       let matchType: 'title' | 'category' | 'description' = 'title';
@@ -70,7 +49,7 @@ export function searchGames(query: string, limit: number = 20): SearchResult[] {
       results.push({
         id: game.id,
         title: game.title,
-        description: game.description,
+        description: gameConfig?.description,
         image: game.image,
         category: game.category,
         badge: game.badge,
@@ -94,8 +73,5 @@ export function getSearchSuggestions(query: string, limit: number = 5): SearchRe
   return searchGames(query, limit);
 }
 
-// 按分类获取游戏
-export function getGamesByCategory(categoryId: string): Game[] {
-  const category = gameCategories.find(cat => cat.id === categoryId);
-  return category ? category.games : [];
-}
+// 按分类获取游戏 - 重新导出从games.ts的函数
+export { getGamesByCategory, getAllGames } from './games';

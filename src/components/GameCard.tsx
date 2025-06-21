@@ -2,10 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import type { Game } from '@/lib/games-data';
+import type { BaseGame } from '@/lib/games';
 
 interface GameCardProps {
-  game: Game;
+  game: BaseGame;
   size?: "normal" | "small" | "large";
   className?: string;
   showTags?: boolean;
@@ -55,11 +55,7 @@ export function GameCard({ game, size = "normal", className = "", showTags = fal
             {game.title}
           </h3>
           
-          {game.description && (
-            <p className="text-xs text-gray-200 line-clamp-2 mb-2">
-              {game.description}
-            </p>
-          )}
+          {/* 暂时不显示描述，因为BaseGame接口中没有description属性 */}
           
           <div className="flex items-center justify-between text-xs">
             <span className="capitalize text-gray-300">

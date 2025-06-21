@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameCard } from '@/components/GameCard';
-import { getAllGames, type Game } from '@/lib/games-data';
+import { getAllGames, getGamesByCategory, BaseGame } from '@/lib/games';
 
 interface CategoryPageContentProps {
   categorySlug: string;
@@ -50,7 +50,7 @@ const categoryTitles: Record<string, string> = {
 
 export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentProps) {
   const { t } = useTranslation();
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<BaseGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,12 +60,12 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
         setLoading(true);
         setError(null);
         
-        const allGames = await getAllGames();
-        let filteredGames: Game[] = [];
+        const allGames = getAllGames();
+        let filteredGames: BaseGame[] = [];
 
         // 如果有标签参数，按标签过滤
         if (tag) {
-          filteredGames = allGames.filter((game: Game) => 
+          filteredGames = allGames.filter((game: BaseGame) => 
             game.tags.some((gameTag: string) => 
               gameTag.toLowerCase() === tag.toLowerCase()
             )
@@ -74,15 +74,13 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
           // 按分类过滤游戏
           switch (categorySlug) {
             case 'new':
-              // 假设新游戏是最近添加的（这里可以根据实际情况调整）
-              filteredGames = allGames.sort((a: Game, b: Game) => 
-                new Date(b.id).getTime() - new Date(a.id).getTime()
-              ).slice(0, 50);
+              // 使用新游戏函数
+              filteredGames = require('@/lib/games').getNewGames();
               break;
               
             case 'trending':
-              // 假设热门游戏是播放量最高的（这里可以根据实际情况调整）
-              filteredGames = allGames.slice(0, 50);
+              // 使用热门游戏函数
+              filteredGames = require('@/lib/games').getHotGames();
               break;
               
             case 'updated':
@@ -91,13 +89,13 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
               break;
               
             case 'multiplayer':
-              filteredGames = allGames.filter((game: Game) => 
+              filteredGames = allGames.filter((game: BaseGame) => 
                 game.tags.some((tag: string) => tag.toLowerCase().includes('multiplayer'))
               );
               break;
               
             case 'two-player':
-              filteredGames = allGames.filter((game: Game) => 
+              filteredGames = allGames.filter((game: BaseGame) => 
                 game.tags.some((tag: string) => 
                   tag.toLowerCase().includes('2 player') || 
                   tag.toLowerCase().includes('two player')
@@ -106,14 +104,17 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
               break;
               
             default:
-              // 按分类过滤
-              filteredGames = allGames.filter((game: Game) => 
-                game.category.toLowerCase() === categorySlug.toLowerCase() ||
-                game.tags.some((tag: string) => 
-                  tag.toLowerCase() === categorySlug.toLowerCase() ||
-                  tag.toLowerCase().replace(' ', '-') === categorySlug.toLowerCase()
-                )
-              );
+              // 使用按分类获取游戏的函数
+              filteredGames = getGamesByCategory(categorySlug);
+              if (filteredGames.length === 0) {
+                // 如果没有匹配的分类，按标签搜索
+                filteredGames = allGames.filter((game: BaseGame) => 
+                  game.tags.some((tag: string) => 
+                    tag.toLowerCase() === categorySlug.toLowerCase() ||
+                    tag.toLowerCase().replace(' ', '-') === categorySlug.toLowerCase()
+                  )
+                );
+              }
               break;
           }
         }

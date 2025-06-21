@@ -168,6 +168,30 @@ export const gamesConfig: Record<string, GameConfig> = {
       "Simple controls",
       "Retro style graphics"
     ]
+  },
+  "cat-mini-restaurant": {
+    id: "cat-mini-restaurant",
+    title: "Cat Mini Restaurant",
+    description: "In this heartwarming and healing simulation management game \"Meow Flavor Restaurant\", you will become a little cat owner who loves cooking and personally create your own dream restaurant. Starting from a small cat house kitchen, gradually upgrading equipment, developing new recipes, recruiting cute cat employees, until becoming the most popular internet celebrity restaurant in the city! More than 30 cats with different personalities and skills are waiting for you to collect!",
+    image: "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg",
+    embedUrl: "https://html5.gamedistribution.com/196df99b32324438b39a4dcf18f0f838/?gd_sdk_referrer_url=https://www.miniplaygame.online/games/cat-mini-restaurant",
+    thumbnail: "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg",
+    category: "casual",
+    tags: ["simulation", "restaurant", "management", "cute", "cats"],
+    isNew: true,
+    badge: "NEW",
+    instructions: {
+      mouse: "Mouse click to interact with objects and manage restaurant",
+      keyboard: ""
+    },
+    features: [
+      "Cute cat characters with unique personalities",
+      "Restaurant management gameplay",
+      "Equipment upgrade system",
+      "Recipe development and cooking",
+      "Employee recruitment and management",
+      "Heartwarming and relaxing experience"
+    ]
   }
 };
 
