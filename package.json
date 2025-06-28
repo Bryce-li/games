@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:init": "node scripts/init-database-direct.js",
-    "db:migrate": "node scripts/migrate-data.js"
+    "db:migrate": "node scripts/migrate-data.js",
+    "storage:init": "node scripts/init-storage.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

@@ -79,8 +79,18 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
     }
   };
 
-  // 生成唯一的key前缀，基于title生成一个简短的标识符
-  const keyPrefix = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+  // 生成唯一的key前缀，使用title的哈希值确保唯一性
+  const keyPrefix = React.useMemo(() => {
+    // 使用简单的哈希函数生成基于title的唯一标识符
+    let hash = 0;
+    const str = title + (viewMoreHref || ''); // 包含href确保更大的唯一性
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // 转换为32位整数
+    }
+    return `list-${Math.abs(hash)}`;
+  }, [title, viewMoreHref]);
 
   return (
     <section className="mb-4">
