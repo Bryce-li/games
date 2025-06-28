@@ -60,6 +60,73 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🚀 游戏数据系统重大升级 - 迁移到Supabase数据库 (2025-01-23)
+
+#### ✨ **重大升级内容**:
+系统已从静态数据文件完全迁移到**Supabase云数据库**，实现了数据的动态管理和持久化存储。
+
+#### 🗄️ **数据库架构**:
+1. **games表** - 游戏主数据存储
+   - 包含游戏标题、描述、嵌入URL、图片、分类等完整信息
+   - 支持发布日期、更新日期的时间戳记录
+   - 提供is_new、is_hot、is_original标识
+
+2. **game_tags表** - 游戏标签关联表
+   - 多对多关系，一个游戏可以有多个标签
+   - 支持基于标签的高效搜索和筛选
+
+3. **categories表** - 动态分类配置
+   - 可配置的分类显示控制（show_on_homepage）
+   - 支持分类排序（display_order）和显示数量控制
+   - 26个预设分类支持
+
+4. **hero_games表** - 英雄区游戏配置
+   - 可动态调整英雄区显示的游戏
+   - 支持排序和激活状态控制
+
+#### 🔧 **技术升级亮点**:
+- ✅ **类型安全**: 完整的TypeScript数据库类型定义
+- ✅ **性能优化**: 智能索引设计，支持高效查询
+- ✅ **向后兼容**: 保持原有API接口不变，无需修改现有组件
+- ✅ **实时更新**: 数据库驱动，支持动态内容更新
+- ✅ **搜索增强**: 支持全文搜索、标签搜索、分类筛选
+- ✅ **扩展性强**: 易于添加新游戏、分类和功能
+
+#### 📊 **数据迁移完成**:
+- ✅ 7个游戏成功导入数据库
+- ✅ 30个游戏标签建立关联
+- ✅ 3个英雄区游戏配置完成
+- ✅ 26个游戏分类预设完成
+
+#### 🛠️ **开发工具**:
+```bash
+# 初始化数据库（检查连接和表状态）
+npm run db:init
+
+# 数据迁移（导入游戏数据）
+npm run db:migrate
+```
+
+#### 📁 **新增文件**:
+- ✅ `src/lib/supabase.ts` - Supabase客户端配置和类型定义
+- ✅ `src/lib/games-db.ts` - 数据库查询函数集合
+- ✅ `src/lib/games-static-backup.ts` - 原静态数据备份
+- ✅ `scripts/create-database.sql` - 数据库表创建脚本
+- ✅ `scripts/init-database-direct.js` - 数据库初始化工具
+- ✅ `scripts/migrate-data.js` - 数据迁移工具
+- ✅ `.env.local` - Supabase连接配置
+
+#### 🔄 **API兼容性**:
+原有的游戏数据获取函数保持完全兼容：
+```typescript
+// 所有原有函数继续可用，现在从数据库获取数据
+const games = await getAllGames()
+const actionGames = await getGamesByCategory('action')
+const newGames = await getNewGames()
+const hotGames = await getHotGames()
+const heroGames = await getHeroGames()
+```
+
 ### ⚙️ 主页分类显示配置系统 - 可控制分类在主页的显示 (2025-01-23)
 
 #### ✨ **新功能描述**:
