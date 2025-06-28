@@ -2,9 +2,9 @@
 
 import { supabase } from './supabase'
 
-// 数据库行的类型定义
+// 数据库行的类型定义 - 已优化：移除game_id字段
 interface DatabaseGameRow {
-  game_id: string;
+  id: string; // 现在直接使用UUID主键
   title: string;
   description?: string;
   image_url?: string;
@@ -20,12 +20,12 @@ interface DatabaseGameRow {
   created_at?: string;
 }
 
-// 英雄游戏关联查询的类型定义
+// 英雄游戏关联查询的类型定义 - 已优化：game_id现在是UUID
 interface HeroGameQueryRow {
-  game_id: string;
+  game_id: string; // UUID外键
   display_order: number;
   games: {
-    game_id: string;
+    id: string; // 游戏主键
     title: string;
     description?: string;
     image_url?: string;
@@ -101,11 +101,11 @@ export const gameCategories = {
 } as const;
 
 /**
- * 数据库行转换为BaseGame格式
+ * 数据库行转换为BaseGame格式 - 已优化：直接使用主键id
  */
 function dbRowToBaseGame(row: DatabaseGameRow, tags: string[] = []): BaseGame {
   return {
-    id: row.game_id,
+    id: row.id, // 直接使用主键
     title: row.title,
     image: row.image_url || row.thumbnail_url || '',
     category: row.category,
@@ -117,11 +117,11 @@ function dbRowToBaseGame(row: DatabaseGameRow, tags: string[] = []): BaseGame {
 }
 
 /**
- * 数据库行转换为GameConfig格式
+ * 数据库行转换为GameConfig格式 - 已优化：直接使用主键id
  */
 function dbRowToGameConfig(row: DatabaseGameRow, tags: string[] = []): GameConfig {
   return {
-    id: row.game_id,
+    id: row.id, // 直接使用主键
     title: row.title,
     description: row.description || '',
     image: row.image_url || row.thumbnail_url || '',
@@ -139,11 +139,11 @@ function dbRowToGameConfig(row: DatabaseGameRow, tags: string[] = []): GameConfi
 }
 
 /**
- * 数据库行转换为HeroGame格式
+ * 数据库行转换为HeroGame格式 - 已优化：直接使用主键id
  */
 function dbRowToHeroGame(row: DatabaseGameRow, tags: string[] = []): HeroGame {
   return {
-    id: row.game_id,
+    id: row.id, // 直接使用主键
     title: row.title,
     description: row.description || '',
     image: row.image_url || row.thumbnail_url || '',
@@ -156,12 +156,12 @@ function dbRowToHeroGame(row: DatabaseGameRow, tags: string[] = []): HeroGame {
 }
 
 /**
- * 英雄游戏关联查询结果转换为HeroGame格式
+ * 英雄游戏关联查询结果转换为HeroGame格式 - 已优化
  */
 function heroQueryRowToHeroGame(queryRow: HeroGameQueryRow, tags: string[] = []): HeroGame {
   const gameData = queryRow.games;
   return {
-    id: gameData.game_id,
+    id: gameData.id, // 使用关联的games表主键
     title: gameData.title,
     description: gameData.description || '',
     image: gameData.image_url || gameData.thumbnail_url || '',
@@ -174,14 +174,14 @@ function heroQueryRowToHeroGame(queryRow: HeroGameQueryRow, tags: string[] = [])
 }
 
 /**
- * 获取游戏的标签
+ * 获取游戏的标签 - 已优化：使用UUID关联
  */
 async function getGameTags(gameId: string): Promise<string[]> {
   try {
     const { data, error } = await supabase
       .from('game_tags')
       .select('tag')
-      .eq('game_id', gameId);
+      .eq('game_id', gameId); // game_id现在是UUID
     
     if (error) {
       console.error('获取游戏标签失败:', error.message);
@@ -196,7 +196,7 @@ async function getGameTags(gameId: string): Promise<string[]> {
 }
 
 /**
- * 批量获取多个游戏的标签
+ * 批量获取多个游戏的标签 - 已优化：使用UUID关联
  */
 async function getBatchGameTags(gameIds: string[]): Promise<Record<string, string[]>> {
   if (gameIds.length === 0) return {};
@@ -205,7 +205,7 @@ async function getBatchGameTags(gameIds: string[]): Promise<Record<string, strin
     const { data, error } = await supabase
       .from('game_tags')
       .select('game_id, tag')
-      .in('game_id', gameIds);
+      .in('game_id', gameIds); // game_id现在是UUID数组
     
     if (error) {
       console.error('批量获取游戏标签失败:', error.message);
@@ -245,11 +245,11 @@ export async function getGamesByCategory(category: string): Promise<BaseGame[]> 
     
     if (!data || data.length === 0) return [];
     
-    // 批量获取标签
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签 - 使用主键id
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('按分类获取游戏时出错:', error);
     return [];
@@ -274,10 +274,11 @@ export async function getNewGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('获取新游戏时出错:', error);
     return [];
@@ -293,7 +294,7 @@ export async function getHotGames(): Promise<BaseGame[]> {
       .from('games')
       .select('*')
       .eq('is_hot', true)
-      .order('last_updated', { ascending: false });
+      .order('publish_date', { ascending: false });
     
     if (error) {
       console.error('获取热门游戏失败:', error.message);
@@ -302,10 +303,11 @@ export async function getHotGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('获取热门游戏时出错:', error);
     return [];
@@ -313,15 +315,15 @@ export async function getHotGames(): Promise<BaseGame[]> {
 }
 
 /**
- * 获取推荐游戏（排除当前游戏）
+ * 获取推荐游戏
  */
 export async function getRecommendedGames(currentGameId: string, limit: number = 8): Promise<GameConfig[]> {
   try {
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .neq('game_id', currentGameId)
-      .order('last_updated', { ascending: false })
+      .neq('id', currentGameId) // 使用主键排除当前游戏
+      .order('publish_date', { ascending: false })
       .limit(limit);
     
     if (error) {
@@ -331,10 +333,11 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToGameConfig(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToGameConfig(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('获取推荐游戏时出错:', error);
     return [];
@@ -342,16 +345,16 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
 }
 
 /**
- * 根据分类获取相关游戏
+ * 获取相关游戏
  */
 export async function getRelatedGames(category: string, currentGameId: string, limit: number = 8): Promise<GameConfig[]> {
   try {
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .eq('category', category)
-      .neq('game_id', currentGameId)
-      .order('last_updated', { ascending: false })
+      .eq('category', category.toLowerCase())
+      .neq('id', currentGameId) // 使用主键排除当前游戏
+      .order('publish_date', { ascending: false })
       .limit(limit);
     
     if (error) {
@@ -361,10 +364,11 @@ export async function getRelatedGames(category: string, currentGameId: string, l
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToGameConfig(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToGameConfig(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('获取相关游戏时出错:', error);
     return [];
@@ -372,14 +376,14 @@ export async function getRelatedGames(category: string, currentGameId: string, l
 }
 
 /**
- * 获取游戏配置
+ * 获取游戏配置 - 已优化：使用主键查询
  */
 export async function getGameConfig(gameId: string): Promise<GameConfig | null> {
   try {
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .eq('game_id', gameId)
+      .eq('id', gameId) // 直接使用主键查询
       .single();
     
     if (error) {
@@ -389,6 +393,7 @@ export async function getGameConfig(gameId: string): Promise<GameConfig | null> 
     
     if (!data) return null;
     
+    // 获取标签
     const tags = await getGameTags(gameId);
     
     return dbRowToGameConfig(data, tags);
@@ -415,10 +420,11 @@ export async function getAllGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(game => game.game_id);
+    // 批量获取标签
+    const gameIds = data.map(game => game.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
   } catch (error) {
     console.error('获取所有游戏时出错:', error);
     return [];
@@ -430,14 +436,17 @@ export async function getAllGames(): Promise<BaseGame[]> {
  */
 export async function searchGames(query: string, limit: number = 10): Promise<BaseGame[]> {
   try {
-    const searchTerm = query.toLowerCase();
+    const searchTerm = query.toLowerCase().trim();
     
-    // 使用ilike进行大小写不敏感的搜索
+    if (!searchTerm) {
+      return getAllGames();
+    }
+    
+    // 先按标题和描述搜索
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .or(`title.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
-      .order('last_updated', { ascending: false })
+      .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
       .limit(limit);
     
     if (error) {
@@ -445,15 +454,28 @@ export async function searchGames(query: string, limit: number = 10): Promise<Ba
       return [];
     }
     
-    if (!data || data.length === 0) {
-      // 如果没有找到结果，尝试通过标签搜索
-      return await searchGamesByTags(searchTerm, limit);
+    let results: BaseGame[] = [];
+    
+    if (data && data.length > 0) {
+      // 批量获取标签
+      const gameIds = data.map(game => game.id);
+      const tagsMap = await getBatchGameTags(gameIds);
+      
+      results = data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
     }
     
-    const gameIds = data.map(game => game.game_id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    // 如果结果不够，补充标签搜索
+    if (results.length < limit) {
+      const tagResults = await searchGamesByTags(searchTerm, limit - results.length);
+      
+      // 去重合并结果
+      const existingIds = new Set(results.map(game => game.id));
+      const newResults = tagResults.filter(game => !existingIds.has(game.id));
+      
+      results = [...results, ...newResults].slice(0, limit);
+    }
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return results;
   } catch (error) {
     console.error('搜索游戏时出错:', error);
     return [];
@@ -461,43 +483,46 @@ export async function searchGames(query: string, limit: number = 10): Promise<Ba
 }
 
 /**
- * 通过标签搜索游戏
+ * 按标签搜索游戏
  */
 async function searchGamesByTags(searchTerm: string, limit: number = 10): Promise<BaseGame[]> {
   try {
     const { data: tagData, error: tagError } = await supabase
       .from('game_tags')
-      .select('game_id')
-      .ilike('tag', `%${searchTerm}%`)
-      .limit(limit);
+      .select('game_id') // game_id现在是UUID
+      .ilike('tag', `%${searchTerm}%`);
     
     if (tagError || !tagData || tagData.length === 0) {
       return [];
     }
     
-    const gameIds = [...new Set(tagData.map(row => row.game_id))]; // 去重
+    // 去重游戏ID
+    const gameIds = [...new Set(tagData.map(row => row.game_id))];
+    
+    if (gameIds.length === 0) return [];
     
     const { data: gameData, error: gameError } = await supabase
       .from('games')
       .select('*')
-      .in('game_id', gameIds)
-      .order('last_updated', { ascending: false });
+      .in('id', gameIds) // 使用主键查询
+      .limit(limit);
     
     if (gameError || !gameData) {
       return [];
     }
     
-    const tagsMap = await getBatchGameTags(gameIds);
+    // 批量获取标签
+    const tagsMap = await getBatchGameTags(gameData.map(game => game.id));
     
-    return gameData.map(row => dbRowToBaseGame(row, tagsMap[row.game_id] || []));
+    return gameData.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
   } catch (error) {
-    console.error('通过标签搜索游戏时出错:', error);
+    console.error('按标签搜索游戏时出错:', error);
     return [];
   }
 }
 
 /**
- * 获取主页显示的分类配置
+ * 获取主页分类配置
  */
 export async function getHomepageCategories(): Promise<HomepageCategoryConfig[]> {
   try {
@@ -508,7 +533,7 @@ export async function getHomepageCategories(): Promise<HomepageCategoryConfig[]>
       .order('display_order', { ascending: true });
     
     if (error) {
-      console.error('获取主页分类配置失败:', error.message);
+      console.error('获取主页分类失败:', error.message);
       return [];
     }
     
@@ -520,43 +545,45 @@ export async function getHomepageCategories(): Promise<HomepageCategoryConfig[]>
       maxGames: row.max_games
     })) || [];
   } catch (error) {
-    console.error('获取主页分类配置时出错:', error);
+    console.error('获取主页分类时出错:', error);
     return [];
   }
 }
 
 /**
- * 获取主页分类游戏数据
+ * 获取指定分类的游戏数据
  */
 export async function getHomepageCategoryData(categoryKey: string, maxGames?: number): Promise<BaseGame[]> {
-  const games = await getGamesByCategory(categoryKey);
-  const limit = maxGames || 8;
-  return games.slice(0, limit);
+  try {
+    return await getGamesByCategory(categoryKey);
+  } catch (error) {
+    console.error('获取分类游戏数据时出错:', error);
+    return [];
+  }
 }
 
 /**
- * 获取所有主页分类的游戏数据
+ * 获取所有主页分类数据
  */
 export async function getAllHomepageCategoryData(): Promise<Record<string, { config: HomepageCategoryConfig; games: BaseGame[] }>> {
-  const result: Record<string, { config: HomepageCategoryConfig; games: BaseGame[] }> = {};
-  
-  const categories = await getHomepageCategories();
-  
-  for (const config of categories) {
-    const games = await getHomepageCategoryData(config.key, config.maxGames);
-    if (games.length > 0) {
-      result[config.key] = {
-        config,
-        games
-      };
+  try {
+    const categories = await getHomepageCategories();
+    const result: Record<string, { config: HomepageCategoryConfig; games: BaseGame[] }> = {};
+    
+    for (const config of categories) {
+      const games = await getHomepageCategoryData(config.key, config.maxGames);
+      result[config.key] = { config, games };
     }
+    
+    return result;
+  } catch (error) {
+    console.error('获取所有主页分类数据时出错:', error);
+    return {};
   }
-  
-  return result;
 }
 
 /**
- * 获取英雄区游戏数据
+ * 获取英雄区游戏 - 已优化：使用UUID关联
  */
 export async function getHeroGames(): Promise<HeroGame[]> {
   try {
@@ -565,8 +592,8 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       .select(`
         game_id,
         display_order,
-        games (
-          game_id,
+        games!inner (
+          id,
           title,
           description,
           image_url,
@@ -587,30 +614,30 @@ export async function getHeroGames(): Promise<HeroGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map((row: unknown) => (row as { game_id: string }).game_id);
+    // 批量获取标签 - 使用关联的games表id
+    const gameIds = data.map((row: unknown) => (row as { games: { id: string } }).games.id);
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data
-      .filter((row: unknown) => (row as { games: unknown }).games) // 确保关联的游戏存在
-      .map((row: unknown) => {
-        const typedRow = row as { game_id: string; games: { 
-          game_id: string; title: string; description?: string; 
-          image_url?: string; thumbnail_url?: string; category: string;
-          is_original?: boolean; is_new?: boolean; is_hot?: boolean;
-        }};
-        const gameData = typedRow.games;
-        return {
-          id: gameData.game_id,
-          title: gameData.title,
-          description: gameData.description || '',
-          image: gameData.image_url || gameData.thumbnail_url || '',
-          category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
-          tags: tagsMap[typedRow.game_id] || [],
-          isOriginal: gameData.is_original,
-          isNew: gameData.is_new,
-          isHot: gameData.is_hot
-        } as HeroGame;
-      });
+    return data.map((row: unknown) => {
+      const typedRow = row as { game_id: string; games: {
+        id: string; title: string; description?: string;
+        image_url?: string; thumbnail_url?: string; category: string;
+        is_new?: boolean; is_hot?: boolean; is_original?: boolean;
+      }};
+      
+      const gameData = typedRow.games;
+      return {
+        id: gameData.id,
+        title: gameData.title,
+        description: gameData.description || '',
+        image: gameData.image_url || gameData.thumbnail_url || '',
+        category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
+        tags: tagsMap[gameData.id] || [],
+        isOriginal: gameData.is_original,
+        isNew: gameData.is_new,
+        isHot: gameData.is_hot
+      };
+    });
   } catch (error) {
     console.error('获取英雄区游戏时出错:', error);
     return [];
@@ -618,7 +645,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
 }
 
 /**
- * 更新分类显示状态（管理功能）
+ * 更新分类显示状态
  */
 export async function updateCategoryVisibility(categoryKey: string, showOnHomepage: boolean): Promise<boolean> {
   try {
@@ -632,7 +659,6 @@ export async function updateCategoryVisibility(categoryKey: string, showOnHomepa
       return false;
     }
     
-    console.log(`📝 分类 "${categoryKey}" 主页显示状态已更新为: ${showOnHomepage ? '显示' : '隐藏'}`);
     return true;
   } catch (error) {
     console.error('更新分类显示状态时出错:', error);
@@ -644,13 +670,17 @@ export async function updateCategoryVisibility(categoryKey: string, showOnHomepa
  * 批量更新分类显示状态
  */
 export async function updateMultipleCategoriesVisibility(updates: Record<string, boolean>): Promise<void> {
-  for (const [categoryKey, showOnHomepage] of Object.entries(updates)) {
-    await updateCategoryVisibility(categoryKey, showOnHomepage);
+  try {
+    for (const [categoryKey, showOnHomepage] of Object.entries(updates)) {
+      await updateCategoryVisibility(categoryKey, showOnHomepage);
+    }
+  } catch (error) {
+    console.error('批量更新分类显示状态时出错:', error);
   }
 }
 
 /**
- * 获取当前分类显示状态概览
+ * 获取分类显示状态
  */
 export async function getCategoryVisibilityStatus(): Promise<Record<string, boolean>> {
   try {
@@ -663,12 +693,12 @@ export async function getCategoryVisibilityStatus(): Promise<Record<string, bool
       return {};
     }
     
-    const status: Record<string, boolean> = {};
+    const result: Record<string, boolean> = {};
     data?.forEach(row => {
-      status[row.category_key] = row.show_on_homepage;
+      result[row.category_key] = row.show_on_homepage;
     });
     
-    return status;
+    return result;
   } catch (error) {
     console.error('获取分类显示状态时出错:', error);
     return {};

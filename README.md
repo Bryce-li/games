@@ -12,7 +12,7 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **🌙 Dark Mode**: Complete dark/light theme support with system preference detection
 - **🌐 Internationalization**: Multi-language support (English/Chinese)
 - **⚡ Performance Optimized**: Next.js 15 with optimized loading and caching
-- **🖼️ Image Storage**: Supabase Storage for scalable image management
+
 
 ### 🎨 UI/UX Features
 - **🎪 Hero Carousel**: Featured games with auto-play carousel
@@ -20,13 +20,10 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **🎯 Advanced Filtering**: Filter by category, tags, and game status
 - **💫 Smooth Animations**: Tailwind CSS powered transitions
 - **🔄 Loading States**: Skeleton loading for better UX
-- **📷 Image Upload**: Drag-and-drop image upload with preview
 
 ### 🏗️ Infrastructure Features
 - **🗄️ Supabase Database**: Cloud PostgreSQL database for game data
-- **📁 Supabase Storage**: Scalable image storage with automatic optimization
-- **🔗 CDN Integration**: Auto-distributed images for global performance
-- **🎛️ Admin Interface**: Image upload and management tools
+- **⚡ Optimized Performance**: Fast loading with efficient data fetching
 
 ## 🛠 Tech Stack
 
@@ -36,7 +33,6 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **UI Components**: Shadcn/ui + Radix UI
 - **Icons**: Lucide React
 - **Database**: Supabase (PostgreSQL)
-- **Storage**: Supabase Storage
 - **Internationalization**: react-i18next
 - **Deployment**: Vercel Ready
 
@@ -49,12 +45,11 @@ src/
   │   │   ├── [slug]/   # 动态游戏路由
   │   │   └── category/ # 分类和标签页面
   │   │       └── [slug]/ # 动态分类路由
-  │   ├── image-upload-demo/ # 图片上传演示页面
+
   │   ├── layout.tsx    # 根布局
   │   └── page.tsx      # 主页
   ├── components/       # React 组件
   │   ├── ui/           # Shadcn UI 组件
-  │   ├── image-upload.tsx # 图片上传组件
   │   ├── MainLayout.tsx # 主布局组件（含侧边栏）
   │   ├── Sidebar.tsx   # 左侧侧边栏组件
   │   ├── GameCard.tsx  # 通用游戏卡片组件
@@ -66,12 +61,10 @@ src/
   ├── lib/             # 工具和配置
   │   ├── i18n/        # 国际化设置
   │   ├── supabase.ts  # Supabase客户端配置
-  │   ├── image-manager.ts # 图片管理系统
   │   ├── games.ts     # 统一游戏数据配置（合并后）
   │   ├── games-db.ts  # 数据库操作函数
   │   └── utils.ts     # 工具函数
   ├── scripts/         # 脚本文件
-  │   ├── init-storage.js # Supabase Storage初始化
   │   ├── init-database.js # 数据库初始化
   │   └── migrate-data.js # 数据迁移脚本
   └── styles/          # 全局样式
@@ -189,134 +182,37 @@ src/
 - ✅ **性能提升**: 优化的异步处理提高了页面加载速度
 - ✅ **维护性强**: 清晰的架构便于后续开发和维护
 
-### 🖼️ 游戏图片存储和性能优化系统 (2025-01-23)
 
-#### 📊 **图片存储方案对比**:
 
-| 方案 | 优势 | 适用场景 | 成本 |
-|------|------|----------|------|
-| **Supabase Storage** ⭐ | 与数据库一体化，自动CDN，简单易用 | 中小型项目 | 免费1GB/月 |
-| **Cloudinary** 🚀 | AI优化，强大处理，全球CDN | 高性能需求 | 免费25GB流量/月 |
-| **Vercel Blob** ⚡ | Next.js原生集成，零配置 | Vercel部署 | 免费1GB/月 |
-| **AWS S3 + CloudFront** 🏢 | 企业级，高可扩展 | 大型项目 | 按使用量付费 |
 
-#### 🎯 **推荐实施方案 - Supabase Storage**:
+### 📂 分类系统数据同步完成 (2025-01-23)
 
-```typescript
-// 🔧 统一图片管理API
-import { getGameImageUrls, uploadGameThumbnail } from '@/lib/image-manager'
+#### ✅ **问题解决**:
+修复了分类配置数据未同步到数据库的问题，现在完整的分类系统已经正常运行。
 
-// 📱 响应式图片获取
-const gameImages = getGameImageUrls(game)
-// 返回: { thumbnail, hero, card, detail, responsive, placeholder }
+#### 🔧 **修复内容**:
+1. **创建分类同步脚本** (`scripts/insert-categories.js`):
+   - 一次性批量插入26个游戏分类配置
+   - 包含主页显示的6个主要分类：Action、Adventure、Casual、Puzzle、Sports、Shooting
+   - 支持20个额外分类用于搜索和筛选
 
-// 🚀 自动优化和格式转换
-const optimizedUrl = getOptimizedImageUrl('thumbnails/game-id.jpg', {
-  width: 400,
-  height: 240,
-  quality: 80,
-  format: 'webp'  // 自动WebP格式转换
-})
+2. **更新验证脚本** (`scripts/verify-data.js`):
+   - 新增分类配置表检查功能
+   - 显示主页分类和每个分类的最大游戏数量限制
+   - 完整的数据库状态验证报告
 
-// 📤 图片上传
-const result = await uploadGameThumbnail(file, gameId, { 
-  folder: 'thumbnails' 
-})
-```
+#### 📊 **分类同步结果**:
+- ✅ **26个分类配置**：成功同步到categories表
+- ✅ **6个主页分类**：Action Games、Adventure Games、Casual Games、Puzzle Games、Sports Games、Shooting Games
+- ✅ **20个搜索分类**：Basketball、Beauty、Bike、Car、Card等辅助分类
+- ✅ **分类关联验证**：现有游戏正确关联到对应分类（action: 3个、casual: 3个、adventure: 1个）
 
-#### 📁 **存储结构设计**:
-```
-game-assets/                    # Supabase Storage桶
-├── thumbnails/                 # 游戏缩略图 (400x240)
-│   ├── game-id-1.webp
-│   └── game-id-2.webp
-├── hero-images/               # 英雄区大图 (1200x600)
-│   ├── featured-1.webp
-│   └── featured-2.webp
-├── screenshots/               # 游戏截图 (800x480)
-│   └── game-id-1/
-├── icons/                     # 游戏图标 (64x64)
-│   └── game-id.png
-└── placeholder.svg            # 默认占位符
-```
-
-#### ⚡ **性能优化特性**:
-
-1. **🖼️ 自动图片优化**:
-   - WebP格式自动转换（减少60%文件大小）
-   - 响应式尺寸生成（1x, 2x, mobile, tablet, desktop）
-   - 智能质量压缩（保持视觉质量的前提下最小化文件大小）
-
-2. **📱 Next.js Image组件集成**:
-   ```tsx
-   import { OptimizedGameCard } from '@/components/OptimizedGameCard'
-   
-   // ✅ 自动懒加载、blur占位符、响应式
-   <OptimizedGameCard 
-     game={game} 
-     size="medium"
-     showTags={true}
-   />
-   ```
-
-3. **🚀 CDN全球加速**:
-   - Supabase自动CDN分发
-   - 边缘缓存优化
-   - 3600秒浏览器缓存
-
-4. **💾 缓存策略**:
-   ```typescript
-   // 浏览器缓存控制
-   cacheControl: '3600'        // 1小时浏览器缓存
-   
-   // 预加载关键图片
-   preloadImages([
-     gameImages.thumbnail,
-     gameImages.hero
-   ])
-   ```
-
-#### 🛠️ **初始化步骤**:
-
-```bash
-# 1. 设置环境变量（.env.local）
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-SUPABASE_SERVICE_ROLE_KEY=your-service-key
-
-# 2. 初始化存储系统
-npm run storage:init
-
-# 3. 开始上传图片
-# 通过管理面板或API上传到对应目录
-```
-
-#### 📈 **性能提升效果**:
-- ✅ **加载速度**: 图片加载时间减少70%（WebP + CDN）
-- ✅ **带宽优化**: 数据传输减少60%（自动压缩）
-- ✅ **用户体验**: 懒加载 + blur占位符，无白屏闪烁
-- ✅ **SEO友好**: 正确的图片尺寸和alt属性
-- ✅ **移动优化**: 响应式图片，移动端流量友好
-
-#### 🔄 **迁移指南**:
-
-```typescript
-// 🔄 从静态文件迁移到云存储
-// 之前：
-<img src="/images/game-thumbnail.jpg" alt="Game" />
-
-// 现在：
-import { OptimizedGameCard } from '@/components/OptimizedGameCard'
-<OptimizedGameCard game={gameData} />
-
-// 🎯 批量图片迁移工具
-const migrateImages = async () => {
-  for (const game of games) {
-    const file = await fetch(`/images/${game.id}.jpg`)
-    const blob = await file.blob()
-    await uploadGameThumbnail(blob, game.id)
-  }
-}
-```
+#### 🎯 **系统状态**:
+- ✅ 游戏数据：7个游戏完整同步
+- ✅ 标签数据：30个标签关联正常
+- ✅ 英雄区数据：3个英雄游戏配置
+- ✅ 分类数据：26个分类配置完整
+- ✅ 特殊标记：5个新游戏，2个热门游戏
 
 ### 🚀 游戏数据系统重大升级 - 迁移到Supabase数据库 (2025-01-23)
 
@@ -331,6 +227,14 @@ const migrateImages = async () => {
 
 2. **game_tags表** - 游戏标签关联表
    - 多对多关系，一个游戏可以有多个标签
+
+3. **categories表** - 分类配置表
+   - 存储所有游戏分类的配置信息
+   - 控制主页显示分类和显示顺序
+   - 设置每个分类的最大游戏数量限制
+
+4. **hero_games表** - 英雄区游戏配置表
+   - 管理主页轮播展示的特色游戏
    - 支持基于标签的高效搜索和筛选
 
 3. **categories表** - 动态分类配置
@@ -349,6 +253,84 @@ const migrateImages = async () => {
 - ✅ **实时更新**: 数据库驱动，支持动态内容更新
 - ✅ **搜索增强**: 支持全文搜索、标签搜索、分类筛选
 - ✅ **扩展性强**: 易于添加新游戏、分类和功能
+
+### 🚀 数据库结构重大优化 - 简化设计提升性能 (2024年)
+
+#### ✨ **优化概述**:
+完成了数据库结构的重大优化，移除冗余字段，简化外键关联，提升系统性能和可维护性。
+
+#### 🔧 **优化内容**:
+
+1. **移除冗余字段** - 简化games表设计:
+   ```sql
+   -- ❌ 优化前：同时存在id和game_id两个标识字段
+   games表:
+     id UUID PRIMARY KEY (主键)
+     game_id VARCHAR(255) UNIQUE (业务标识，冗余)
+     -- 其他字段...
+
+   -- ✅ 优化后：只保留UUID主键，删除冗余game_id
+   games表:
+     id UUID PRIMARY KEY (唯一主键)
+     -- 其他字段...
+   ```
+
+2. **简化外键关联** - 统一使用UUID主键:
+   ```sql
+   -- ❌ 优化前：外键表引用VARCHAR类型的game_id
+   game_tags表:
+     game_id VARCHAR(255) REFERENCES games(game_id)
+   
+   hero_games表:
+     game_id VARCHAR(255) REFERENCES games(game_id)
+
+   -- ✅ 优化后：直接引用UUID主键
+   game_tags表:
+     game_id UUID REFERENCES games(id)
+   
+   hero_games表:
+     game_id UUID REFERENCES games(id)
+   ```
+
+3. **更新代码适配** - 修改所有查询和关联逻辑:
+   ```typescript
+   // ❌ 优化前：通过game_id字段查询
+   const game = await supabase
+     .from('games')
+     .select('*')
+     .eq('game_id', gameId)
+
+   // ✅ 优化后：直接使用主键查询
+   const game = await supabase
+     .from('games')
+     .select('*')
+     .eq('id', gameId)
+   ```
+
+#### 📊 **优化效果**:
+- ✅ **存储优化**: 移除冗余字段，减少数据存储空间
+- ✅ **性能提升**: 统一主键类型，提高JOIN查询性能
+- ✅ **设计简洁**: 清晰的主外键关系，便于理解和维护
+- ✅ **一致性强**: 统一使用UUID，避免类型混乱
+
+#### 🔄 **数据迁移**:
+- ✅ **无缝迁移**: 所有现有数据成功迁移到新结构
+- ✅ **关联保持**: 游戏-标签、游戏-英雄区关联关系完整保留
+- ✅ **验证通过**: 数据完整性和一致性验证全部通过
+
+#### 📁 **修改的文件**:
+- ✅ `src/lib/games-db.ts` - 适配新数据库结构的查询函数
+- ✅ `scripts/sync-data-after-optimization.js` - 新结构数据同步脚本
+- ✅ `scripts/verify-new-structure.js` - 新结构数据验证工具
+
+#### 🛠️ **维护工具**:
+```bash
+# 使用新结构同步数据（games、game_tags、hero_games三表）
+node scripts/sync-data-after-optimization.js
+
+# 验证新数据库结构完整性
+node scripts/verify-new-structure.js
+```
 
 #### 📊 **数据迁移完成**:
 - ✅ 7个游戏成功导入数据库
@@ -372,12 +354,12 @@ npm run storage:init
 - ✅ `src/lib/supabase.ts` - Supabase客户端配置和类型定义
 - ✅ `src/lib/games-db.ts` - 数据库查询函数集合
 - ✅ `src/lib/games-static-backup.ts` - 原静态数据备份
-- ✅ `src/lib/image-manager.ts` - 统一图片管理和优化系统
+
 - ✅ `src/components/OptimizedGameCard.tsx` - 优化的游戏卡片组件
 - ✅ `scripts/create-database.sql` - 数据库表创建脚本
 - ✅ `scripts/init-database-direct.js` - 数据库初始化工具
 - ✅ `scripts/migrate-data.js` - 数据迁移工具
-- ✅ `scripts/init-storage.js` - Supabase Storage初始化工具
+
 - ✅ `.env.local` - Supabase连接配置
 
 #### 🔄 **API兼容性**:
@@ -477,7 +459,7 @@ const heroGames = await getHeroGames()
 1. **URL编码问题**: 游戏ID包含冒号 `:` (`br-br-patapim:-obby-challenge`)，在URL中被解释为端口分隔符
 2. **分类名称不一致**: 游戏分类设置为 `"Adventure"`（首字母大写），但主页分类筛选使用小写 `"adventure"`
 3. **静态路径缺失**: 新游戏未添加到 `generateStaticParams()` 预生成路径中
-4. **图片路径错误**: thumbnail字段使用了错误的图片路径
+4. **路径规范错误**: 某些字段使用了不规范的路径
 
 #### 🔧 **完整修复方案**:
 
@@ -511,14 +493,7 @@ const heroGames = await getHeroGames()
    }
    ```
 
-4. **修复图片路径** - 使用正确的缩略图:
-   ```typescript
-   // ❌ 修复前 - 使用错误的图片
-   thumbnail: "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg"
-   
-   // ✅ 修复后 - 使用正确的图片  
-   thumbnail: "/images/game-thumbnails/br-br-patapim-obby-challenge.jpg"
-   ```
+4. **修复路径规范** - 使用标准化的路径格式
 
 5. **主页分类显示** - 添加Adventure游戏分类:
    ```typescript
@@ -534,7 +509,7 @@ const heroGames = await getHeroGames()
    ```
 
 #### 📋 **修复的文件列表**:
-- ✅ `src/lib/games.ts` - 修复游戏ID、分类名称、图片路径
+- ✅ `src/lib/games.ts` - 修复游戏ID、分类名称、路径规范
 - ✅ `src/app/games/[slug]/page.tsx` - 添加静态路径生成
 - ✅ `src/app/page.tsx` - 添加Adventure分类显示
 
@@ -542,7 +517,7 @@ const heroGames = await getHeroGames()
 - ✅ 游戏链接正常工作，不再出现404错误
 - ✅ 游戏正确显示在主页的"Adventure Games"分类中
 - ✅ 游戏正确显示在"New Games"分类中（isNew: true）
-- ✅ 图片正确加载和显示
+- ✅ 资源正确加载和显示
 - ✅ URL路径标准化，符合Web标准
 
 ### 🏷️ Badge参数重构 - 使用布尔值控制显示 (2025-01-23)

@@ -112,6 +112,8 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
           />
         </div>
 
+
+
         {/* Categories */}
         <div className="space-y-1">
           <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">

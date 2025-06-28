@@ -1,0 +1,601 @@
+{
+  "timestamp": "2025-06-28T15:50:26.987Z",
+  "games": [
+    {
+      "id": "a52416bc-9a9b-499e-93f5-e1ef2a754911",
+      "game_id": "stone-grass-mowing-simulator",
+      "title": "Stone Grass: Mowing Simulator",
+      "description": "A relaxed and enjoyable lawn mowing simulator. Constantly upgrade your lawn mowing machine and create the perfect lawn!",
+      "embed_url": "https://games.crazygames.com/en_US/stone-grass-mowing-simulator/index.html",
+      "image_url": "https://imgs.crazygames.com/stone-grass-mowing-simulator_16x9/20250410062107/stone-grass-mowing-simulator_16x9-cover",
+      "thumbnail_url": "https://imgs.crazygames.com/stone-grass-mowing-simulator_16x9/20250410062107/stone-grass-mowing-simulator_16x9-cover",
+      "category": "casual",
+      "is_new": true,
+      "is_hot": false,
+      "is_original": false,
+      "instructions": "Use your mouse to control the mowing direction, or use WASD or arrow keys to move around. Simply guide your lawn mowing machine across the grass to create the perfect lawn while enjoying this relaxing simulator.",
+      "publish_date": "2025-01-18T00:00:00+00:00",
+      "last_updated": "2025-01-19T00:00:00+00:00",
+      "created_at": "2025-06-28T15:36:17.090051+00:00",
+      "updated_at": "2025-06-28T15:36:17.090051+00:00"
+    },
+    {
+      "id": "9b3d9012-f2a4-4946-8bb5-6c213eec61de",
+      "game_id": "ragdoll-archers",
+      "title": "Ragdoll Archers",
+      "description": "A physics-based archery game with ragdoll characters. Aim and shoot to defeat your opponents in this hilarious battle!",
+      "embed_url": "https://games.crazygames.com/en_US/ragdoll-archers/index.html",
+      "image_url": "/images/game-thumbnails/ragdoll-archers_16x9-cover.jpg",
+      "thumbnail_url": "/images/game-thumbnails/ragdoll-archers_16x9-cover.jpg",
+      "category": "action",
+      "is_new": false,
+      "is_hot": true,
+      "is_original": false,
+      "instructions": "Click and drag with your mouse to aim your bow, then release to shoot arrows at your ragdoll opponents. Use arrow keys for fine-tuned aiming adjustments. Master the physics-based mechanics to defeat all challengers!",
+      "publish_date": "2024-12-01T00:00:00+00:00",
+      "last_updated": "2025-01-16T00:00:00+00:00",
+      "created_at": "2025-06-28T15:36:18.258652+00:00",
+      "updated_at": "2025-06-28T15:36:18.258652+00:00"
+    },
+    {
+      "id": "73b39a57-cbf2-4d2a-99eb-72300d7c4e90",
+      "game_id": "zombie-horde-build-survive",
+      "title": "Zombie Horde: Build & Survive",
+      "description": "Build your base and survive waves of zombies in this intense survival game!",
+      "embed_url": "https://games.crazygames.com/en_US/zombie-horde-build-survive/index.html",
+      "image_url": "/images/game-thumbnails/zombie-horde-build-survive_16x9-cover.jpg",
+      "thumbnail_url": "/images/game-thumbnails/zombie-horde-build-survive_16x9-cover.jpg",
+      "category": "action",
+      "is_new": true,
+      "is_hot": false,
+      "is_original": false,
+      "instructions": "Use WASD keys to move your character around the map. Click with your mouse to build structures and interact with objects. Use number keys (1-9) for quick building shortcuts. Gather resources, build defenses, and survive against endless waves of zombies!",
+      "publish_date": null,
+      "last_updated": null,
+      "created_at": "2025-06-28T15:36:19.835183+00:00",
+      "updated_at": "2025-06-28T15:36:19.835183+00:00"
+    },
+    {
+      "id": "bd9cf393-9d0f-4f99-9dec-1d5bd872d026",
+      "game_id": "count-masters-stickman-games",
+      "title": "Count Masters: Stickman Games",
+      "description": "A fast-paced running game where you gather a growing army of stickmen to clash against rival crowds. Navigate through obstacles, choose the best paths to multiply your numbers, and lead your team to victory.",
+      "embed_url": "https://games.crazygames.com/en_US/count-masters-stickman-games/index.html",
+      "image_url": "https://imgs.crazygames.com/count-masters-stickman-games_16x9/20250220041115/count-masters-stickman-games_16x9-cover",
+      "thumbnail_url": "https://imgs.crazygames.com/count-masters-stickman-games_16x9/20250220041115/count-masters-stickman-games_16x9-cover",
+      "category": "action",
+      "is_new": false,
+      "is_hot": true,
+      "is_original": false,
+      "instructions": "Use the left and right arrow keys to move your character. You can also move by moving the mouse left or right. Press space or left-click to select actions and navigate through obstacles while gathering your stickman army.",
+      "publish_date": "2025-01-10T00:00:00+00:00",
+      "last_updated": "2025-01-15T00:00:00+00:00",
+      "created_at": "2025-06-28T15:36:15.887651+00:00",
+      "updated_at": "2025-06-28T15:36:15.887651+00:00"
+    },
+    {
+      "id": "45de28df-0a78-4406-a3a3-5cfbfa64e790",
+      "game_id": "leap-and-avoid-2",
+      "title": "Leap and Avoid 2",
+      "description": "Jump and avoid obstacles in this challenging platformer sequel!",
+      "embed_url": "https://games.crazygames.com/en_US/leap-and-avoid-2/index.html?v=1.332",
+      "image_url": "/images/game-thumbnails/leap-and-avoid-2_16x9-cover.jpg",
+      "thumbnail_url": "/images/game-thumbnails/leap-and-avoid-2_16x9-cover.jpg",
+      "category": "casual",
+      "is_new": true,
+      "is_hot": false,
+      "is_original": false,
+      "instructions": "Press the Spacebar or Up arrow key to make your character jump over obstacles. You can also click with your mouse to jump. Time your jumps carefully to avoid obstacles and achieve the highest score possible in this challenging platformer!",
+      "publish_date": null,
+      "last_updated": null,
+      "created_at": "2025-06-28T15:36:21.01957+00:00",
+      "updated_at": "2025-06-28T15:36:21.01957+00:00"
+    },
+    {
+      "id": "cdc342d5-255c-46f2-b8ac-db6b3fc9de46",
+      "game_id": "cat-mini-restaurant",
+      "title": "Cat Mini Restaurant",
+      "description": "In this heartwarming and healing simulation management game \"Meow Flavor Restaurant\", you will become a little cat owner who loves cooking and personally create your own dream restaurant. Starting from a small cat house kitchen, gradually upgrading equipment, developing new recipes, recruiting cute cat employees, until becoming the most popular internet celebrity restaurant in the city! More than 30 cats with different personalities and skills are waiting for you to collect!",
+      "embed_url": "https://html5.gamedistribution.com/196df99b32324438b39a4dcf18f0f838/?gd_sdk_referrer_url=https://www.miniplaygame.online/games/cat-mini-restaurant",
+      "image_url": "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg",
+      "thumbnail_url": "/images/game-thumbnails/stone-grass-mowing-simulator_16x9-cover.jpg",
+      "category": "casual",
+      "is_new": true,
+      "is_hot": false,
+      "is_original": false,
+      "instructions": "Use your mouse to click and interact with various objects, ingredients, and cat employees in your restaurant. Manage your kitchen, take customer orders, cook delicious meals, and expand your restaurant empire with the help of adorable cat staff!",
+      "publish_date": "2025-01-20T00:00:00+00:00",
+      "last_updated": "2025-01-21T00:00:00+00:00",
+      "created_at": "2025-06-28T15:36:22.424062+00:00",
+      "updated_at": "2025-06-28T15:36:22.424062+00:00"
+    },
+    {
+      "id": "3f5ee0bf-82f6-417e-b38b-d70614f5bf2c",
+      "game_id": "br-br-patapim-obby-challenge",
+      "title": "Br Br Patapim: Obby Challenge",
+      "description": "Br Br Patapim: Obby Challenge is a wild meme-fueled obby game where you'll jump, fall, and laugh your way through chaos! Inspired by the viral spirit of Italian Brainrot Animals of TikTok trends, this game turns parkour madness into pure comedy. Take control of the legendary Brr Brr Patapim and conquer ridiculous levels full of traps, platforms, and meme-powered surprises.",
+      "embed_url": "https://html5.gamedistribution.com/c2c539077905410bb2114297cf24255b/?gd_sdk_referrer_url=https://www.miniplaygame.online/games",
+      "image_url": "/images/game-thumbnails/br-br-patapim-obby-challenge.jpg",
+      "thumbnail_url": "/images/game-thumbnails/br-br-patapim-obby-challenge.jpg",
+      "category": "adventure",
+      "is_new": true,
+      "is_hot": false,
+      "is_original": false,
+      "instructions": "Controls: W, A, S, D – Move Spacebar – Jump Shift - Run Mouse – Look Around",
+      "publish_date": "2025-06-01T00:00:00+00:00",
+      "last_updated": "2025-06-01T00:00:00+00:00",
+      "created_at": "2025-06-28T15:36:23.112846+00:00",
+      "updated_at": "2025-06-28T15:36:23.112846+00:00"
+    }
+  ],
+  "game_tags": [
+    {
+      "id": "445b5790-7b30-4f63-adb5-16a3765fbfcb",
+      "game_id": "count-masters-stickman-games",
+      "tag": "running",
+      "created_at": "2025-06-28T15:36:16.722934+00:00"
+    },
+    {
+      "id": "8ae33ed0-9d29-4914-b8aa-435bc0500d15",
+      "game_id": "count-masters-stickman-games",
+      "tag": "stickman",
+      "created_at": "2025-06-28T15:36:16.722934+00:00"
+    },
+    {
+      "id": "d80b02d1-a8ea-48b7-ac8c-94b208f89467",
+      "game_id": "count-masters-stickman-games",
+      "tag": "action",
+      "created_at": "2025-06-28T15:36:16.722934+00:00"
+    },
+    {
+      "id": "3ead9b19-802a-4d6c-8d72-3cc8b092b14f",
+      "game_id": "count-masters-stickman-games",
+      "tag": "multiplayer",
+      "created_at": "2025-06-28T15:36:16.722934+00:00"
+    },
+    {
+      "id": "a4a36c77-a499-416a-aaee-19b014710578",
+      "game_id": "stone-grass-mowing-simulator",
+      "tag": "simulation",
+      "created_at": "2025-06-28T15:36:17.919958+00:00"
+    },
+    {
+      "id": "9e04b110-6711-428b-89ce-16ffe82b3a97",
+      "game_id": "stone-grass-mowing-simulator",
+      "tag": "casual",
+      "created_at": "2025-06-28T15:36:17.919958+00:00"
+    },
+    {
+      "id": "b7fe7a2f-6990-43e8-aafc-005326bb53a8",
+      "game_id": "stone-grass-mowing-simulator",
+      "tag": "relaxing",
+      "created_at": "2025-06-28T15:36:17.919958+00:00"
+    },
+    {
+      "id": "3e35f7cd-f3a8-48be-ab50-a83ccd25100f",
+      "game_id": "ragdoll-archers",
+      "tag": "archery",
+      "created_at": "2025-06-28T15:36:19.064603+00:00"
+    },
+    {
+      "id": "b94493c5-38e9-45c2-ab45-097f75debb7a",
+      "game_id": "ragdoll-archers",
+      "tag": "physics",
+      "created_at": "2025-06-28T15:36:19.064603+00:00"
+    },
+    {
+      "id": "26b0e335-8e9f-4eab-896c-ead2cc2cd6fc",
+      "game_id": "ragdoll-archers",
+      "tag": "ragdoll",
+      "created_at": "2025-06-28T15:36:19.064603+00:00"
+    },
+    {
+      "id": "6dad0913-2fb7-45e5-8d53-5cbe31f7f0eb",
+      "game_id": "ragdoll-archers",
+      "tag": "shooting",
+      "created_at": "2025-06-28T15:36:19.064603+00:00"
+    },
+    {
+      "id": "b5e09ba7-ba85-49e9-8ed7-776aeba882d1",
+      "game_id": "zombie-horde-build-survive",
+      "tag": "survival",
+      "created_at": "2025-06-28T15:36:20.191669+00:00"
+    },
+    {
+      "id": "37faff8f-5c35-4ee6-877c-74b41c871677",
+      "game_id": "zombie-horde-build-survive",
+      "tag": "zombie",
+      "created_at": "2025-06-28T15:36:20.191669+00:00"
+    },
+    {
+      "id": "4122c5ce-f59d-4e59-8a3a-d1d40333fec9",
+      "game_id": "zombie-horde-build-survive",
+      "tag": "building",
+      "created_at": "2025-06-28T15:36:20.191669+00:00"
+    },
+    {
+      "id": "a952affb-ac86-4d3d-bd0f-bf4526b6d32c",
+      "game_id": "zombie-horde-build-survive",
+      "tag": "strategy",
+      "created_at": "2025-06-28T15:36:20.191669+00:00"
+    },
+    {
+      "id": "e67e321e-4989-42ae-96d1-b9a4e6f3815f",
+      "game_id": "leap-and-avoid-2",
+      "tag": "platformer",
+      "created_at": "2025-06-28T15:36:21.944706+00:00"
+    },
+    {
+      "id": "90566419-7a47-4299-9eca-81c36a0a5254",
+      "game_id": "leap-and-avoid-2",
+      "tag": "jumping",
+      "created_at": "2025-06-28T15:36:21.944706+00:00"
+    },
+    {
+      "id": "7c212e8e-c37c-4f50-99e6-8a53ccf1e5fc",
+      "game_id": "leap-and-avoid-2",
+      "tag": "obstacles",
+      "created_at": "2025-06-28T15:36:21.944706+00:00"
+    },
+    {
+      "id": "776f19d9-46b3-4087-9405-67a7aca3642f",
+      "game_id": "leap-and-avoid-2",
+      "tag": "arcade",
+      "created_at": "2025-06-28T15:36:21.944706+00:00"
+    },
+    {
+      "id": "0a0afcc0-67e1-47bc-b63c-b93106d28efa",
+      "game_id": "cat-mini-restaurant",
+      "tag": "simulation",
+      "created_at": "2025-06-28T15:36:22.775275+00:00"
+    },
+    {
+      "id": "9f5a677f-eb07-4018-8d18-74f641c538c9",
+      "game_id": "cat-mini-restaurant",
+      "tag": "restaurant",
+      "created_at": "2025-06-28T15:36:22.775275+00:00"
+    },
+    {
+      "id": "7fc59d58-8b5a-4451-988e-26347af63239",
+      "game_id": "cat-mini-restaurant",
+      "tag": "management",
+      "created_at": "2025-06-28T15:36:22.775275+00:00"
+    },
+    {
+      "id": "bcd972fe-bc16-4794-ba2c-1a00381e31a3",
+      "game_id": "cat-mini-restaurant",
+      "tag": "cute",
+      "created_at": "2025-06-28T15:36:22.775275+00:00"
+    },
+    {
+      "id": "c07ebcd2-2b97-48a6-a415-d820ffb023cb",
+      "game_id": "cat-mini-restaurant",
+      "tag": "cats",
+      "created_at": "2025-06-28T15:36:22.775275+00:00"
+    },
+    {
+      "id": "8845ee8c-3807-46d7-9afe-bc9226abee16",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "Agility",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    },
+    {
+      "id": "751b68da-f26b-4a31-b0c4-59416af4674e",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "animal",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    },
+    {
+      "id": "962df18d-3976-418e-9421-fa1cc386040a",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "obstacle",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    },
+    {
+      "id": "c6ce6628-bc68-4f89-8daa-1950e7c91a7a",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "parkour",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    },
+    {
+      "id": "c9571ffc-cd73-4df6-b09f-61620e6a2a5c",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "platformer",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    },
+    {
+      "id": "9bf2e805-9ebb-4d5c-ac4c-2e2e39e20383",
+      "game_id": "br-br-patapim-obby-challenge",
+      "tag": "roblox",
+      "created_at": "2025-06-28T15:36:23.522082+00:00"
+    }
+  ],
+  "hero_games": [
+    {
+      "id": "b3e3fc4b-89cc-4d41-88e2-7899bae291b0",
+      "game_id": "count-masters-stickman-games",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2025-06-28T15:36:24.736888+00:00",
+      "updated_at": "2025-06-28T15:36:24.736888+00:00"
+    },
+    {
+      "id": "3b059e22-e45c-4261-9c68-15713c9acef0",
+      "game_id": "stone-grass-mowing-simulator",
+      "display_order": 2,
+      "is_active": true,
+      "created_at": "2025-06-28T15:36:25.53234+00:00",
+      "updated_at": "2025-06-28T15:36:25.53234+00:00"
+    },
+    {
+      "id": "39d3dc72-e326-47bb-a2ca-9b39a5d4d6b8",
+      "game_id": "ragdoll-archers",
+      "display_order": 3,
+      "is_active": true,
+      "created_at": "2025-06-28T15:36:25.996129+00:00",
+      "updated_at": "2025-06-28T15:36:25.996129+00:00"
+    }
+  ],
+  "categories": [
+    {
+      "id": "c5efa830-951c-4e59-8b49-dc6609e30857",
+      "category_key": "action",
+      "category_title": "Action Games",
+      "show_on_homepage": true,
+      "display_order": 1,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "b4773e22-8fec-43a0-b363-e46566cee10c",
+      "category_key": "adventure",
+      "category_title": "Adventure Games",
+      "show_on_homepage": true,
+      "display_order": 2,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "af4f222f-016a-40ab-a9c5-a9e955e6fae7",
+      "category_key": "casual",
+      "category_title": "Casual Games",
+      "show_on_homepage": true,
+      "display_order": 3,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "ab49c759-d6d7-40ba-89f7-da8385e21b10",
+      "category_key": "puzzle",
+      "category_title": "Puzzle Games",
+      "show_on_homepage": true,
+      "display_order": 4,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "0c6446b8-105f-41bc-8b47-4a94a60266b9",
+      "category_key": "sports",
+      "category_title": "Sports Games",
+      "show_on_homepage": true,
+      "display_order": 5,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "302e2d5d-5eaa-43f3-a05b-4aa061f0f0a6",
+      "category_key": "shooting",
+      "category_title": "Shooting Games",
+      "show_on_homepage": true,
+      "display_order": 6,
+      "max_games": 8,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "03c96f12-bc43-4339-a991-5bc1551404c2",
+      "category_key": "basketball",
+      "category_title": "Basketball Games",
+      "show_on_homepage": false,
+      "display_order": 7,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "7c15075e-59b2-4dec-a51c-3b0898bc1b68",
+      "category_key": "beauty",
+      "category_title": "Beauty Games",
+      "show_on_homepage": false,
+      "display_order": 8,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "658ed7e5-1f19-476c-9598-d513c3e304b6",
+      "category_key": "bike",
+      "category_title": "Bike Games",
+      "show_on_homepage": false,
+      "display_order": 9,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "6dfea83e-e03a-4200-944b-59568f3bf8b0",
+      "category_key": "car",
+      "category_title": "Car Games",
+      "show_on_homepage": false,
+      "display_order": 10,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "025193a2-459e-4cda-9309-97e16f81d5fa",
+      "category_key": "card",
+      "category_title": "Card Games",
+      "show_on_homepage": false,
+      "display_order": 11,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "b8b5b076-ba0e-4579-9e4e-bba2b2a25ac0",
+      "category_key": "clicker",
+      "category_title": "Clicker Games",
+      "show_on_homepage": false,
+      "display_order": 12,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "599291b3-c87a-449c-8f54-d6292289efab",
+      "category_key": "controller",
+      "category_title": "Controller Games",
+      "show_on_homepage": false,
+      "display_order": 13,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "fa2e7228-e1b3-4e31-813b-784fe1a6884e",
+      "category_key": "dressUp",
+      "category_title": "Dress Up Games",
+      "show_on_homepage": false,
+      "display_order": 14,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "c9c6466f-4af6-4ee8-9dde-b2dafbbd4e9d",
+      "category_key": "driving",
+      "category_title": "Driving Games",
+      "show_on_homepage": false,
+      "display_order": 15,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "da10cec3-d73d-465b-9c1b-03c8a4a2fdac",
+      "category_key": "escape",
+      "category_title": "Escape Games",
+      "show_on_homepage": false,
+      "display_order": 16,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "c4e3e9a9-be8d-489e-98f3-59b7a3a8c96b",
+      "category_key": "flash",
+      "category_title": "Flash Games",
+      "show_on_homepage": false,
+      "display_order": 17,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "8368e366-9324-400c-94e4-7bf52ba30f0e",
+      "category_key": "fps",
+      "category_title": "FPS Games",
+      "show_on_homepage": false,
+      "display_order": 18,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "6d84d5ce-99c5-4677-bc63-80160da6f134",
+      "category_key": "horror",
+      "category_title": "Horror Games",
+      "show_on_homepage": false,
+      "display_order": 19,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "f805a3ab-8bcb-4ded-89ac-8ff5c015cc4b",
+      "category_key": "io",
+      "category_title": ".io Games",
+      "show_on_homepage": false,
+      "display_order": 20,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "b2019947-d372-4bfb-ae01-f99275811fd0",
+      "category_key": "mahjong",
+      "category_title": "Mahjong Games",
+      "show_on_homepage": false,
+      "display_order": 21,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "8611c131-11e0-4add-b630-a3d062528b75",
+      "category_key": "minecraft",
+      "category_title": "Minecraft Games",
+      "show_on_homepage": false,
+      "display_order": 22,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "0bea9a33-d2a5-46f0-ae6e-4c56c27513a0",
+      "category_key": "pool",
+      "category_title": "Pool Games",
+      "show_on_homepage": false,
+      "display_order": 23,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "c3b18ce1-8e15-4678-b8df-aaa1b40287bf",
+      "category_key": "soccer",
+      "category_title": "Soccer Games",
+      "show_on_homepage": false,
+      "display_order": 24,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "cb919024-2be7-43ce-a74b-f6b5bcacd1e9",
+      "category_key": "stickman",
+      "category_title": "Stickman Games",
+      "show_on_homepage": false,
+      "display_order": 25,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    },
+    {
+      "id": "c4804388-44d6-4d73-a6d5-535b5e6d6dd7",
+      "category_key": "towerDefense",
+      "category_title": "Tower Defense Games",
+      "show_on_homepage": false,
+      "display_order": 26,
+      "max_games": 6,
+      "created_at": "2025-06-28T15:43:23.875233+00:00",
+      "updated_at": "2025-06-28T15:43:23.875233+00:00"
+    }
+  ]
+}
