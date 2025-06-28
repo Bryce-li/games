@@ -583,61 +583,62 @@ export async function getAllHomepageCategoryData(): Promise<Record<string, { con
 }
 
 /**
- * 获取英雄区游戏 - 已优化：使用UUID关联
+ * 获取英雄区游戏 - 已优化：使用UUID关联（手动JOIN查询）
  */
 export async function getHeroGames(): Promise<HeroGame[]> {
   try {
-    const { data, error } = await supabase
+    // 第一步：获取英雄区配置
+    const { data: heroData, error: heroError } = await supabase
       .from('hero_games')
-      .select(`
-        game_id,
-        display_order,
-        games!inner (
-          id,
-          title,
-          description,
-          image_url,
-          thumbnail_url,
-          category,
-          is_new,
-          is_hot,
-          is_original
-        )
-      `)
+      .select('game_id, display_order')
       .eq('is_active', true)
       .order('display_order', { ascending: true });
     
-    if (error) {
-      console.error('获取英雄区游戏失败:', error.message);
+    if (heroError) {
+      console.error('获取英雄区配置失败:', heroError.message);
       return [];
     }
     
-    if (!data || data.length === 0) return [];
+    if (!heroData || heroData.length === 0) return [];
     
-    // 批量获取标签 - 使用关联的games表id
-    const gameIds = data.map((row: unknown) => (row as { games: { id: string } }).games.id);
+    // 第二步：获取对应的游戏数据
+    const gameIds = heroData.map(hero => hero.game_id);
+    const { data: gamesData, error: gamesError } = await supabase
+      .from('games')
+      .select('*')
+      .in('id', gameIds);
+    
+    if (gamesError) {
+      console.error('获取英雄区游戏数据失败:', gamesError.message);
+      return [];
+    }
+    
+    if (!gamesData || gamesData.length === 0) return [];
+    
+    // 第三步：批量获取标签
     const tagsMap = await getBatchGameTags(gameIds);
     
-    return data.map((row: unknown) => {
-      const typedRow = row as { game_id: string; games: {
-        id: string; title: string; description?: string;
-        image_url?: string; thumbnail_url?: string; category: string;
-        is_new?: boolean; is_hot?: boolean; is_original?: boolean;
-      }};
-      
-      const gameData = typedRow.games;
-      return {
-        id: gameData.id,
-        title: gameData.title,
-        description: gameData.description || '',
-        image: gameData.image_url || gameData.thumbnail_url || '',
-        category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
-        tags: tagsMap[gameData.id] || [],
-        isOriginal: gameData.is_original,
-        isNew: gameData.is_new,
-        isHot: gameData.is_hot
-      };
-    });
+    // 第四步：按照hero_games的顺序重新排列并转换数据
+    const result: HeroGame[] = [];
+    
+    for (const hero of heroData) {
+      const gameData = gamesData.find(game => game.id === hero.game_id);
+      if (gameData) {
+        result.push({
+          id: gameData.id,
+          title: gameData.title,
+          description: gameData.description || '',
+          image: gameData.image_url || gameData.thumbnail_url || '',
+          category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
+          tags: tagsMap[gameData.id] || [],
+          isOriginal: gameData.is_original,
+          isNew: gameData.is_new,
+          isHot: gameData.is_hot
+        });
+      }
+    }
+    
+    return result;
   } catch (error) {
     console.error('获取英雄区游戏时出错:', error);
     return [];
