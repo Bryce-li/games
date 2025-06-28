@@ -12,6 +12,7 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **🌙 Dark Mode**: Complete dark/light theme support with system preference detection
 - **🌐 Internationalization**: Multi-language support (English/Chinese)
 - **⚡ Performance Optimized**: Next.js 15 with optimized loading and caching
+- **🖼️ Image Storage**: Supabase Storage for scalable image management
 
 ### 🎨 UI/UX Features
 - **🎪 Hero Carousel**: Featured games with auto-play carousel
@@ -19,6 +20,13 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **🎯 Advanced Filtering**: Filter by category, tags, and game status
 - **💫 Smooth Animations**: Tailwind CSS powered transitions
 - **🔄 Loading States**: Skeleton loading for better UX
+- **📷 Image Upload**: Drag-and-drop image upload with preview
+
+### 🏗️ Infrastructure Features
+- **🗄️ Supabase Database**: Cloud PostgreSQL database for game data
+- **📁 Supabase Storage**: Scalable image storage with automatic optimization
+- **🔗 CDN Integration**: Auto-distributed images for global performance
+- **🎛️ Admin Interface**: Image upload and management tools
 
 ## 🛠 Tech Stack
 
@@ -27,6 +35,8 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **Styling**: Tailwind CSS
 - **UI Components**: Shadcn/ui + Radix UI
 - **Icons**: Lucide React
+- **Database**: Supabase (PostgreSQL)
+- **Storage**: Supabase Storage
 - **Internationalization**: react-i18next
 - **Deployment**: Vercel Ready
 
@@ -39,10 +49,12 @@ src/
   │   │   ├── [slug]/   # 动态游戏路由
   │   │   └── category/ # 分类和标签页面
   │   │       └── [slug]/ # 动态分类路由
+  │   ├── image-upload-demo/ # 图片上传演示页面
   │   ├── layout.tsx    # 根布局
   │   └── page.tsx      # 主页
   ├── components/       # React 组件
   │   ├── ui/           # Shadcn UI 组件
+  │   ├── image-upload.tsx # 图片上传组件
   │   ├── MainLayout.tsx # 主布局组件（含侧边栏）
   │   ├── Sidebar.tsx   # 左侧侧边栏组件
   │   ├── GameCard.tsx  # 通用游戏卡片组件
@@ -53,8 +65,15 @@ src/
   │   └── HorizontalGamesList.tsx # 可滚动游戏列表
   ├── lib/             # 工具和配置
   │   ├── i18n/        # 国际化设置
+  │   ├── supabase.ts  # Supabase客户端配置
+  │   ├── image-manager.ts # 图片管理系统
   │   ├── games.ts     # 统一游戏数据配置（合并后）
+  │   ├── games-db.ts  # 数据库操作函数
   │   └── utils.ts     # 工具函数
+  ├── scripts/         # 脚本文件
+  │   ├── init-storage.js # Supabase Storage初始化
+  │   ├── init-database.js # 数据库初始化
+  │   └── migrate-data.js # 数据迁移脚本
   └── styles/          # 全局样式
 ```
 
