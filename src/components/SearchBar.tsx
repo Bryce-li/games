@@ -46,19 +46,23 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
 
   // 搜索建议更新
   useEffect(() => {
-    if (query.trim() && query.length >= 1) {
-      try {
-        const results = searchGames(query, 5);
-        setSuggestions(results);
-        setSelectedIndex(-1);
-      } catch (error) {
-        console.error('搜索出错:', error);
+    const loadSuggestions = async () => {
+      if (query.trim() && query.length >= 1) {
+        try {
+          const results = await searchGames(query, 5);
+          setSuggestions(results);
+          setSelectedIndex(-1);
+        } catch (error) {
+          console.error('搜索出错:', error);
+          setSuggestions([]);
+        }
+      } else {
         setSuggestions([]);
+        setSelectedIndex(-1);
       }
-    } else {
-      setSuggestions([]);
-      setSelectedIndex(-1);
-    }
+    };
+
+    loadSuggestions();
   }, [query]);
 
   // 点击外部关闭下拉框
@@ -143,11 +147,11 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
     if (!isFocused) setIsFocused(true);
   };
 
-  const handleFocus = () => {
+  const handleFocus = async () => {
     setIsFocused(true);
     if (query.trim() && query.length >= 1) {
       try {
-        const results = searchGames(query, 5);
+        const results = await searchGames(query, 5);
         setSuggestions(results);
       } catch (error) {
         console.error('获取搜索建议出错:', error);

@@ -91,17 +91,6 @@ export function HeroSection({ games }: HeroSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // 自动轮播
-  useEffect(() => {
-    if (games.length <= 1) return;
-    
-    const interval = setInterval(() => {
-      goToNext();
-    }, 5000); // 5秒切换一次
-
-    return () => clearInterval(interval);
-  }, [currentIndex, games.length]);
-
   // 手动切换到指定索引
   const goToSlide = (index: number) => {
     if (isTransitioning || index === currentIndex) return;
@@ -123,6 +112,17 @@ export function HeroSection({ games }: HeroSectionProps) {
     const newIndex = (currentIndex + 1) % games.length;
     goToSlide(newIndex);
   };
+
+  // 自动轮播
+  useEffect(() => {
+    if (games.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      goToNext();
+    }, 5000); // 5秒切换一次
+
+    return () => clearInterval(interval);
+  }, [currentIndex, games.length, goToNext]);
 
   if (!games || games.length === 0) {
     return null;

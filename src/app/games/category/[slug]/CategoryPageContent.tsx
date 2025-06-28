@@ -60,63 +60,68 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
         setLoading(true);
         setError(null);
         
-        const allGames = getAllGames();
         let filteredGames: BaseGame[] = [];
 
-        // 如果有标签参数，按标签过滤
-        if (tag) {
-          filteredGames = allGames.filter((game: BaseGame) => 
+        // 按分类过滤游戏
+        switch (categorySlug) {
+          case 'new':
+            // 使用新游戏函数
+            const { getNewGames } = await import('@/lib/games');
+            filteredGames = await getNewGames();
+            break;
+            
+          case 'trending':
+            // 使用热门游戏函数
+            const { getHotGames } = await import('@/lib/games');
+            filteredGames = await getHotGames();
+            break;
+            
+          case 'updated':
+            // 获取所有游戏，假设更新的游戏
+            const allGames = await getAllGames();
+            filteredGames = allGames.slice(0, 50);
+            break;
+            
+          case 'multiplayer':
+            const allMultiplayerGames = await getAllGames();
+            filteredGames = allMultiplayerGames.filter((game: BaseGame) => 
+              game.tags.some((gameTag: string) => gameTag.toLowerCase().includes('multiplayer'))
+            );
+            break;
+            
+          case 'two-player':
+            const allTwoPlayerGames = await getAllGames();
+            filteredGames = allTwoPlayerGames.filter((game: BaseGame) => 
+              game.tags.some((gameTag: string) => 
+                gameTag.toLowerCase().includes('2 player') || 
+                gameTag.toLowerCase().includes('two player')
+              )
+            );
+            break;
+            
+          default:
+            // 使用按分类获取游戏的函数
+            filteredGames = await getGamesByCategory(categorySlug);
+            if (filteredGames.length === 0) {
+              // 如果没有匹配的分类，按标签搜索
+              const allCategoryGames = await getAllGames();
+              filteredGames = allCategoryGames.filter((game: BaseGame) => 
+                game.tags.some((gameTag: string) => 
+                  gameTag.toLowerCase() === categorySlug.toLowerCase() ||
+                  gameTag.toLowerCase().replace(' ', '-') === categorySlug.toLowerCase()
+                )
+              );
+            }
+            break;
+        }
+
+        // 如果有标签参数，再次按标签过滤
+        if (tag && filteredGames.length > 0) {
+          filteredGames = filteredGames.filter((game: BaseGame) => 
             game.tags.some((gameTag: string) => 
               gameTag.toLowerCase() === tag.toLowerCase()
             )
           );
-        } else {
-          // 按分类过滤游戏
-          switch (categorySlug) {
-            case 'new':
-              // 使用新游戏函数
-              filteredGames = require('@/lib/games').getNewGames();
-              break;
-              
-            case 'trending':
-              // 使用热门游戏函数
-              filteredGames = require('@/lib/games').getHotGames();
-              break;
-              
-            case 'updated':
-              // 假设更新的游戏（这里可以根据实际情况调整）
-              filteredGames = allGames.slice(0, 50);
-              break;
-              
-            case 'multiplayer':
-              filteredGames = allGames.filter((game: BaseGame) => 
-                game.tags.some((tag: string) => tag.toLowerCase().includes('multiplayer'))
-              );
-              break;
-              
-            case 'two-player':
-              filteredGames = allGames.filter((game: BaseGame) => 
-                game.tags.some((tag: string) => 
-                  tag.toLowerCase().includes('2 player') || 
-                  tag.toLowerCase().includes('two player')
-                )
-              );
-              break;
-              
-            default:
-              // 使用按分类获取游戏的函数
-              filteredGames = getGamesByCategory(categorySlug);
-              if (filteredGames.length === 0) {
-                // 如果没有匹配的分类，按标签搜索
-                filteredGames = allGames.filter((game: BaseGame) => 
-                  game.tags.some((tag: string) => 
-                    tag.toLowerCase() === categorySlug.toLowerCase() ||
-                    tag.toLowerCase().replace(' ', '-') === categorySlug.toLowerCase()
-                  )
-                );
-              }
-              break;
-          }
         }
 
         setGames(filteredGames);

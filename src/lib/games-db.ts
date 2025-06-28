@@ -2,6 +2,41 @@
 
 import { supabase } from './supabase'
 
+// 数据库行的类型定义
+interface DatabaseGameRow {
+  game_id: string;
+  title: string;
+  description?: string;
+  image_url?: string;
+  thumbnail_url?: string;
+  embed_url: string;
+  category: string;
+  is_original?: boolean;
+  is_new?: boolean;
+  is_hot?: boolean;
+  publish_date?: string;
+  last_updated?: string;
+  instructions?: string;
+  created_at?: string;
+}
+
+// 英雄游戏关联查询的类型定义
+interface HeroGameQueryRow {
+  game_id: string;
+  display_order: number;
+  games: {
+    game_id: string;
+    title: string;
+    description?: string;
+    image_url?: string;
+    thumbnail_url?: string;
+    category: string;
+    is_new?: boolean;
+    is_hot?: boolean;
+    is_original?: boolean;
+  };
+}
+
 // 保持原有的接口定义以确保兼容性
 export interface BaseGame {
   id: string;
@@ -68,7 +103,7 @@ export const gameCategories = {
 /**
  * 数据库行转换为BaseGame格式
  */
-function dbRowToBaseGame(row: any, tags: string[] = []): BaseGame {
+function dbRowToBaseGame(row: DatabaseGameRow, tags: string[] = []): BaseGame {
   return {
     id: row.game_id,
     title: row.title,
@@ -84,7 +119,7 @@ function dbRowToBaseGame(row: any, tags: string[] = []): BaseGame {
 /**
  * 数据库行转换为GameConfig格式
  */
-function dbRowToGameConfig(row: any, tags: string[] = []): GameConfig {
+function dbRowToGameConfig(row: DatabaseGameRow, tags: string[] = []): GameConfig {
   return {
     id: row.game_id,
     title: row.title,
@@ -106,7 +141,7 @@ function dbRowToGameConfig(row: any, tags: string[] = []): GameConfig {
 /**
  * 数据库行转换为HeroGame格式
  */
-function dbRowToHeroGame(row: any, tags: string[] = []): HeroGame {
+function dbRowToHeroGame(row: DatabaseGameRow, tags: string[] = []): HeroGame {
   return {
     id: row.game_id,
     title: row.title,
@@ -117,6 +152,24 @@ function dbRowToHeroGame(row: any, tags: string[] = []): HeroGame {
     isOriginal: row.is_original,
     isNew: row.is_new,
     isHot: row.is_hot
+  };
+}
+
+/**
+ * 英雄游戏关联查询结果转换为HeroGame格式
+ */
+function heroQueryRowToHeroGame(queryRow: HeroGameQueryRow, tags: string[] = []): HeroGame {
+  const gameData = queryRow.games;
+  return {
+    id: gameData.game_id,
+    title: gameData.title,
+    description: gameData.description || '',
+    image: gameData.image_url || gameData.thumbnail_url || '',
+    category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
+    tags: tags,
+    isOriginal: gameData.is_original,
+    isNew: gameData.is_new,
+    isHot: gameData.is_hot
   };
 }
 
@@ -534,12 +587,30 @@ export async function getHeroGames(): Promise<HeroGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    const gameIds = data.map(row => row.game_id);
+    const gameIds = data.map((row: unknown) => (row as { game_id: string }).game_id);
     const tagsMap = await getBatchGameTags(gameIds);
     
     return data
-      .filter(row => row.games) // 确保关联的游戏存在
-      .map(row => dbRowToHeroGame(row.games, tagsMap[row.game_id] || []));
+      .filter((row: unknown) => (row as { games: unknown }).games) // 确保关联的游戏存在
+      .map((row: unknown) => {
+        const typedRow = row as { game_id: string; games: { 
+          game_id: string; title: string; description?: string; 
+          image_url?: string; thumbnail_url?: string; category: string;
+          is_original?: boolean; is_new?: boolean; is_hot?: boolean;
+        }};
+        const gameData = typedRow.games;
+        return {
+          id: gameData.game_id,
+          title: gameData.title,
+          description: gameData.description || '',
+          image: gameData.image_url || gameData.thumbnail_url || '',
+          category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
+          tags: tagsMap[typedRow.game_id] || [],
+          isOriginal: gameData.is_original,
+          isNew: gameData.is_new,
+          isHot: gameData.is_hot
+        } as HeroGame;
+      });
   } catch (error) {
     console.error('获取英雄区游戏时出错:', error);
     return [];

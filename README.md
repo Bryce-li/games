@@ -60,6 +60,116 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### ⚡ 重大错误修复 - 异步函数调用问题解决 (2025-01-23)
+
+#### 🐛 **问题描述**:
+修复了由数据库迁移导致的**TypeError: newGames.forEach is not a function**等一系列异步函数调用错误。
+
+#### 🔧 **根本原因**:
+在从静态数据迁移到Supabase数据库时，所有数据获取函数都变为异步函数（返回Promise），但部分组件仍然按同步方式调用这些函数，导致：
+- `newGames.forEach` 试图对Promise对象调用forEach方法
+- `allGames.filter` 试图对Promise对象调用filter方法
+- 类似的异步调用错误在多个组件中出现
+
+#### ✅ **修复内容**:
+
+1. **主页架构重构** - 实现服务器组件和客户端组件分离:
+   ```typescript
+   // ✅ 服务器组件 (page.tsx) - 处理数据获取和SEO
+   export default async function Home() {
+     const [newGames, homepageCategoryData, heroGames] = await Promise.all([
+       getNewGames(),
+       getAllHomepageCategoryData(), 
+       getHeroGames()
+     ])
+     return <PageContent {...props} />
+   }
+
+   // ✅ 客户端组件 (PageContent.tsx) - 处理交互逻辑
+   "use client"
+   export function PageContent({ newGames, homepageCategoryData, heroGames }) {
+     // 所有交互逻辑和状态管理
+   }
+   ```
+
+2. **游戏页面修复** - 所有异步调用添加await:
+   ```typescript
+   // ✅ 修复前: const game = getGameConfig(slug)
+   // ✅ 修复后: const game = await getGameConfig(slug)
+   
+   // ✅ 修复前: const recommendedGames = getRecommendedGames(game.id, 8)
+   // ✅ 修复后: const recommendedGames = await getRecommendedGames(game.id, 8)
+   ```
+
+3. **搜索系统修复** - 异步搜索和类型安全:
+   ```typescript
+   // ✅ SearchBar组件
+   const loadSuggestions = async () => {
+     const results = await searchGames(query, 5)
+     setSuggestions(results)
+   }
+
+   // ✅ 搜索工具函数
+   export async function searchGames(query: string): Promise<SearchResult[]> {
+     const allGames = await getAllGames()
+     // 异步处理搜索逻辑
+   }
+   ```
+
+4. **分类页面修复** - 动态导入和批量处理:
+   ```typescript
+   const performSearch = async () => {
+     switch (categorySlug) {
+       case 'new':
+         const { getNewGames } = await import('@/lib/games')
+         filteredGames = await getNewGames()
+         break
+       // 其他分类处理...
+     }
+   }
+   ```
+
+5. **类型安全增强** - 消除any类型使用:
+   ```typescript
+   // ✅ 新增数据库行类型定义
+   interface DatabaseGameRow {
+     game_id: string
+     title: string
+     description?: string
+     // ...完整类型定义
+   }
+
+   // ✅ 类型安全的转换函数
+   function dbRowToBaseGame(row: DatabaseGameRow): BaseGame
+   function dbRowToGameConfig(row: DatabaseGameRow): GameConfig
+   ```
+
+#### 📋 **修复的文件列表**:
+- ✅ `src/app/page.tsx` - 重构为服务器组件架构
+- ✅ `src/components/PageContent.tsx` - 新建客户端组件
+- ✅ `src/app/games/[slug]/page.tsx` - 修复异步调用
+- ✅ `src/app/games/category/[slug]/CategoryPageContent.tsx` - 修复搜索逻辑
+- ✅ `src/app/search/SearchPageContent.tsx` - 修复搜索功能
+- ✅ `src/components/SearchBar.tsx` - 修复搜索建议
+- ✅ `src/lib/search-utils.ts` - 修复搜索工具函数
+- ✅ `src/lib/games-db.ts` - 类型安全增强
+- ✅ `src/lib/games.ts` - 类型优化
+- ✅ `src/components/HeroSection.tsx` - 修复useEffect依赖
+
+#### 🎯 **遵循Next.js 15最佳实践**:
+- ✅ **服务器优先**: 页面级数据获取在服务器端完成
+- ✅ **组件分离**: 清晰分离服务器组件和客户端组件
+- ✅ **SEO友好**: metadata只在服务器组件中处理
+- ✅ **性能优化**: 并行数据获取，减少加载时间
+- ✅ **类型安全**: 完整的TypeScript类型定义
+
+#### 📊 **修复效果**:
+- ✅ **构建成功**: 项目可以正常构建和运行
+- ✅ **错误消除**: 所有TypeError异步调用错误已解决
+- ✅ **功能完整**: 搜索、分类、游戏页面等功能正常工作
+- ✅ **性能提升**: 优化的异步处理提高了页面加载速度
+- ✅ **维护性强**: 清晰的架构便于后续开发和维护
+
 ### 🚀 游戏数据系统重大升级 - 迁移到Supabase数据库 (2025-01-23)
 
 #### ✨ **重大升级内容**:

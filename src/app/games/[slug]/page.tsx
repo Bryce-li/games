@@ -13,7 +13,7 @@ interface GamePageProps {
 // 生成页面元数据
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const game = getGameConfig(slug);
+  const game = await getGameConfig(slug);
 
   if (!game) {
     return {
@@ -38,14 +38,14 @@ export default async function GamePage({ params }: GamePageProps) {
   const { slug } = await params;
   
   // 获取游戏配置
-  const game = getGameConfig(slug);
+  const game = await getGameConfig(slug);
   
   if (!game) {
     notFound();
   }
 
   // 获取推荐游戏（排除当前游戏）
-  const recommendedGames = getRecommendedGames(game.id, 8);
+  const recommendedGames = await getRecommendedGames(game.id, 8);
 
   return (
     <MainLayout>

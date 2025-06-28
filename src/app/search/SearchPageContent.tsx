@@ -21,42 +21,49 @@ export function SearchPageContent({ query: initialQuery, category: initialCatego
 
   // 执行搜索
   useEffect(() => {
-    setIsLoading(true);
-    
-    let searchResults: SearchResult[] = [];
-    
-    if (searchQuery.trim()) {
-      // 文本搜索
-      searchResults = searchGames(searchQuery, 50);
+    const performSearch = async () => {
+      setIsLoading(true);
       
-      // 如果还选择了分类，进一步筛选
-      if (selectedCategory) {
-        searchResults = searchResults.filter(result => 
-          result.category.toLowerCase() === selectedCategory.toLowerCase()
-        );
-      }
-    } else if (selectedCategory) {
-      // 只按分类筛选
-      const categoryGames = getGamesByCategory(selectedCategory);
+      let searchResults: SearchResult[] = [];
+      
+      if (searchQuery.trim()) {
+        // 文本搜索
+        searchResults = await searchGames(searchQuery, 50);
+        
+        // 如果还选择了分类，进一步筛选
+        if (selectedCategory) {
+          searchResults = searchResults.filter(result => 
+            result.category.toLowerCase() === selectedCategory.toLowerCase()
+          );
+        }
+      } else if (selectedCategory) {
+        // 只按分类筛选
+        const categoryGames = await getGamesByCategory(selectedCategory);
 
-      searchResults = categoryGames.map(game => {
-        const gameConfig = getGameConfig(game.id);
-        return {
-          id: game.id,
-          title: game.title,
-          description: gameConfig?.description,
-          image: game.image,
-          category: game.category,
-          isNew: game.isNew,
-          isHot: game.isHot,
-          isOriginal: game.isOriginal,
-          matchType: 'category' as const
-        };
-      });
-    }
-    
-    setResults(searchResults);
-    setIsLoading(false);
+        // 批量获取游戏配置以提高性能
+        const gameConfigPromises = categoryGames.map(async (game) => {
+          const gameConfig = await getGameConfig(game.id);
+          return {
+            id: game.id,
+            title: game.title,
+            description: gameConfig?.description,
+            image: game.image,
+            category: game.category,
+            isNew: game.isNew,
+            isHot: game.isHot,
+            isOriginal: game.isOriginal,
+            matchType: 'category' as const
+          };
+        });
+
+        searchResults = await Promise.all(gameConfigPromises);
+      }
+      
+      setResults(searchResults);
+      setIsLoading(false);
+    };
+
+    performSearch();
   }, [searchQuery, selectedCategory]);
 
   const handleSearch = (query: string) => {
