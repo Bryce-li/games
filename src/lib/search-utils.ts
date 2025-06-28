@@ -1,4 +1,4 @@
-import { getAllGames, getGamesByCategory, BaseGame, GameConfig, gameCategories } from './games';
+import { getAllGames, getGamesByCategory, BaseGame, GameConfig, gameCategories, getGameConfig } from './games';
 
 export interface SearchResult {
   id: string;
@@ -6,7 +6,8 @@ export interface SearchResult {
   description?: string;
   image: string;
   category: string;
-  badge?: string;
+  isNew?: boolean;
+  isHot?: boolean;
   isOriginal?: boolean;
   matchType: 'title' | 'category' | 'description';
 }
@@ -36,7 +37,7 @@ export function searchGames(query: string, limit: number = 20): SearchResult[] {
     const titleMatch = game.title.toLowerCase().includes(searchTerm);
     const categoryMatch = game.category.toLowerCase().includes(searchTerm);
     // 由于BaseGame没有description，我们需要从gamesConfig获取
-    const gameConfig = require('./games').getGameConfig(game.id);
+    const gameConfig = getGameConfig(game.id);
     const descriptionMatch = gameConfig?.description?.toLowerCase().includes(searchTerm);
     
     if (titleMatch || categoryMatch || descriptionMatch) {
@@ -52,7 +53,8 @@ export function searchGames(query: string, limit: number = 20): SearchResult[] {
         description: gameConfig?.description,
         image: game.image,
         category: game.category,
-        badge: game.badge,
+        isNew: game.isNew,
+        isHot: game.isHot,
         isOriginal: game.isOriginal,
         matchType
       });

@@ -50,13 +50,20 @@ function GameCard({ result, query }: { result: SearchResult; query: string }) {
           <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600" />
         )}
         
-        {/* 徽章 */}
-        {result.badge && (
+        {/* 徽章 - 根据布尔值参数动态显示 */}
+        {result.isNew && (
           <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-semibold">
-            {result.badge}
+            NEW
           </div>
         )}
-        {result.isOriginal && (
+        
+        {result.isHot && !result.isNew && (
+          <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-semibold">
+            HOT
+          </div>
+        )}
+        
+        {result.isOriginal && !result.isNew && !result.isHot && (
           <div className="absolute top-2 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold">
             ORIGINAL
           </div>

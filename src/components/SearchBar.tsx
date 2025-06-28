@@ -225,12 +225,18 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
                   <h4 className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
                     <HighlightText text={suggestion.title} query={query} />
                   </h4>
-                  {suggestion.badge && (
+                  {/* 根据布尔值参数动态显示badge */}
+                  {suggestion.isNew && (
                     <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded font-semibold">
-                      {suggestion.badge}
+                      NEW
                     </span>
                   )}
-                  {suggestion.isOriginal && (
+                  {suggestion.isHot && !suggestion.isNew && (
+                    <span className="bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded font-semibold">
+                      HOT
+                    </span>
+                  )}
+                  {suggestion.isOriginal && !suggestion.isNew && !suggestion.isHot && (
                     <span className="bg-yellow-400 text-black text-xs px-1.5 py-0.5 rounded font-semibold">
                       ORIGINAL
                     </span>

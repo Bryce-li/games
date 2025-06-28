@@ -5,7 +5,7 @@ import { HeroSection } from "../components/HeroSection"
 import { HorizontalGamesList } from "../components/HorizontalGamesList"
 import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
-import { heroGames, getNewGames, getGamesByCategory, BaseGame } from "@/lib/games"
+import { heroGames, getNewGames, getGamesByCategory, getAllHomepageCategoryData, BaseGame } from "@/lib/games"
 
 export default function Home() {
   const { t } = useTranslation()
@@ -20,13 +20,18 @@ export default function Home() {
   // 使用useMemo优化数据获取和去重处理
   const gameData = useMemo(() => {
     const newGames = getNewGames()
-    const casualGames = getGamesByCategory("casual")
-    const actionGames = getGamesByCategory("action")
+    
+    // 获取所有主页分类的游戏数据（使用可配置系统）
+    const homepageCategoryData = getAllHomepageCategoryData()
     
     // 为避免重复key，我们为精选游戏创建一个去重的列表
     // 优先级：动作游戏 > 休闲游戏 > 新游戏
     const usedGameIds = new Set<string>()
     const featuredGames: BaseGame[] = []
+    
+    // 从启用的分类中收集精选游戏
+    const actionGames = homepageCategoryData["action"]?.games || []
+    const casualGames = homepageCategoryData["casual"]?.games || []
     
     // 先添加动作游戏（2个）
     actionGames.slice(0, 2).forEach(game => {
@@ -55,8 +60,7 @@ export default function Home() {
     return {
       featuredGames,
       newGames,
-      casualGames,
-      actionGames
+      homepageCategoryData // 包含所有启用的分类数据
     }
   }, [])
 
@@ -83,19 +87,15 @@ export default function Home() {
               viewMoreHref="/games/category/new"
             />
 
-            {/* 休闲游戏 */}
-            <HorizontalGamesList
-              title={t("categories.casual", "Casual Games")}
-              games={gameData.casualGames}
-              viewMoreHref="/games/category/casual"
-            />
-
-            {/* 动作游戏 */}
-            <HorizontalGamesList
-              title={t("categories.action", "Action Games")}
-              games={gameData.actionGames}
-              viewMoreHref="/games/category/action"
-            />
+            {/* 动态渲染启用的分类游戏 */}
+            {Object.entries(gameData.homepageCategoryData).map(([categoryKey, categoryData]) => (
+              <HorizontalGamesList
+                key={categoryKey}
+                title={t(`categories.${categoryKey}`, categoryData.config.title)}
+                games={categoryData.games}
+                viewMoreHref={`/games/category/${categoryKey}`}
+              />
+            ))}
           </div>
 
           {/* 搜索结果 (如果有搜索查询) */}

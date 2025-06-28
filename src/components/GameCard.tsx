@@ -36,14 +36,20 @@ export function GameCard({ game, size = "normal", className = "", showTags = fal
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
 
-        {/* 徽章 */}
-        {game.badge && (
+        {/* 徽章 - 根据布尔值参数动态显示 */}
+        {game.isNew && (
           <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-semibold z-10">
-            {game.badge}
+            NEW
           </div>
         )}
         
-        {game.isOriginal && (
+        {game.isHot && !game.isNew && (
+          <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-semibold z-10">
+            HOT
+          </div>
+        )}
+        
+        {game.isOriginal && !game.isNew && !game.isHot && (
           <div className="absolute top-2 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold z-10">
             ORIGINAL
           </div>

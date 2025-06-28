@@ -66,5 +66,7 @@ export async function generateStaticParams() {
     { slug: 'ragdoll-archers' },
     { slug: 'zombie-horde-build-survive' },
     { slug: 'leap-and-avoid-2' },
+    { slug: 'cat-mini-restaurant' },
+    { slug: 'br-br-patapim-obby-challenge' },
   ];
 } 

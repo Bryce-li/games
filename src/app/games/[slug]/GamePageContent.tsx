@@ -16,8 +16,7 @@ export function GamePageContent({ game, recommendedGames }: GamePageContentProps
     <div className="container mx-auto px-4 py-6">
       {/* 页面标题 */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{game.title}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{game.description}</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{game.title}</h1>
       </div>
 
       {/* 游戏区域 */}

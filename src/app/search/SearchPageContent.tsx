@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { SearchResults } from '@/components/SearchResults';
 import { searchGames, getGamesByCategory, getAllCategories, SearchResult } from '@/lib/search-utils';
+import { getGameConfig } from '@/lib/games';
 import { useTranslation } from 'react-i18next';
 
 interface SearchPageContentProps {
@@ -37,16 +38,21 @@ export function SearchPageContent({ query: initialQuery, category: initialCatego
     } else if (selectedCategory) {
       // 只按分类筛选
       const categoryGames = getGamesByCategory(selectedCategory);
-      searchResults = categoryGames.map(game => ({
-        id: game.id,
-        title: game.title,
-        description: game.description,
-        image: game.image,
-        category: game.category,
-        badge: game.badge,
-        isOriginal: game.isOriginal,
-        matchType: 'category' as const
-      }));
+
+      searchResults = categoryGames.map(game => {
+        const gameConfig = getGameConfig(game.id);
+        return {
+          id: game.id,
+          title: game.title,
+          description: gameConfig?.description,
+          image: game.image,
+          category: game.category,
+          isNew: game.isNew,
+          isHot: game.isHot,
+          isOriginal: game.isOriginal,
+          matchType: 'category' as const
+        };
+      });
     }
     
     setResults(searchResults);

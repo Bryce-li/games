@@ -8,7 +8,8 @@ interface Game {
   id: string;
   title: string;
   image?: string;
-  badge?: string;
+  isNew?: boolean;
+  isHot?: boolean;
   isOriginal?: boolean;
 }
 
@@ -33,12 +34,21 @@ function GameCard({ game }: { game: Game }) {
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600" />
           )}
-          {game.badge && (
+          
+          {/* 徽章显示 - 根据布尔值参数动态显示，按优先级排序 */}
+          {game.isNew && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-semibold">
-              {game.badge}
+              NEW
             </div>
           )}
-          {game.isOriginal && (
+          
+          {game.isHot && !game.isNew && (
+            <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-semibold">
+              HOT
+            </div>
+          )}
+          
+          {game.isOriginal && !game.isNew && !game.isHot && (
             <div className="absolute top-2 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold">
               ORIGINAL
             </div>

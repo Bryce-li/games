@@ -7,7 +7,6 @@ export interface BaseGame {
   image: string; // 用于列表显示的图片
   category: string;
   tags: string[];
-  badge?: string; // NEW, HOT等标识
   isOriginal?: boolean;
   isNew?: boolean;
   isHot?: boolean;
@@ -18,12 +17,9 @@ export interface GameConfig extends BaseGame {
   description: string;
   embedUrl: string;
   thumbnail: string; // 用于缩略图显示
-  instructions: {
-    mouse?: string;
-    keyboard?: string;
-    controls?: string[];
-  };
-  features: string[];
+  publishDate?: string;    // 发布日期 (ISO 8601格式)
+  lastUpdated?: string;    // 最后更新日期 (ISO 8601格式)
+  instructions: string;    // 游戏说明/操作指南 (统一为单个字符串字段)
 }
 
 // 英雄区游戏接口
@@ -61,6 +57,61 @@ export const gameCategories = {
   towerDefense: "Tower Defense"
 } as const;
 
+// 主页分类显示配置接口
+export interface HomepageCategoryConfig {
+  key: string;           // 分类key（对应gameCategories的key）
+  title: string;         // 显示标题
+  showOnHomepage: boolean; // 是否在主页显示
+  order: number;         // 显示顺序（数字越小越靠前）
+  maxGames?: number;     // 最大显示游戏数量（默认8个）
+}
+
+// 主页分类显示配置（可配置哪些分类在主页显示）
+export const homepageCategoryConfig: HomepageCategoryConfig[] = [
+  {
+    key: "casual",
+    title: "Casual Games",
+    showOnHomepage: true,
+    order: 3,
+    maxGames: 8
+  },
+  {
+    key: "action", 
+    title: "Action Games",
+    showOnHomepage: true,
+    order: 4,
+    maxGames: 8
+  },
+  {
+    key: "adventure",
+    title: "Adventure Games", 
+    showOnHomepage: true,
+    order: 5,
+    maxGames: 8
+  },
+  {
+    key: "puzzle",
+    title: "Puzzle Games",
+    showOnHomepage: false, // 暂时不在主页显示
+    order: 6,
+    maxGames: 8
+  },
+  {
+    key: "sports",
+    title: "Sports Games",
+    showOnHomepage: false, // 暂时不在主页显示
+    order: 7,
+    maxGames: 8
+  },
+  {
+    key: "shooting",
+    title: "Shooting Games",
+    showOnHomepage: false, // 暂时不在主页显示
+    order: 8,
+    maxGames: 8
+  }
+];
+
 // 完整游戏配置数据（包含游戏页面所需的详细信息）
 export const gamesConfig: Record<string, GameConfig> = {
   "count-masters-stickman-games": {
@@ -73,16 +124,9 @@ export const gamesConfig: Record<string, GameConfig> = {
     category: "action",
     tags: ["running", "stickman", "action", "multiplayer"],
     isHot: true,
-    instructions: {
-      mouse: "Move the character by moving the mouse left or right. Left-click to select buttons.",
-      keyboard: "Use the left and right arrow keys to move. Press space to select actions."
-    },
-    features: [
-      "Fast-paced running gameplay",
-      "Strategic army building",
-      "Multiple levels and challenges",
-      "Simple one-touch controls"
-    ]
+    publishDate: "2025-01-10",    // 发布日期
+    lastUpdated: "2025-01-15",    // 最后更新日期
+    instructions: "Use the left and right arrow keys to move your character. You can also move by moving the mouse left or right. Press space or left-click to select actions and navigate through obstacles while gathering your stickman army."
   },
   "stone-grass-mowing-simulator": {
     id: "stone-grass-mowing-simulator",
@@ -94,17 +138,9 @@ export const gamesConfig: Record<string, GameConfig> = {
     category: "casual",
     tags: ["simulation", "casual", "relaxing"],
     isNew: true,
-    badge: "NEW",
-    instructions: {
-      mouse: "Use mouse to control the mowing direction",
-      keyboard: "WASD or arrow keys to move"
-    },
-    features: [
-      "Relaxing gameplay",
-      "Machine upgrades",
-      "Beautiful graphics",
-      "Simple controls"
-    ]
+    publishDate: "2025-01-18",    // 发布日期（5天前，符合NEW标识）
+    lastUpdated: "2025-01-19",    // 最后更新日期
+    instructions: "Use your mouse to control the mowing direction, or use WASD or arrow keys to move around. Simply guide your lawn mowing machine across the grass to create the perfect lawn while enjoying this relaxing simulator."
   },
   "ragdoll-archers": {
     id: "ragdoll-archers",
@@ -116,16 +152,9 @@ export const gamesConfig: Record<string, GameConfig> = {
     category: "action",
     tags: ["archery", "physics", "ragdoll", "shooting"],
     isHot: true,
-    instructions: {
-      mouse: "Click and drag to aim, release to shoot",
-      keyboard: "Use arrow keys for fine aiming"
-    },
-    features: [
-      "Physics-based gameplay",
-      "Ragdoll characters",
-      "Multiple levels",
-      "Challenging opponents"
-    ]
+    publishDate: "2024-12-01",    // 发布日期（较早，不算新游戏）
+    lastUpdated: "2025-01-16",    // 最近更新（符合UPDATED标识）
+    instructions: "Click and drag with your mouse to aim your bow, then release to shoot arrows at your ragdoll opponents. Use arrow keys for fine-tuned aiming adjustments. Master the physics-based mechanics to defeat all challengers!"
   },
   "zombie-horde-build-survive": {
     id: "zombie-horde-build-survive",
@@ -136,17 +165,8 @@ export const gamesConfig: Record<string, GameConfig> = {
     thumbnail: "/images/game-thumbnails/zombie-horde-build-survive_16x9-cover.jpg",
     category: "action",
     tags: ["survival", "zombie", "building", "strategy"],
-    badge: "NEW",
-    instructions: {
-      mouse: "Click to build and interact",
-      keyboard: "WASD to move, number keys for building shortcuts"
-    },
-    features: [
-      "Base building mechanics",
-      "Survival gameplay",
-      "Zombie waves",
-      "Resource management"
-    ]
+    isNew: true, // 添加isNew属性替代之前的badge="NEW"
+    instructions: "Use WASD keys to move your character around the map. Click with your mouse to build structures and interact with objects. Use number keys (1-9) for quick building shortcuts. Gather resources, build defenses, and survive against endless waves of zombies!"
   },
   "leap-and-avoid-2": {
     id: "leap-and-avoid-2",
@@ -157,17 +177,8 @@ export const gamesConfig: Record<string, GameConfig> = {
     thumbnail: "/images/game-thumbnails/leap-and-avoid-2_16x9-cover.jpg",
     category: "casual",
     tags: ["platformer", "jumping", "obstacles", "arcade"],
-    badge: "NEW",
-    instructions: {
-      keyboard: "Spacebar or Up arrow to jump",
-      mouse: "Click to jump"
-    },
-    features: [
-      "Challenging platforming",
-      "Progressive difficulty",
-      "Simple controls",
-      "Retro style graphics"
-    ]
+    isNew: true, // 添加isNew属性替代之前的badge="NEW"
+    instructions: "Press the Spacebar or Up arrow key to make your character jump over obstacles. You can also click with your mouse to jump. Time your jumps carefully to avoid obstacles and achieve the highest score possible in this challenging platformer!"
   },
   "cat-mini-restaurant": {
     id: "cat-mini-restaurant",
@@ -179,19 +190,23 @@ export const gamesConfig: Record<string, GameConfig> = {
     category: "casual",
     tags: ["simulation", "restaurant", "management", "cute", "cats"],
     isNew: true,
-    badge: "NEW",
-    instructions: {
-      mouse: "Mouse click to interact with objects and manage restaurant",
-      keyboard: ""
-    },
-    features: [
-      "Cute cat characters with unique personalities",
-      "Restaurant management gameplay",
-      "Equipment upgrade system",
-      "Recipe development and cooking",
-      "Employee recruitment and management",
-      "Heartwarming and relaxing experience"
-    ]
+    publishDate: "2025-01-20",    // 发布日期（3天前，符合NEW标识）
+    lastUpdated: "2025-01-21",    // 最后更新日期
+    instructions: "Use your mouse to click and interact with various objects, ingredients, and cat employees in your restaurant. Manage your kitchen, take customer orders, cook delicious meals, and expand your restaurant empire with the help of adorable cat staff!"
+  },
+  "br-br-patapim-obby-challenge": {
+    id: "br-br-patapim-obby-challenge",
+    title: "Br Br Patapim: Obby Challenge",
+    description: "Br Br Patapim: Obby Challenge is a wild meme-fueled obby game where you’ll jump, fall, and laugh your way through chaos! Inspired by the viral spirit of Italian Brainrot Animals of TikTok trends, this game turns parkour madness into pure comedy. Take control of the legendary Brr Brr Patapim and conquer ridiculous levels full of traps, platforms, and meme-powered surprises.",
+    image: "/images/game-thumbnails/br-br-patapim-obby-challenge.jpg",
+    embedUrl: "https://html5.gamedistribution.com/c2c539077905410bb2114297cf24255b/?gd_sdk_referrer_url=https://www.miniplaygame.online/games",
+    thumbnail: "/images/game-thumbnails/br-br-patapim-obby-challenge.jpg",
+    category: "adventure",
+    tags: ["Agility","animal","obstacle","parkour","platformer","roblox"],
+    isNew: true,
+    publishDate: "2025-06-01",    // 发布日期（3天前，符合NEW标识）
+    lastUpdated: "2025-06-01",    // 最后更新日期
+    instructions: "Controls: W, A, S, D – Move Spacebar – Jump Shift - Run Mouse – Look Around"
   }
 };
 
@@ -203,7 +218,6 @@ function configToBaseGame(config: GameConfig): BaseGame {
     image: config.image,
     category: config.category,
     tags: config.tags,
-    badge: config.badge,
     isOriginal: config.isOriginal,
     isNew: config.isNew,
     isHot: config.isHot
@@ -251,14 +265,14 @@ export function getGamesByCategory(category: string): BaseGame[] {
 // 获取新游戏
 export function getNewGames(): BaseGame[] {
   return Object.values(gamesConfig)
-    .filter(game => game.isNew || game.badge === "NEW")
+    .filter(game => game.isNew)
     .map(configToBaseGame);
 }
 
 // 获取热门游戏
 export function getHotGames(): BaseGame[] {
   return Object.values(gamesConfig)
-    .filter(game => game.isHot || game.badge === "HOT")
+    .filter(game => game.isHot)
     .map(configToBaseGame);
 }
 
@@ -297,4 +311,62 @@ export function searchGames(query: string, limit: number = 10): BaseGame[] {
     )
     .slice(0, limit)
     .map(configToBaseGame);
+}
+
+// 获取主页显示的分类配置（按顺序排序，只返回启用的分类）
+export function getHomepageCategories(): HomepageCategoryConfig[] {
+  return homepageCategoryConfig
+    .filter(config => config.showOnHomepage)
+    .sort((a, b) => a.order - b.order);
+}
+
+// 获取主页分类游戏数据
+export function getHomepageCategoryData(categoryKey: string, maxGames?: number): BaseGame[] {
+  const games = getGamesByCategory(categoryKey);
+  const limit = maxGames || 8;
+  return games.slice(0, limit);
+}
+
+// 获取所有主页分类的游戏数据
+export function getAllHomepageCategoryData(): Record<string, { config: HomepageCategoryConfig; games: BaseGame[] }> {
+  const result: Record<string, { config: HomepageCategoryConfig; games: BaseGame[] }> = {};
+  
+  getHomepageCategories().forEach(config => {
+    const games = getHomepageCategoryData(config.key, config.maxGames);
+    if (games.length > 0) { // 只包含有游戏的分类
+      result[config.key] = {
+        config,
+        games
+      };
+    }
+  });
+  
+  return result;
+}
+
+// 便捷工具：更新分类显示状态
+export function updateCategoryVisibility(categoryKey: string, showOnHomepage: boolean): void {
+  const category = homepageCategoryConfig.find(config => config.key === categoryKey);
+  if (category) {
+    category.showOnHomepage = showOnHomepage;
+    console.log(`📝 分类 "${categoryKey}" 主页显示状态已更新为: ${showOnHomepage ? '显示' : '隐藏'}`);
+  } else {
+    console.warn(`⚠️ 未找到分类: ${categoryKey}`);
+  }
+}
+
+// 便捷工具：批量更新分类显示状态
+export function updateMultipleCategoriesVisibility(updates: Record<string, boolean>): void {
+  Object.entries(updates).forEach(([categoryKey, showOnHomepage]) => {
+    updateCategoryVisibility(categoryKey, showOnHomepage);
+  });
+}
+
+// 便捷工具：获取当前分类显示状态概览
+export function getCategoryVisibilityStatus(): Record<string, boolean> {
+  const status: Record<string, boolean> = {};
+  homepageCategoryConfig.forEach(config => {
+    status[config.key] = config.showOnHomepage;
+  });
+  return status;
 } 
