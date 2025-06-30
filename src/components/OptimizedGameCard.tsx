@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getGameImageUrls, useImageLazyLoad } from '@/lib/image-manager'
+
 
 interface Game {
   id: string
@@ -29,7 +29,6 @@ export function OptimizedGameCard({
   className = '' 
 }: OptimizedGameCardProps) {
   const [imageError, setImageError] = useState(false)
-  const lazyLoadProps = useImageLazyLoad()
   
   // 根据尺寸设置容器大小
   const sizeClasses = {
@@ -46,7 +45,7 @@ export function OptimizedGameCard({
   }
   
   const { width, height } = imageDimensions[size]
-  const gameImages = getGameImageUrls(game)
+  const gameImageUrl = game.image || game.thumbnail || '/images/game-placeholder.jpg'
 
   return (
     <Link 
@@ -59,7 +58,7 @@ export function OptimizedGameCard({
         <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
           {!imageError ? (
                          <Image
-               src={gameImages.card}
+               src={gameImageUrl}
                alt={game.title}
                width={width}
                height={height}

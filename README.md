@@ -72,6 +72,93 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🔄 核心业务修复 - games.category字段迁移完成 (2025-01-23)
+
+#### 🎯 **修复背景**:
+根据数据库迁移指南，游戏分类已从`games.category`字段迁移到`game_tags`表，通过`tag_type=1`标识分类，`tag_type=2`标识标签，但现有业务代码仍在使用旧的字段结构。
+
+#### ✅ **核心修复内容**:
+
+1. **🔧 新增分类查询函数**:
+   ```typescript
+   // 新增：查询游戏分类 (tag_type=1)
+   async function getGameCategories(gameId: string): Promise<string[]>
+   
+   // 修改：只查询标签 (tag_type=2)
+   async function getGameTags(gameId: string): Promise<string[]>
+   
+   // 新增：批量查询分类
+   async function getBatchGameCategories(gameIds: string[]): Promise<Record<string, string[]>>
+   ```
+
+2. **🏗️ 重构核心查询函数**:
+   ```typescript
+   // ✅ getGamesByCategory - 通过game_tags表查询
+   // 旧: .eq('category', category) ❌
+   // 新: 先查game_tags获取game_id，再查games表 ✅
+   
+   // ✅ getRelatedGames - 使用新的分类查询逻辑
+   // ✅ getAllGames、getNewGames、getHotGames - 合并分类和标签数据
+   // ✅ getGameConfig - 并行查询分类和标签
+   ```
+
+3. **🔍 搜索功能优化**:
+   ```typescript
+   // 移除对games.category字段的依赖
+   // 旧: .or(`title.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`) ❌
+   // 新: .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`) ✅
+   
+   // 标签搜索通过game_tags表实现
+   ```
+
+4. **📊 数据结构统一**:
+   ```typescript
+   // 统一的数据转换逻辑
+   const categories = categoriesMap[row.id] || []
+   const tags = tagsMap[row.id] || []
+   const primaryCategory = categories.length > 0 ? categories[0] : 'casual'
+   
+   return {
+     id: row.id,
+     category: gameCategories[primaryCategory] || primaryCategory,
+     tags: [...categories, ...tags], // 合并分类和标签
+     // ...其他字段
+   }
+   ```
+
+#### 🚀 **性能优化**:
+- **⚡ 并行查询**: 分类和标签同时获取，提升查询效率
+- **🔄 批量处理**: 批量获取多游戏的分类标签数据
+- **💨 缓存友好**: 保持接口不变，便于前端缓存
+
+#### 📋 **修复的函数列表**:
+- ✅ `getGamesByCategory` - 核心分类查询函数
+- ✅ `getRelatedGames` - 相关游戏推荐
+- ✅ `getAllGames` - 所有游戏列表
+- ✅ `getNewGames` - 新游戏列表
+- ✅ `getHotGames` - 热门游戏列表
+- ✅ `getRecommendedGames` - 推荐游戏列表
+- ✅ `getGameConfig` - 单个游戏详情
+- ✅ `searchGames` - 游戏搜索功能
+- ✅ `searchGamesByTags` - 标签搜索功能
+
+#### 🎯 **Excel上传功能设计**:
+同时完成了`Excel游戏数据上传功能设计文档.md`，包含：
+- ✅ **批次处理**: 以游戏为单位(默认10个/批)，包含对应分类标签
+- ✅ **事务安全**: 每批作为一个事务，失败自动回滚
+- ✅ **智能映射**: 继续使用现有的语义分类映射逻辑
+- ✅ **日期处理**: 优先解析中文文本日期，备用Excel序列号
+- ✅ **更新控制**: 支持"是否更新"字段控制数据导入
+
+#### 📈 **升级效果**:
+- ✅ **数据一致性**: 统一使用game_tags表存储分类和标签
+- ✅ **查询效率**: 通过索引优化提升查询性能
+- ✅ **功能完整**: 所有原有功能保持正常工作
+- ✅ **扩展性强**: 便于添加新的标签类型和分类
+- ✅ **向前兼容**: 接口保持不变，前端无需修改
+
+---
+
 ### ⚡ 重大错误修复 - 异步函数调用问题解决 (2025-01-23)
 
 #### 🐛 **问题描述**:
@@ -1428,3 +1515,341 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ using Next.js 15 and TypeScript
+
+## 📋 更新记录
+
+### 2025年6月30日 - Excel游戏数据上传功能完成
+
+#### 🎯 新增功能
+1. **完整的Excel上传系统**
+   - 📤 Web界面：`/admin/upload`
+   - 🔄 API路由：`/api/upload-games`  
+   - 📊 实时进度跟踪和结果展示
+   - ⚙️ 可配置的批次大小和重试机制
+
+#### 🏗️ 核心组件
+1. **ExcelGameDataUploader类** (`src/lib/excel-game-uploader.ts`)
+   - 4阶段处理流程：解析→预处理→批量上传→验证
+   - 智能分类映射和标签处理
+   - 事务安全的批量插入
+   - 中文日期优先解析
+
+2. **上传页面** (`src/app/admin/upload/page.tsx`)
+   - 拖拽上传Excel文件
+   - 实时进度显示
+   - 配置参数调整
+   - 数据库状态监控
+
+3. **API路由** (`src/app/api/upload-games/route.ts`)
+   - 文件验证和临时存储
+   - 批量处理结果返回
+   - 错误处理和清理
+
+#### 📊 数据处理特性
+- **智能分类映射**：支持语义相似性匹配（如car→racing）
+- **批次处理**：以游戏为单位，默认10个/批，可配置1-50
+- **日期处理**：优先解析中文格式，备用Excel序列号
+- **"是否更新"控制**：只处理标记为"是"的行
+- **事务安全**：每批游戏+标签作为单个事务
+
+#### 🔧 技术实现
+```typescript
+// 使用示例
+const uploader = new ExcelGameDataUploader({
+  batchSize: 10,      // 游戏数量/批
+  maxRetries: 3,      // 最大重试次数
+  enableProgressLog: true
+});
+
+const result = await uploader.uploadFromFile(filePath);
+```
+
+#### 🛣️ 访问路径
+- **上传页面**：http://localhost:3000/admin/upload
+- **导航入口**：侧边栏 → 管理功能 → Data Upload
+
+#### ⚠️ 重要说明
+- Excel文件最大10MB
+- 支持.xlsx和.xls格式
+- 只有"是否更新"列为"是"的行会被处理
+- 批次大小影响性能：小批次更稳定但较慢
+
+#### 📈 处理流程
+1. **文件解析**：验证格式，统计数据量
+2. **数据预处理**：清理数据，映射分类，生成UUID
+3. **批量上传**：事务安全的分批插入
+4. **结果验证**：数据完整性检查，生成报告
+
+---
+
+## 🔄 此前更新记录
+
+### 2025年6月30日 - 数据库结构修复完成
+
+#### 🎯 修复目标
+游戏分类已从 `games.category` 字段迁移到 `game_tags` 表中：
+- `tag_type=1`：游戏分类
+- `tag_type=2`：游戏标签  
+- `games.category` 字段已删除
+
+#### ✅ 完成的修复工作
+
+##### 1. 核心查询函数重构
+- **新增分类查询函数**：
+  - `getGameCategories(gameId)` - 查询单个游戏的分类
+  - `getBatchGameCategories(gameIds)` - 批量查询游戏分类
+
+- **修改标签查询函数**：
+  - `getGameTags(gameId)` - 只查询 tag_type=2 的标签
+  - `getBatchGameTags(gameIds)` - 批量查询标签
+
+- **重构核心业务函数**：
+  - `getGamesByCategory` - 通过 game_tags 表查询，不再依赖 games.category
+  - `getRelatedGames` - 使用新的分类查询逻辑
+  - `getAllGames`, `getNewGames`, `getHotGames`, `getRecommendedGames` - 并行查询分类和标签
+  - `getGameConfig` - 合并分类和标签数据到统一格式
+
+##### 2. 搜索功能优化
+- 移除对 `games.category` 字段的依赖
+- 搜索逻辑改为只搜索 title 和 description
+- 标签搜索通过 game_tags 表实现
+
+##### 3. 数据结构统一
+- 实现并行查询：使用 `Promise.all` 同时获取分类和标签
+- 统一数据转换：将分类和标签合并到 tags 数组中
+- 兼容性处理：第一个分类作为主分类显示
+
+##### 4. 性能优化措施
+- **批量查询**：减少数据库请求次数
+- **并行处理**：分类和标签查询同时进行  
+- **缓存友好**：保持原有的数据结构接口
+
+#### 🔧 修复验证
+- ✅ 项目构建成功，无 TypeScript 错误
+- ✅ 所有核心游戏查询功能正常工作
+- ✅ 分类页面和搜索功能正常
+- ✅ 数据结构完全兼容前端组件
+
+#### 📊 函数调用链分析
+```
+游戏列表页面 → getAllGames() → 并行查询：
+├── 查询游戏基础数据
+├── getBatchGameCategories() → tag_type=1
+└── getBatchGameTags() → tag_type=2
+最终合并为统一的游戏对象数组
+```
+
+#### 🎯 关键改进点
+1. **查询效率**：从 N+1 查询优化为批量查询
+2. **数据一致性**：统一使用 game_tags 表作为数据源
+3. **代码维护性**：清晰的函数职责分工
+4. **向后兼容**：保持原有 API 接口不变
+
+---
+
+## 🚀 项目功能特性
+
+### 🎮 游戏平台核心功能
+- **游戏展示**：首页展示、分类浏览、热门推荐
+- **搜索系统**：智能搜索、标签过滤、分类筛选
+- **游戏详情**：详细介绍、操作说明、相关推荐
+- **响应式设计**：支持移动端和桌面端完美体验
+
+### 📱 用户体验功能  
+- **多语言支持**：中英文切换
+- **主题切换**：明暗主题自由切换
+- **侧边栏导航**：可折叠的分类导航
+- **最近游戏**：记录用户游戏历史
+
+### 🛠️ 管理功能
+- **Excel数据上传**：批量导入游戏数据
+- **数据验证**：自动检查数据完整性
+- **进度监控**：实时显示处理进度
+
+### 🗄️ 数据库架构
+- **games 表**：存储游戏基础信息
+- **game_tags 表**：存储分类(tag_type=1)和标签(tag_type=2)
+- **优化查询**：批量查询和并行处理
+
+### ⚡ 技术栈
+- **Frontend**: Next.js 15 + React 18 + TypeScript
+- **UI**: Tailwind CSS + Shadcn/ui + Radix UI  
+- **Backend**: Supabase + PostgreSQL
+- **部署**: 支持 Vercel 一键部署
+
+### 🔧 开发工具
+- **代码质量**: ESLint + Biome
+- **类型检查**: TypeScript 严格模式
+- **包管理**: npm
+- **开发服务**: Next.js Dev Server
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+- Node.js 18.17+
+- npm 或 yarn
+- Supabase 账户
+
+### 安装步骤
+1. **克隆项目**
+```bash
+git clone <repository-url>
+cd miniplaygame
+```
+
+2. **安装依赖**
+```bash
+npm install
+```
+
+3. **环境配置**
+创建 `.env.local` 文件：
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. **启动开发服务器**
+```bash
+npm run dev
+```
+
+5. **访问应用**
+打开 http://localhost:3000
+
+### 🔧 可用脚本
+- `npm run dev` - 启动开发服务器
+- `npm run build` - 构建生产版本
+- `npm run start` - 启动生产服务器  
+- `npm run lint` - 代码检查
+
+---
+
+## 📂 项目结构
+
+```
+miniplaygame/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── admin/           # 管理功能页面
+│   │   ├── api/             # API 路由
+│   │   ├── games/           # 游戏相关页面
+│   │   └── globals.css      # 全局样式
+│   ├── components/          # React 组件
+│   │   ├── admin/           # 管理组件
+│   │   └── ui/              # UI 基础组件
+│   └── lib/                 # 工具库和配置
+│       ├── excel-game-uploader.ts  # Excel上传器
+│       ├── games-db.ts      # 游戏数据库操作
+│       └── supabase.ts      # Supabase 配置
+├── scripts/                 # 工具脚本
+├── temp/                    # 临时文件目录
+└── README.md               # 项目文档
+```
+
+---
+
+## 🎯 后续规划
+
+### 📋 待优化功能
+1. **Excel上传**：
+   - [ ] 批量上传进度实时显示
+   - [ ] 上传历史记录
+   - [ ] 错误数据修复建议
+
+2. **用户体验**：
+   - [ ] 游戏收藏功能
+   - [ ] 游戏评分系统  
+   - [ ] 社交分享功能
+
+3. **管理功能**：
+   - [ ] 游戏数据编辑界面
+   - [ ] 批量数据管理
+   - [ ] 数据统计报表
+
+4. **性能优化**：
+   - [ ] 图片懒加载优化
+   - [ ] 数据缓存策略
+   - [ ] SEO 优化完善
+
+### 🔧 技术债务
+- [ ] ESLint any类型警告修复
+- [ ] 组件TypeScript类型完善
+- [ ] 错误边界处理增强
+- [ ] 单元测试覆盖
+
+---
+
+## 🤝 贡献指南
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送分支 (`git push origin feature/amazing-feature`)
+5. 开启 Pull Request
+
+---
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+---
+
+## 📅 更新日志
+
+### [v1.4.1] - 2025-06-30 Excel解析错误修复
+
+#### 🐛 关键错误修复
+**问题**: Excel上传功能出现 `row[4].split is not a function` 错误
+- **原因**: `calculateUniqueTags` 和 `calculateUniqueCategories` 方法中直接对Excel解析数据调用 `.split()` 方法，但数据可能不是字符串类型
+- **位置**: `src/lib/excel-game-uploader.ts:939` 和 `src/lib/excel-game-uploader.ts:929`
+
+#### ✅ 修复措施
+1. **类型安全检查**：
+   ```typescript
+   // 修复前
+   if (row[4]) {
+     row[4].split(',').forEach((tag: string) => tags.add(tag.trim()));
+   }
+   
+   // 修复后  
+   if (row[4] && typeof row[4] === 'string') {
+     row[4].split(',').forEach((tag: string) => tags.add(tag.trim()));
+   } else if (row[4]) {
+     const tagString = row[4].toString();
+     if (tagString && tagString !== 'undefined' && tagString !== 'null') {
+       tagString.split(',').forEach((tag: string) => tags.add(tag.trim()));
+     }
+   }
+   ```
+
+2. **安全数据转换**：
+   - 添加类型检查确保数据为字符串
+   - 非字符串数据安全转换为字符串
+   - 过滤无效值（'undefined', 'null'）
+
+3. **同步修复**：
+   - `calculateUniqueTags()` - 标签字段处理
+   - `calculateUniqueCategories()` - 分类字段处理
+
+#### 🗑️ 代码清理
+删除不再需要的文件：
+- `temp/test-games.xlsx` - 临时测试Excel文件
+- `src/lib/games-static-backup.ts` - 不再使用的静态备份文件
+- `scripts/test-games-db-fix.js` - 已完成的数据库测试脚本
+- `scripts/test-local-fix.js` - 本地测试脚本
+- `scripts/verify-fix-summary.js` - 验证脚本
+
+#### 🔍 修复验证
+- ✅ Excel数据解析错误已修复
+- ✅ 类型安全检查机制已建立
+- ✅ 多余测试文件已清理
+- ✅ 项目代码库整洁度提升
+
+#### 📋 下一步计划
+- 重新测试Excel上传功能完整流程
+- 验证分类和标签数据处理准确性
+- 完善错误处理和用户反馈机制
