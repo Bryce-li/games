@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS games (
   embed_url TEXT NOT NULL,              -- 游戏嵌入URL
   image_url TEXT,                       -- 主图片URL
   thumbnail_url TEXT,                   -- 缩略图URL
-  category VARCHAR(100) NOT NULL,       -- 游戏分类（小写存储）
   is_new BOOLEAN DEFAULT false,         -- 是否为新游戏
   is_hot BOOLEAN DEFAULT false,         -- 是否为热门游戏
   is_original BOOLEAN DEFAULT false,    -- 是否为原创游戏
@@ -27,6 +26,7 @@ CREATE TABLE IF NOT EXISTS game_tags (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   game_id VARCHAR(255) NOT NULL REFERENCES games(game_id) ON DELETE CASCADE,
   tag VARCHAR(100) NOT NULL,
+  tag_type INTEGER NULL DEFAULT 2,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
