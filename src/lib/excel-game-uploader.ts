@@ -369,7 +369,7 @@ export class ExcelGameDataUploader {
   /**
    * 阶段2: 数据预处理
    */
-  private async preprocessData(rawData: any[][]): Promise<PreprocessResult> {
+  private async preprocessData(rawData: ExcelRowData[][]): Promise<PreprocessResult> {
     this.log('info', '🔄 开始数据预处理...');
     
     const processedGames: GameData[] = [];
@@ -412,7 +412,8 @@ export class ExcelGameDataUploader {
         
         // 分类处理
         if (row[3]) {
-          const categories = row[3].split(',').map((cat: string) => cat.trim()).filter((cat: string) => cat);
+          const categoryStr = row[3].toString();
+          const categories = categoryStr.split(',').map((cat: string) => cat.trim()).filter((cat: string) => cat);
           this.log('info', `🏷️ 游戏 ${gameData.title} 的原始分类: [${categories.join(', ')}]`);
           
           categories.forEach((category: string) => {
@@ -436,7 +437,8 @@ export class ExcelGameDataUploader {
         
         // 标签处理
         if (row[4]) {
-          const tags = row[4].split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
+          const tagStr = row[4].toString();
+          const tags = tagStr.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
           tags.forEach((tag: string) => {
             const cleanedTag = this.cleanTag(tag);
             if (cleanedTag) {
@@ -839,7 +841,7 @@ export class ExcelGameDataUploader {
     return lowerCategory;
   }
 
-  private parseChineseDateFirst(chineseDateStr: any): string | null {
+  private parseChineseDateFirst(chineseDateStr: unknown): string | null {
     if (!chineseDateStr || typeof chineseDateStr !== 'string') {
       return null;
     }
@@ -876,7 +878,7 @@ export class ExcelGameDataUploader {
     return null;
   }
 
-  private convertExcelDate(dateValue: any): string | null {
+  private convertExcelDate(dateValue: unknown): string | null {
     if (!dateValue || typeof dateValue !== 'number') {
       return null;
     }
@@ -895,7 +897,7 @@ export class ExcelGameDataUploader {
     return null;
   }
 
-  private validateHeaders(actualHeaders: any[], expectedHeaders: string[]) {
+  private validateHeaders(actualHeaders: unknown[], expectedHeaders: string[]) {
     if (!actualHeaders || actualHeaders.length === 0) {
       throw new Error('Excel文件表头为空');
     }
@@ -906,27 +908,27 @@ export class ExcelGameDataUploader {
     }
   }
 
-  private isValidGameRow(row: any[]): boolean {
-    return row && row.length >= 3 && row[0] && row[1] && row[2];
+  private isValidGameRow(row: ExcelRowData[]): boolean {
+    return row && row.length >= 3 && Boolean(row[0]) && Boolean(row[1]) && Boolean(row[2]);
   }
 
-  private cleanGameId(gameId: any): string {
+  private cleanGameId(gameId: unknown): string {
     return gameId ? gameId.toString().trim().toLowerCase() : '';
   }
 
-  private cleanText(text: any): string {
+  private cleanText(text: unknown): string {
     return text ? text.toString().trim() : '';
   }
 
-  private cleanUrl(url: any): string {
+  private cleanUrl(url: unknown): string {
     return url ? url.toString().trim() : '';
   }
 
-  private cleanTag(tag: any): string {
+  private cleanTag(tag: unknown): string {
     return tag ? tag.toString().trim().toLowerCase() : '';
   }
 
-  private calculateUniqueCategories(rows: any[][]): number {
+  private calculateUniqueCategories(rows: ExcelRowData[][]): number {
     const categories = new Set();
     rows.forEach(row => {
       if (row[3] && typeof row[3] === 'string') {
@@ -942,7 +944,7 @@ export class ExcelGameDataUploader {
     return categories.size;
   }
 
-  private calculateUniqueTags(rows: any[][]): number {
+  private calculateUniqueTags(rows: ExcelRowData[][]): number {
     const tags = new Set();
     rows.forEach(row => {
       if (row[4] && typeof row[4] === 'string') {
@@ -991,7 +993,7 @@ export class ExcelGameDataUploader {
     this.log('info', `📋 阶段 ${phaseNumber}: ${phaseName}`);
   }
 
-  private updateProgress(type: string, current: number, total: number, stats: any = {}) {
+  private updateProgress(type: string, current: number, total: number, stats: { errors?: number; skipped?: number; processed?: number; tagsProcessed?: number; tagsErrors?: number } = {}) {
     this.progressState.current.processed = current;
     this.progressState.current.total = total;
     
@@ -999,7 +1001,7 @@ export class ExcelGameDataUploader {
       const percentage = ((current / total) * 100).toFixed(1);
       this.log('info', `📊 ${type} 进度: ${current}/${total} (${percentage}%)`);
       
-      if (stats.errors > 0) {
+      if (stats.errors && stats.errors > 0) {
         this.log('warn', `⚠️ 错误: ${stats.errors}, 跳过: ${stats.skipped || 0}`);
       }
     }
@@ -1010,7 +1012,7 @@ export class ExcelGameDataUploader {
     console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`);
   }
 
-  private generateFinalReport(parseResult: ParseResult, preprocessResult: PreprocessResult, uploadResult: UploadResult, validationResult: any) {
+  private generateFinalReport(parseResult: ParseResult, preprocessResult: PreprocessResult, uploadResult: UploadResult, validationResult: { success: boolean; details?: unknown; recommendations?: string[]; error?: string }) {
     const endTime = Date.now();
     const duration = endTime - (this.progressState.overall.startTime || endTime);
     

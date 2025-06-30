@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Play, Info } from 'lucide-react';
 import Link from 'next/link';
 
@@ -92,7 +92,7 @@ export function HeroSection({ games }: HeroSectionProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   // 手动切换到指定索引
-  const goToSlide = (index: number) => {
+  const goToSlide = useCallback((index: number) => {
     if (isTransitioning || index === currentIndex) return;
     
     setIsTransitioning(true);
@@ -101,17 +101,17 @@ export function HeroSection({ games }: HeroSectionProps) {
     setTimeout(() => {
       setIsTransitioning(false);
     }, 500);
-  };
+  }, [isTransitioning, currentIndex]);
 
   const goToPrevious = () => {
     const newIndex = currentIndex === 0 ? games.length - 1 : currentIndex - 1;
     goToSlide(newIndex);
   };
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     const newIndex = (currentIndex + 1) % games.length;
     goToSlide(newIndex);
-  };
+  }, [currentIndex, games.length, goToSlide]);
 
   // 自动轮播
   useEffect(() => {
@@ -122,7 +122,7 @@ export function HeroSection({ games }: HeroSectionProps) {
     }, 5000); // 5秒切换一次
 
     return () => clearInterval(interval);
-  }, [currentIndex, games.length, goToNext]);
+  }, [games.length, goToNext]);
 
   if (!games || games.length === 0) {
     return null;

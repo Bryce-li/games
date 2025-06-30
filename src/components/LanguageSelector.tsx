@@ -28,7 +28,7 @@ export function LanguageSelector() {
     } else {
       setIsReady(true)
     }
-  }, [])
+  }, [i18n])
 
   // 获取当前语言
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
