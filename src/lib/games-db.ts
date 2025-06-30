@@ -174,14 +174,38 @@ function heroQueryRowToHeroGame(queryRow: HeroGameQueryRow, tags: string[] = [])
 }
 
 /**
- * 获取游戏的标签 - 已优化：使用UUID关联
+ * 获取游戏的分类 - 从game_tags表查询tag_type=1的记录
+ */
+async function getGameCategories(gameId: string): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from('game_tags')
+      .select('tag')
+      .eq('game_id', gameId)
+      .eq('tag_type', 1); // 1=分类
+    
+    if (error) {
+      console.error('获取游戏分类失败:', error.message);
+      return [];
+    }
+    
+    return data?.map(row => row.tag) || [];
+  } catch (error) {
+    console.error('获取游戏分类时出错:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取游戏的标签 - 从game_tags表查询tag_type=2的记录
  */
 async function getGameTags(gameId: string): Promise<string[]> {
   try {
     const { data, error } = await supabase
       .from('game_tags')
       .select('tag')
-      .eq('game_id', gameId); // game_id现在是UUID
+      .eq('game_id', gameId)
+      .eq('tag_type', 2); // 2=标签
     
     if (error) {
       console.error('获取游戏标签失败:', error.message);
@@ -196,7 +220,40 @@ async function getGameTags(gameId: string): Promise<string[]> {
 }
 
 /**
- * 批量获取多个游戏的标签 - 已优化：使用UUID关联
+ * 批量获取多个游戏的分类 - 从game_tags表查询tag_type=1的记录
+ */
+async function getBatchGameCategories(gameIds: string[]): Promise<Record<string, string[]>> {
+  if (gameIds.length === 0) return {};
+  
+  try {
+    const { data, error } = await supabase
+      .from('game_tags')
+      .select('game_id, tag')
+      .in('game_id', gameIds)
+      .eq('tag_type', 1); // 1=分类
+    
+    if (error) {
+      console.error('批量获取游戏分类失败:', error.message);
+      return {};
+    }
+    
+    const categoriesMap: Record<string, string[]> = {};
+    data?.forEach(row => {
+      if (!categoriesMap[row.game_id]) {
+        categoriesMap[row.game_id] = [];
+      }
+      categoriesMap[row.game_id].push(row.tag);
+    });
+    
+    return categoriesMap;
+  } catch (error) {
+    console.error('批量获取游戏分类时出错:', error);
+    return {};
+  }
+}
+
+/**
+ * 批量获取多个游戏的标签 - 从game_tags表查询tag_type=2的记录
  */
 async function getBatchGameTags(gameIds: string[]): Promise<Record<string, string[]>> {
   if (gameIds.length === 0) return {};
@@ -205,7 +262,8 @@ async function getBatchGameTags(gameIds: string[]): Promise<Record<string, strin
     const { data, error } = await supabase
       .from('game_tags')
       .select('game_id, tag')
-      .in('game_id', gameIds); // game_id现在是UUID数组
+      .in('game_id', gameIds)
+      .eq('tag_type', 2); // 2=标签
     
     if (error) {
       console.error('批量获取游戏标签失败:', error.message);
@@ -228,28 +286,64 @@ async function getBatchGameTags(gameIds: string[]): Promise<Record<string, strin
 }
 
 /**
- * 按分类获取游戏列表
+ * 按分类获取游戏列表 - 通过game_tags表查询
  */
 export async function getGamesByCategory(category: string): Promise<BaseGame[]> {
   try {
-    const { data, error } = await supabase
-      .from('games')
-      .select('*')
-      .eq('category', category.toLowerCase())
-      .order('created_at', { ascending: false });
+    // 先从game_tags表获取属于该分类的游戏ID
+    const { data: categoryData, error: categoryError } = await supabase
+      .from('game_tags')
+      .select('game_id')
+      .eq('tag', category.toLowerCase())
+      .eq('tag_type', 1); // 1=分类
     
-    if (error) {
-      console.error('按分类获取游戏失败:', error.message);
+    if (categoryError) {
+      console.error('查询分类失败:', categoryError.message);
       return [];
     }
     
-    if (!data || data.length === 0) return [];
+    if (!categoryData || categoryData.length === 0) return [];
     
-    // 批量获取标签 - 使用主键id
-    const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    // 获取游戏ID列表
+    const gameIds = categoryData.map(item => item.game_id);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+    // 根据游戏ID获取游戏详细信息
+    const { data: gamesData, error: gamesError } = await supabase
+      .from('games')
+      .select('*')
+      .in('id', gameIds)
+      .order('created_at', { ascending: false });
+    
+    if (gamesError) {
+      console.error('获取游戏详情失败:', gamesError.message);
+      return [];
+    }
+    
+    if (!gamesData || gamesData.length === 0) return [];
+    
+    // 批量获取分类和标签
+    const actualGameIds = gamesData.map(game => game.id);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(actualGameIds),
+      getBatchGameTags(actualGameIds)
+    ]);
+    
+    return gamesData.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        image: row.image_url || row.thumbnail_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot
+      };
+    });
   } catch (error) {
     console.error('按分类获取游戏时出错:', error);
     return [];
@@ -274,11 +368,29 @@ export async function getNewGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    // 批量获取标签
+    // 批量获取分类和标签
     const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(gameIds),
+      getBatchGameTags(gameIds)
+    ]);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+    return data.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        image: row.image_url || row.thumbnail_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot
+      };
+    });
   } catch (error) {
     console.error('获取新游戏时出错:', error);
     return [];
@@ -303,11 +415,29 @@ export async function getHotGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    // 批量获取标签
+    // 批量获取分类和标签
     const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(gameIds),
+      getBatchGameTags(gameIds)
+    ]);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+    return data.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        image: row.image_url || row.thumbnail_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot
+      };
+    });
   } catch (error) {
     console.error('获取热门游戏时出错:', error);
     return [];
@@ -333,11 +463,35 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
     
     if (!data || data.length === 0) return [];
     
-    // 批量获取标签
+    // 批量获取分类和标签
     const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(gameIds),
+      getBatchGameTags(gameIds)
+    ]);
     
-    return data.map(row => dbRowToGameConfig(row, tagsMap[row.id] || []));
+    return data.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        description: row.description || '',
+        image: row.image_url || row.thumbnail_url || '',
+        embedUrl: row.embed_url,
+        thumbnail: row.thumbnail_url || row.image_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot,
+        publishDate: row.publish_date ? new Date(row.publish_date).toISOString().split('T')[0] : undefined,
+        lastUpdated: row.last_updated ? new Date(row.last_updated).toISOString().split('T')[0] : undefined,
+        instructions: row.instructions || ''
+      };
+    });
   } catch (error) {
     console.error('获取推荐游戏时出错:', error);
     return [];
@@ -345,30 +499,75 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
 }
 
 /**
- * 获取相关游戏
+ * 获取相关游戏 - 通过game_tags表查询同分类游戏
  */
 export async function getRelatedGames(category: string, currentGameId: string, limit: number = 8): Promise<GameConfig[]> {
   try {
-    const { data, error } = await supabase
-      .from('games')
-      .select('*')
-      .eq('category', category.toLowerCase())
-      .neq('id', currentGameId) // 使用主键排除当前游戏
-      .order('publish_date', { ascending: false })
-      .limit(limit);
+    // 先从game_tags表获取属于该分类的游戏ID
+    const { data: categoryData, error: categoryError } = await supabase
+      .from('game_tags')
+      .select('game_id')
+      .eq('tag', category.toLowerCase())
+      .eq('tag_type', 1); // 1=分类
     
-    if (error) {
-      console.error('获取相关游戏失败:', error.message);
+    if (categoryError) {
+      console.error('查询相关游戏分类失败:', categoryError.message);
       return [];
     }
     
-    if (!data || data.length === 0) return [];
+    if (!categoryData || categoryData.length === 0) return [];
     
-    // 批量获取标签
-    const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    // 获取游戏ID列表，排除当前游戏
+    const gameIds = categoryData
+      .map(item => item.game_id)
+      .filter(id => id !== currentGameId);
     
-    return data.map(row => dbRowToGameConfig(row, tagsMap[row.id] || []));
+    if (gameIds.length === 0) return [];
+    
+    // 根据游戏ID获取游戏详细信息
+    const { data: gamesData, error: gamesError } = await supabase
+      .from('games')
+      .select('*')
+      .in('id', gameIds)
+      .order('publish_date', { ascending: false })
+      .limit(limit);
+    
+    if (gamesError) {
+      console.error('获取相关游戏详情失败:', gamesError.message);
+      return [];
+    }
+    
+    if (!gamesData || gamesData.length === 0) return [];
+    
+    // 批量获取分类和标签
+    const actualGameIds = gamesData.map(game => game.id);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(actualGameIds),
+      getBatchGameTags(actualGameIds)
+    ]);
+    
+    return gamesData.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        description: row.description || '',
+        image: row.image_url || row.thumbnail_url || '',
+        embedUrl: row.embed_url,
+        thumbnail: row.thumbnail_url || row.image_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot,
+        publishDate: row.publish_date ? new Date(row.publish_date).toISOString().split('T')[0] : undefined,
+        lastUpdated: row.last_updated ? new Date(row.last_updated).toISOString().split('T')[0] : undefined,
+        instructions: row.instructions || ''
+      };
+    });
   } catch (error) {
     console.error('获取相关游戏时出错:', error);
     return [];
@@ -393,10 +592,30 @@ export async function getGameConfig(gameId: string): Promise<GameConfig | null> 
     
     if (!data) return null;
     
-    // 获取标签
-    const tags = await getGameTags(gameId);
+    // 获取分类和标签
+    const [categories, tags] = await Promise.all([
+      getGameCategories(gameId),
+      getGameTags(gameId)
+    ]);
     
-    return dbRowToGameConfig(data, tags);
+    const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description || '',
+      image: data.image_url || data.thumbnail_url || '',
+      embedUrl: data.embed_url,
+      thumbnail: data.thumbnail_url || data.image_url || '',
+      category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+      tags: [...categories, ...tags], // 合并分类和标签
+      isOriginal: data.is_original,
+      isNew: data.is_new,
+      isHot: data.is_hot,
+      publishDate: data.publish_date ? new Date(data.publish_date).toISOString().split('T')[0] : undefined,
+      lastUpdated: data.last_updated ? new Date(data.last_updated).toISOString().split('T')[0] : undefined,
+      instructions: data.instructions || ''
+    };
   } catch (error) {
     console.error('获取游戏配置时出错:', error);
     return null;
@@ -420,11 +639,29 @@ export async function getAllGames(): Promise<BaseGame[]> {
     
     if (!data || data.length === 0) return [];
     
-    // 批量获取标签
+    // 批量获取分类和标签
     const gameIds = data.map(game => game.id);
-    const tagsMap = await getBatchGameTags(gameIds);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(gameIds),
+      getBatchGameTags(gameIds)
+    ]);
     
-    return data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+    return data.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        image: row.image_url || row.thumbnail_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot
+      };
+    });
   } catch (error) {
     console.error('获取所有游戏时出错:', error);
     return [];
@@ -446,7 +683,7 @@ export async function searchGames(query: string, limit: number = 10): Promise<Ba
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
+      .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
       .limit(limit);
     
     if (error) {
@@ -457,11 +694,29 @@ export async function searchGames(query: string, limit: number = 10): Promise<Ba
     let results: BaseGame[] = [];
     
     if (data && data.length > 0) {
-      // 批量获取标签
+      // 批量获取分类和标签
       const gameIds = data.map(game => game.id);
-      const tagsMap = await getBatchGameTags(gameIds);
+      const [categoriesMap, tagsMap] = await Promise.all([
+        getBatchGameCategories(gameIds),
+        getBatchGameTags(gameIds)
+      ]);
       
-      results = data.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+      results = data.map(row => {
+        const categories = categoriesMap[row.id] || [];
+        const tags = tagsMap[row.id] || [];
+        const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+        
+        return {
+          id: row.id,
+          title: row.title,
+          image: row.image_url || row.thumbnail_url || '',
+          category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+          tags: [...categories, ...tags], // 合并分类和标签
+          isOriginal: row.is_original,
+          isNew: row.is_new,
+          isHot: row.is_hot
+        };
+      });
     }
     
     // 如果结果不够，补充标签搜索
@@ -511,10 +766,29 @@ async function searchGamesByTags(searchTerm: string, limit: number = 10): Promis
       return [];
     }
     
-    // 批量获取标签
-    const tagsMap = await getBatchGameTags(gameData.map(game => game.id));
+    // 批量获取分类和标签
+    const actualGameIds = gameData.map(game => game.id);
+    const [categoriesMap, tagsMap] = await Promise.all([
+      getBatchGameCategories(actualGameIds),
+      getBatchGameTags(actualGameIds)
+    ]);
     
-    return gameData.map(row => dbRowToBaseGame(row, tagsMap[row.id] || []));
+    return gameData.map(row => {
+      const categories = categoriesMap[row.id] || [];
+      const tags = tagsMap[row.id] || [];
+      const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+      
+      return {
+        id: row.id,
+        title: row.title,
+        image: row.image_url || row.thumbnail_url || '',
+        category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+        tags: [...categories, ...tags], // 合并分类和标签
+        isOriginal: row.is_original,
+        isNew: row.is_new,
+        isHot: row.is_hot
+      };
+    });
   } catch (error) {
     console.error('按标签搜索游戏时出错:', error);
     return [];
