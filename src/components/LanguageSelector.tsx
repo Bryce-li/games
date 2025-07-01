@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
 import { useEffect, useState } from "react"
-import i18n from "@/lib/i18n"
+import i18n from "@/lib/i18n/config"
 
 // 支持的语言列表
 const languages = [

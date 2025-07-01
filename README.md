@@ -72,6 +72,95 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🔧 URL路由重构 - 使用game_id字段替代UUID (2025-01-23)
+
+#### 🎯 **修复背景**:
+用户反馈希望游戏页面URL使用更友好的`game_id`字段（如：`cat-mini-restaurant`）而不是UUID作为路径参数，提升SEO和用户体验。
+
+#### ✅ **核心修复内容**:
+
+1. **🔧 getGameConfig函数重构**:
+   ```typescript
+   // ✅ 修改前: 使用UUID主键查询
+   .eq('id', gameId) // UUID查询
+   
+   // ✅ 修改后: 使用game_id业务标识符查询
+   .eq('game_id', gameId) // 业务标识符查询
+   
+   // 新增: 通过UUID查询的内部函数
+   export async function getGameConfigById(uuid: string): Promise<GameConfig | null>
+   ```
+
+2. **🏗️ 数据转换函数统一修改**:
+   ```typescript
+   // 所有数据转换函数现在返回game_id作为业务标识符
+   function dbRowToBaseGame(row: DatabaseGameRow): BaseGame {
+     return {
+       id: row.game_id, // 使用game_id作为业务标识符
+       // ...其他字段
+     }
+   }
+   
+   function dbRowToGameConfig(row: DatabaseGameRow): GameConfig {
+     return {
+       id: row.game_id, // 使用game_id作为业务标识符  
+       // ...其他字段
+     }
+   }
+   ```
+
+3. **🔍 批量查询函数优化**:
+   ```typescript
+   // ✅ getAllGames, getNewGames, getHotGames 等函数
+   return data.map(row => ({
+     id: row.game_id, // 返回game_id作为业务标识符
+     title: row.title,
+     // ...其他字段
+   }))
+   
+   // ✅ getRecommendedGames 排除逻辑修改
+   .neq('game_id', currentGameId) // 使用game_id排除当前游戏
+   ```
+
+4. **📊 类型定义更新**:
+   ```typescript
+   // 更新DatabaseGameRow接口
+   interface DatabaseGameRow {
+     id: string; // UUID主键
+     game_id: string; // 业务标识符，如"cat-mini-restaurant"
+     title: string;
+     // ...其他字段
+   }
+   ```
+
+#### 🌐 **URL结构变化**:
+```bash
+# ✅ 修改前: 使用UUID
+/games/123e4567-e89b-12d3-a456-426614174000
+
+# ✅ 修改后: 使用友好的game_id  
+/games/cat-mini-restaurant
+/games/count-masters-stickman-games
+/games/stone-grass-mowing-simulator
+```
+
+#### 🚀 **升级效果**:
+- ✅ **SEO友好**: URL包含游戏名称关键词，提升搜索引擎优化
+- ✅ **用户体验**: 更容易记忆和分享的URL
+- ✅ **向后兼容**: 保持所有现有功能正常工作
+- ✅ **性能稳定**: 查询性能保持不变
+- ✅ **类型安全**: 完整的TypeScript类型定义
+
+#### 📋 **影响的核心函数**:
+- ✅ `getGameConfig` - 主要查询函数改为使用game_id
+- ✅ `getGameConfigById` - 新增UUID查询函数
+- ✅ `getRecommendedGames` - 排除逻辑使用game_id
+- ✅ `getRelatedGames` - 排除逻辑优化
+- ✅ 所有数据转换函数 - 统一返回game_id作为id字段
+- ✅ 所有批量查询函数 - 返回数据结构统一
+
+---
+
 ### 🔄 核心业务修复 - games.category字段迁移完成 (2025-01-23)
 
 #### 🎯 **修复背景**:

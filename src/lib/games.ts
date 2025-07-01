@@ -14,6 +14,7 @@ export {
   getRecommendedGames,
   getRelatedGames,
   getGameConfig,
+  getGameConfigById, // 新增：通过UUID查询游戏配置
   getAllGames,
   searchGames,
   getHomepageCategories,

@@ -2,9 +2,10 @@
 
 import { supabase } from './supabase'
 
-// 数据库行的类型定义 - 已优化：移除game_id字段
+// 数据库行的类型定义
 interface DatabaseGameRow {
-  id: string; // 现在直接使用UUID主键
+  id: string; // UUID主键
+  game_id: string; // 业务标识符，如"cat-mini-restaurant"
   title: string;
   description?: string;
   image_url?: string;
@@ -20,12 +21,13 @@ interface DatabaseGameRow {
   created_at?: string;
 }
 
-// 英雄游戏关联查询的类型定义 - 已优化：game_id现在是UUID
+// 英雄游戏关联查询的类型定义
 interface HeroGameQueryRow {
   game_id: string; // UUID外键
   display_order: number;
   games: {
-    id: string; // 游戏主键
+    id: string; // 游戏UUID主键
+    game_id: string; // 游戏业务标识符
     title: string;
     description?: string;
     image_url?: string;
@@ -101,11 +103,11 @@ export const gameCategories = {
 } as const;
 
 /**
- * 数据库行转换为BaseGame格式 - 已优化：直接使用主键id
+ * 数据库行转换为BaseGame格式 - 使用game_id作为业务标识符
  */
 function dbRowToBaseGame(row: DatabaseGameRow, tags: string[] = []): BaseGame {
   return {
-    id: row.id, // 直接使用主键
+    id: row.game_id, // 使用game_id作为业务标识符
     title: row.title,
     image: row.image_url || row.thumbnail_url || '',
     category: row.category,
@@ -121,7 +123,7 @@ function dbRowToBaseGame(row: DatabaseGameRow, tags: string[] = []): BaseGame {
  */
 function dbRowToGameConfig(row: DatabaseGameRow, tags: string[] = []): GameConfig {
   return {
-    id: row.id, // 直接使用主键
+    id: row.game_id, // 使用game_id作为业务标识符
     title: row.title,
     description: row.description || '',
     image: row.image_url || row.thumbnail_url || '',
@@ -139,11 +141,11 @@ function dbRowToGameConfig(row: DatabaseGameRow, tags: string[] = []): GameConfi
 }
 
 /**
- * 数据库行转换为HeroGame格式 - 已优化：直接使用主键id
+ * 数据库行转换为HeroGame格式 - 使用game_id作为业务标识符
  */
 function dbRowToHeroGame(row: DatabaseGameRow, tags: string[] = []): HeroGame {
   return {
-    id: row.id, // 直接使用主键
+    id: row.game_id, // 使用game_id作为业务标识符
     title: row.title,
     description: row.description || '',
     image: row.image_url || row.thumbnail_url || '',
@@ -156,12 +158,12 @@ function dbRowToHeroGame(row: DatabaseGameRow, tags: string[] = []): HeroGame {
 }
 
 /**
- * 英雄游戏关联查询结果转换为HeroGame格式 - 已优化
+ * 英雄游戏关联查询结果转换为HeroGame格式 - 使用game_id作为业务标识符
  */
 function heroQueryRowToHeroGame(queryRow: HeroGameQueryRow, tags: string[] = []): HeroGame {
   const gameData = queryRow.games;
   return {
-    id: gameData.id, // 使用关联的games表主键
+    id: gameData.game_id, // 使用game_id作为业务标识符
     title: gameData.title,
     description: gameData.description || '',
     image: gameData.image_url || gameData.thumbnail_url || '',
@@ -334,7 +336,7 @@ export async function getGamesByCategory(category: string): Promise<BaseGame[]> 
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         image: row.image_url || row.thumbnail_url || '',
         category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
@@ -381,7 +383,7 @@ export async function getNewGames(): Promise<BaseGame[]> {
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         image: row.image_url || row.thumbnail_url || '',
         category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
@@ -428,7 +430,7 @@ export async function getHotGames(): Promise<BaseGame[]> {
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         image: row.image_url || row.thumbnail_url || '',
         category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
@@ -452,7 +454,7 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .neq('id', currentGameId) // 使用主键排除当前游戏
+      .neq('game_id', currentGameId) // 使用game_id排除当前游戏
       .order('publish_date', { ascending: false })
       .limit(limit);
     
@@ -476,7 +478,7 @@ export async function getRecommendedGames(currentGameId: string, limit: number =
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         description: row.description || '',
         image: row.image_url || row.thumbnail_url || '',
@@ -517,18 +519,17 @@ export async function getRelatedGames(category: string, currentGameId: string, l
     
     if (!categoryData || categoryData.length === 0) return [];
     
-    // 获取游戏ID列表，排除当前游戏
-    const gameIds = categoryData
-      .map(item => item.game_id)
-      .filter(id => id !== currentGameId);
+    // 获取游戏UUID列表
+    const gameUUIDs = categoryData.map(item => item.game_id);
     
-    if (gameIds.length === 0) return [];
+    if (gameUUIDs.length === 0) return [];
     
-    // 根据游戏ID获取游戏详细信息
+    // 根据游戏UUID获取游戏详细信息，然后排除当前游戏
     const { data: gamesData, error: gamesError } = await supabase
       .from('games')
       .select('*')
-      .in('id', gameIds)
+      .in('id', gameUUIDs)
+      .neq('game_id', currentGameId) // 通过game_id排除当前游戏
       .order('publish_date', { ascending: false })
       .limit(limit);
     
@@ -552,7 +553,7 @@ export async function getRelatedGames(category: string, currentGameId: string, l
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         description: row.description || '',
         image: row.image_url || row.thumbnail_url || '',
@@ -575,14 +576,14 @@ export async function getRelatedGames(category: string, currentGameId: string, l
 }
 
 /**
- * 获取游戏配置 - 已优化：使用主键查询
+ * 获取游戏配置 - 通过game_id查询（业务标识符）
  */
 export async function getGameConfig(gameId: string): Promise<GameConfig | null> {
   try {
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .eq('id', gameId) // 直接使用主键查询
+      .eq('game_id', gameId) // 改为使用game_id字段查询
       .single();
     
     if (error) {
@@ -592,16 +593,16 @@ export async function getGameConfig(gameId: string): Promise<GameConfig | null> 
     
     if (!data) return null;
     
-    // 获取分类和标签
+    // 获取分类和标签（使用UUID id）
     const [categories, tags] = await Promise.all([
-      getGameCategories(gameId),
-      getGameTags(gameId)
+      getGameCategories(data.id), // 这里使用UUID
+      getGameTags(data.id) // 这里使用UUID
     ]);
     
     const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
     
     return {
-      id: data.id,
+      id: data.game_id, // 返回game_id作为业务标识符
       title: data.title,
       description: data.description || '',
       image: data.image_url || data.thumbnail_url || '',
@@ -618,6 +619,54 @@ export async function getGameConfig(gameId: string): Promise<GameConfig | null> 
     };
   } catch (error) {
     console.error('获取游戏配置时出错:', error);
+    return null;
+  }
+}
+
+/**
+ * 通过UUID获取游戏配置（内部使用）
+ */
+export async function getGameConfigById(uuid: string): Promise<GameConfig | null> {
+  try {
+    const { data, error } = await supabase
+      .from('games')
+      .select('*')
+      .eq('id', uuid) // 使用UUID查询
+      .single();
+    
+    if (error) {
+      console.error('通过UUID获取游戏配置失败:', error.message);
+      return null;
+    }
+    
+    if (!data) return null;
+    
+    // 获取分类和标签
+    const [categories, tags] = await Promise.all([
+      getGameCategories(uuid),
+      getGameTags(uuid)
+    ]);
+    
+    const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
+    
+    return {
+      id: data.game_id, // 返回game_id作为业务标识符
+      title: data.title,
+      description: data.description || '',
+      image: data.image_url || data.thumbnail_url || '',
+      embedUrl: data.embed_url,
+      thumbnail: data.thumbnail_url || data.image_url || '',
+      category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
+      tags: [...categories, ...tags], // 合并分类和标签
+      isOriginal: data.is_original,
+      isNew: data.is_new,
+      isHot: data.is_hot,
+      publishDate: data.publish_date ? new Date(data.publish_date).toISOString().split('T')[0] : undefined,
+      lastUpdated: data.last_updated ? new Date(data.last_updated).toISOString().split('T')[0] : undefined,
+      instructions: data.instructions || ''
+    };
+  } catch (error) {
+    console.error('通过UUID获取游戏配置时出错:', error);
     return null;
   }
 }
@@ -652,7 +701,7 @@ export async function getAllGames(): Promise<BaseGame[]> {
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         image: row.image_url || row.thumbnail_url || '',
         category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
@@ -707,7 +756,7 @@ export async function searchGames(query: string, limit: number = 10): Promise<Ba
         const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
         
         return {
-          id: row.id,
+          id: row.game_id, // 使用game_id作为业务标识符
           title: row.title,
           image: row.image_url || row.thumbnail_url || '',
           category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
@@ -779,7 +828,7 @@ async function searchGamesByTags(searchTerm: string, limit: number = 10): Promis
       const primaryCategory = categories.length > 0 ? categories[0] : 'casual'; // 默认分类
       
       return {
-        id: row.id,
+        id: row.game_id, // 使用game_id作为业务标识符
         title: row.title,
         image: row.image_url || row.thumbnail_url || '',
         category: gameCategories[primaryCategory as keyof typeof gameCategories] || primaryCategory,
