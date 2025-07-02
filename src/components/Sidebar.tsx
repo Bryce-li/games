@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { usePathname } from 'next/navigation';
+import { useAuth } from "./auth/AuthProvider";
+import { isAdmin } from "@/lib/auth";
 
 interface NavItemProps {
   icon: string;
@@ -53,6 +55,7 @@ interface SidebarProps {
 export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <aside
@@ -278,18 +281,20 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
           />
         </div>
 
-        {/* Admin Section */}
-        {/* <div className="space-y-1 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            管理功能
-          </h3>
-          <NavItem 
-            icon="📤" 
-            label="Data Upload" 
-            href="/admin/upload"
-            active={pathname === "/admin/upload"}
-          />
-        </div> */}
+        {/* Admin Section - 只有管理员可见 */}
+        {isAdmin(user) && (
+          <div className="space-y-1 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+              Admin Functions
+            </h3>
+            <NavItem 
+              icon="📤" 
+              label="Data Upload" 
+              href="/admin/upload"
+              active={pathname === "/admin/upload"}
+            />
+          </div>
+        )}
       </nav>
     </aside>
   );

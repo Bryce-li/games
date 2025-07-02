@@ -4,6 +4,9 @@ import { SearchBar } from "./SearchBar"
 import { ThemeToggle } from "./ThemeToggle"
 import { LanguageSelector } from "./LanguageSelector"
 import { Logo } from "./Logo"
+import { LoginButton } from "./auth/LoginButton"
+import { UserMenu } from "./auth/UserMenu"
+import { useAuth } from "./auth/AuthProvider"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
@@ -16,6 +19,7 @@ interface HeaderProps {
 
 export function Header({ onSearch, onToggleSidebar, isSidebarCollapsed }: HeaderProps) {
   const { t } = useTranslation()
+  const { user, loading } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
 
   const handleSearch = (query: string) => {
@@ -60,6 +64,15 @@ export function Header({ onSearch, onToggleSidebar, isSidebarCollapsed }: Header
           <div className="flex items-center gap-2 flex-shrink-0">
             <ThemeToggle />
             <LanguageSelector />
+            
+            {/* 用户认证区域 */}
+            {loading ? (
+              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+            ) : user ? (
+              <UserMenu user={user} />
+            ) : (
+              <LoginButton />
+            )}
           </div>
         </div>
       </div>

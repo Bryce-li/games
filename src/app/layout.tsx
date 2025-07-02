@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { I18nProvider } from "../components/I18nProvider";
+import { AuthProvider } from "../components/auth/AuthProvider";
 
 const geistSans = Geist({
     subsets: ["latin"],
@@ -44,7 +45,11 @@ export default function RootLayout({
                     `}
                 </Script>
 
-                <I18nProvider>{children}</I18nProvider>
+                <I18nProvider>
+                    <AuthProvider>
+                        {children}
+                    </AuthProvider>
+                </I18nProvider>
             </body>
         </html>
     );

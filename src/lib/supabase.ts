@@ -15,6 +15,73 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export interface Database {
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string
+          email: string
+          name: string
+          avatar_url: string | null
+          google_id: string
+          role: 'user' | 'admin'
+          is_active: boolean
+          last_login_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          name: string
+          avatar_url?: string | null
+          google_id: string
+          role?: 'user' | 'admin'
+          is_active?: boolean
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          name?: string
+          avatar_url?: string | null
+          google_id?: string
+          role?: 'user' | 'admin'
+          is_active?: boolean
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          session_token: string
+          expires_at: string
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          session_token: string
+          expires_at: string
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          session_token?: string
+          expires_at?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+      }
       games: {
         Row: {
           id: string
@@ -151,6 +218,31 @@ export interface Database {
       }
     }
   }
+}
+
+// 用户类型定义
+export interface User {
+  id: string
+  email: string
+  name: string
+  avatar_url?: string | null
+  google_id: string
+  role: 'user' | 'admin'
+  is_active: boolean
+  last_login_at?: string | null
+  created_at: string
+  updated_at: string
+}
+
+// 会话类型定义
+export interface UserSession {
+  id: string
+  user_id: string
+  session_token: string
+  expires_at: string
+  ip_address?: string | null
+  user_agent?: string | null
+  created_at: string
 }
 
 // 创建类型安全的Supabase客户端

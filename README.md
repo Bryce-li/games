@@ -11,6 +11,8 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 - **📱 Responsive Design**: Mobile-first design that works on all devices
 - **🌙 Dark Mode**: Complete dark/light theme support with system preference detection
 - **🌐 Internationalization**: Multi-language support (English/Chinese)
+- **👤 User Authentication**: Google OAuth login with role-based access control
+- **🔐 Admin Dashboard**: Secure admin area for game data management
 - **⚡ Performance Optimized**: Next.js 15 with optimized loading and caching
 
 
@@ -23,6 +25,8 @@ A modern, responsive gaming platform built with Next.js 15, TypeScript, and Tail
 
 ### 🏗️ Infrastructure Features
 - **🗄️ Supabase Database**: Cloud PostgreSQL database for game data
+- **🔐 Secure Authentication**: JWT-based session management with secure cookies
+- **🛡️ Role-based Access**: Admin-only routes protection with middleware
 - **⚡ Optimized Performance**: Fast loading with efficient data fetching
 
 ## 🛠 Tech Stack
@@ -1947,6 +1951,102 @@ miniplaygame/
 ---
 
 ## 📅 更新日志
+
+### [v1.5.0] - 2025-01-23 用户登录模块上线
+
+#### 🎯 **重大功能更新**
+完整的用户认证系统上线，支持Google OAuth登录和基于角色的权限管理。
+
+#### ✅ **新增功能**
+
+1. **🔐 用户认证系统**
+   - Google OAuth 2.0 集成登录
+   - 安全的JWT会话管理（30天有效期）
+   - HttpOnly cookies确保安全性
+   - 自动用户信息同步和更新
+
+2. **👤 用户界面**
+   - 响应式登录按钮设计
+   - 用户头像菜单（支持Google头像）
+   - 用户信息显示（姓名、邮箱）
+   - 优雅的加载状态和动画
+
+3. **🛡️ 权限管理系统**
+   - 基于角色的访问控制（user/admin）
+   - 中间件保护管理员路由
+   - 动态菜单权限显示
+   - 安全的权限验证机制
+
+4. **🔧 管理员功能增强**
+   - 重新启用游戏数据上传功能
+   - 管理员专用导航菜单
+   - 路由级别权限保护
+   - 管理员状态动态检查
+
+5. **🗄️ 数据库扩展**
+   - 新增`users`表存储用户信息
+   - 新增`user_sessions`表管理会话
+   - 完整的索引优化
+   - 自动数据清理机制
+
+#### 🛠️ **技术架构**
+
+```typescript
+// 认证流程
+Google OAuth → JWT Token → HttpOnly Cookie → Session Verification → User Context
+```
+
+- **认证提供者**: AuthProvider组件管理全局用户状态
+- **权限检查**: isAdmin()函数和中间件保护
+- **安全措施**: CSRF保护、XSS防护、SQL注入防护
+
+#### 📁 **新增文件结构**
+```
+src/
+├── components/auth/
+│   ├── AuthProvider.tsx     # 认证上下文提供者
+│   ├── LoginButton.tsx      # Google登录按钮
+│   └── UserMenu.tsx         # 用户头像菜单
+├── app/api/auth/
+│   ├── google/route.ts      # Google OAuth入口
+│   ├── google/callback/route.ts # OAuth回调处理
+│   ├── logout/route.ts      # 用户注销
+│   └── me/route.ts          # 获取用户信息
+├── lib/auth.ts              # 认证工具函数
+├── middleware.ts            # 权限保护中间件
+├── DATABASE_SCHEMA.sql      # 数据库表结构
+└── AUTH_SETUP_GUIDE.md      # 配置指南
+```
+
+#### 🔧 **环境配置**
+需要在`.env.local`中添加：
+```env
+# Google OAuth配置
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
+
+# JWT密钥
+JWT_SECRET=your_jwt_secret_key
+
+# 管理员邮箱
+ADMIN_EMAIL=your-email@gmail.com
+```
+
+#### 🚀 **升级影响**
+- ✅ 无破坏性变更，现有功能完全兼容
+- ✅ 管理员功能重新启用并增强安全性
+- ✅ 用户体验显著提升
+- ✅ 为后续社交功能奠定基础
+
+#### 📋 **设置步骤**
+1. 执行`DATABASE_SCHEMA.sql`中的建表语句
+2. 在Google Cloud Console配置OAuth应用
+3. 添加环境变量配置
+4. 重启开发服务器测试登录功能
+5. 设置管理员账号权限
+
+详细配置请参考：`AUTH_SETUP_GUIDE.md`
 
 ### [v1.4.1] - 2025-06-30 Excel解析错误修复
 
