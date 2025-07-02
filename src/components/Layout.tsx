@@ -4,17 +4,10 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { SearchBar } from '@/components/SearchBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Logo } from '@/components/Logo';
 import { Suspense } from 'react';
 
-// 分离标题组件以处理翻译加载状态
-function HeaderTitle() {
-  const { t } = useTranslation();
-  return (
-    <span className="font-bold text-xl text-gray-900 dark:text-gray-100">
-      {t('common.header.title', 'MiniPlayGame')}
-    </span>
-  );
-}
+// 注释：HeaderTitle组件已被Logo组件替代
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,12 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between h-full mx-4 lg:mx-8 gap-4">
             {/* Logo 和标题 */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-600 rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-sm">MP</span>
-              </div>
-              <Suspense fallback="MiniPlayGame">
-                <HeaderTitle />
-              </Suspense>
+              <Logo href="/" size="sm" showText={true} />
             </div>
             
             {/* 中间搜索框 */}

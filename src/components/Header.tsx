@@ -3,10 +3,10 @@
 import { SearchBar } from "./SearchBar"
 import { ThemeToggle } from "./ThemeToggle"
 import { LanguageSelector } from "./LanguageSelector"
+import { Logo } from "./Logo"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
-import Link from "next/link"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
@@ -44,16 +44,8 @@ export function Header({ onSearch, onToggleSidebar, isSidebarCollapsed }: Header
               )}
             </button>
 
-            {/* Logo - 可点击回到主页 */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">MP</span>
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="font-bold text-xl text-gray-900 dark:text-white">MiniPlayGame</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Play & Enjoy</p>
-              </div>
-            </Link>
+            {/* Logo - 使用新的SVG图标 */}
+            <Logo href="/" size="md" showText={true} />
           </div>
 
           {/* 中央搜索栏 */}

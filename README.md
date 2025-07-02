@@ -72,6 +72,65 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🎨 网站Logo更新 - 应用新的SVG图标 (2025-01-23)
+
+#### 🎯 **更新背景**:
+用户提供了新的SVG图标设计，需要将其应用到网站头部导航栏的logo位置，替换原有的简单"MP"字母logo。
+
+#### ✅ **核心更新内容**:
+
+1. **🎨 新Logo组件创建**:
+   ```typescript
+   // 创建: src/components/Logo.tsx
+   // 支持多种尺寸: sm, md, lg
+   // 支持显示/隐藏文字: showText prop
+   // 支持自定义链接: href prop
+   
+   export function Logo({ size = 'md', showText = true, className = '', href = '/' })
+   ```
+
+2. **📁 SVG文件部署**:
+   ```bash
+   # SVG文件位置: public/logo.svg
+   # 确保Next.js可以正确访问静态资源
+   ```
+
+3. **🔄 导航栏组件更新**:
+   ```typescript
+   // ✅ Header.tsx - 主要导航栏组件
+   // 旧: 紫色渐变背景 + "MP" 文字
+   // 新: <Logo href="/" size="md" showText={true} />
+   
+   // ✅ Layout.tsx - 布局组件
+   // 旧: 小的紫色方块 + "MP" 文字
+   // 新: <Logo href="/" size="sm" showText={true} />
+   ```
+
+4. **🎯 响应式设计**:
+   ```typescript
+   // 支持多种尺寸适配不同设备
+   const iconSizes = {
+     sm: { width: 32, height: 32 },  // 小屏幕/侧边栏
+     md: { width: 40, height: 40 },  // 主导航栏
+     lg: { width: 48, height: 48 }   // 大屏幕/特殊用途
+   }
+   ```
+
+#### 🚀 **升级效果**:
+- ✅ **品牌形象**: 使用专业设计的SVG图标提升品牌识别度
+- ✅ **一致性**: 统一了Header和Layout组件中的logo显示
+- ✅ **可扩展**: Logo组件支持多种配置，便于未来调整
+- ✅ **性能优化**: 使用Next.js Image组件优化加载性能
+- ✅ **响应式**: 自适应不同屏幕尺寸的显示需求
+
+#### 📋 **涉及的文件**:
+- ✅ `src/components/Logo.tsx` - 新建Logo组件
+- ✅ `src/components/Header.tsx` - 更新主导航栏
+- ✅ `src/components/Layout.tsx` - 更新布局组件
+- ✅ `public/logo.svg` - SVG图标文件部署
+
+---
+
 ### 🔧 URL路由重构 - 使用game_id字段替代UUID (2025-01-23)
 
 #### 🎯 **修复背景**:
