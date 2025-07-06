@@ -1,6 +1,6 @@
-import { supabase, type User, type UserSession } from './supabase'
+import { supabaseAdmin } from './supabase/server'
+import type { User, UserSession } from './supabase/client'
 import { sign, verify } from 'jsonwebtoken'
-import { cookies } from 'next/headers'
 
 // JWT密钥，实际部署时应该使用环境变量
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key'
@@ -17,22 +17,31 @@ export interface GoogleUser {
 // 创建或更新用户
 export async function createOrUpdateUser(googleUser: GoogleUser): Promise<User | null> {
   try {
-    // 首先检查用户是否已存在
-    const { data: existingUser } = await supabase
+    // 首先检查用户是否已存在 - 【重要】使用 admin 客户端
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('google_id', googleUser.id)
       .single()
 
+    const adminEmail = process.env.ADMIN_EMAIL
+
     if (existingUser) {
-      // 更新现有用户的登录时间和信息
-      const { data: updatedUser, error } = await supabase
+      // 更新现有用户的登录时间和信息 - 【重要】使用 admin 客户端
+      const updateData: Partial<Omit<User, 'id' | 'created_at'>> = {
+        name: googleUser.name,
+        avatar_url: googleUser.picture,
+        last_login_at: new Date().toISOString(),
+      }
+
+      // 如果邮箱匹配管理员邮箱，则确保其角色为 'admin'
+      if (adminEmail && googleUser.email === adminEmail) {
+        updateData.role = 'admin'
+      }
+
+      const { data: updatedUser, error } = await supabaseAdmin
         .from('users')
-        .update({
-          name: googleUser.name,
-          avatar_url: googleUser.picture,
-          last_login_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', existingUser.id)
         .select()
         .single()
@@ -44,15 +53,19 @@ export async function createOrUpdateUser(googleUser: GoogleUser): Promise<User |
 
       return updatedUser
     } else {
-      // 创建新用户
-      const { data: newUser, error } = await supabase
+      // 根据邮箱判断新用户角色
+      const newUserRole = (adminEmail && googleUser.email === adminEmail) ? 'admin' : 'user'
+
+      // 创建新用户 - 【重要】使用 admin 客户端
+      const { data: newUser, error } = await supabaseAdmin
         .from('users')
         .insert({
           email: googleUser.email,
           name: googleUser.name,
           avatar_url: googleUser.picture,
           google_id: googleUser.id,
-          last_login_at: new Date().toISOString()
+          last_login_at: new Date().toISOString(),
+          role: newUserRole, // 在创建时设置角色
         })
         .select()
         .single()
@@ -88,8 +101,8 @@ export async function createUserSession(
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 30)
 
-    // 在数据库中创建会话记录
-    const { data: session, error } = await supabase
+    // 在数据库中创建会话记录 - 【重要】使用 admin 客户端
+    const { data: session, error } = await supabaseAdmin
       .from('user_sessions')
       .insert({
         user_id: userId,
@@ -119,15 +132,15 @@ export async function verifySession(token: string): Promise<User | null> {
     // 验证JWT token
     const decoded = verify(token, JWT_SECRET) as { userId: string }
     
-    // 从数据库查询会话
-    const { data: session } = await supabase
+    // 从数据库查询会话 - 【重要】使用 admin 客户端
+    const { data: session } = await supabaseAdmin
       .from('user_sessions')
       .select('*, users(*)')
       .eq('session_token', token)
       .gt('expires_at', new Date().toISOString())
       .single()
 
-    if (!session) {
+    if (!session || !session.users) {
       return null
     }
 
@@ -138,28 +151,11 @@ export async function verifySession(token: string): Promise<User | null> {
   }
 }
 
-// 获取当前用户（从cookies中读取会话）
-export async function getCurrentUser(): Promise<User | null> {
-  try {
-    const cookieStore = await cookies()
-    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value
-
-    if (!sessionToken) {
-      return null
-    }
-
-    return await verifySession(sessionToken)
-  } catch (error) {
-    console.error('获取当前用户失败:', error)
-    return null
-  }
-}
-
 // 注销用户（删除会话）
 export async function signOut(token: string): Promise<boolean> {
   try {
-    // 从数据库删除会话
-    const { error } = await supabase
+    // 从数据库删除会话 - 【重要】使用 admin 客户端
+    const { error } = await supabaseAdmin
       .from('user_sessions')
       .delete()
       .eq('session_token', token)
@@ -171,12 +167,7 @@ export async function signOut(token: string): Promise<boolean> {
   }
 }
 
-// 检查用户是否为管理员
-export function isAdmin(user: User | null): boolean {
-  return user?.role === 'admin' && user?.is_active === true
-}
-
-// 设置会话cookie
+// 设置会话cookie的配置
 export function setSessionCookie(token: string) {
   const expires = new Date()
   expires.setDate(expires.getDate() + 30)
@@ -192,7 +183,7 @@ export function setSessionCookie(token: string) {
   }
 }
 
-// 清除会话cookie
+// 清除会话cookie的配置
 export function clearSessionCookie() {
   return {
     name: SESSION_COOKIE_NAME,
@@ -203,4 +194,7 @@ export function clearSessionCookie() {
     sameSite: 'lax' as const,
     path: '/'
   }
-} 
+}
+
+// 导出SESSION_COOKIE_NAME供服务器端使用
+export { SESSION_COOKIE_NAME } 

@@ -36,9 +36,11 @@
 # Supabase 数据库配置
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# 【重要】Supabase 服务端密钥，用于在后端操作数据库，切勿暴露到前端
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# Google OAuth 配置
-GOOGLE_CLIENT_ID=your_google_client_id
+# Google OAuth 配置 (客户端ID需要暴露给前端)
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
 

@@ -1,6 +1,6 @@
 // 数据库查询函数 - 替代原始的games.ts静态数据
 
-import { supabase } from './supabase'
+import { supabase } from './supabase/client'
 
 // 数据库行的类型定义
 interface DatabaseGameRow {

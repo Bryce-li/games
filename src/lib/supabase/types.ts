@@ -1,16 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
-// Supabase配置
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-// 创建Supabase客户端实例
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false, // 由于这是游戏网站，不需要持久化会话
-  },
-})
-
 // 数据库表类型定义（与数据库表结构对应）
 export interface Database {
   public: {
@@ -234,7 +221,6 @@ export interface User {
   updated_at: string
 }
 
-// 会话类型定义
 export interface UserSession {
   id: string
   user_id: string
@@ -243,7 +229,4 @@ export interface UserSession {
   ip_address?: string | null
   user_agent?: string | null
   created_at: string
-}
-
-// 创建类型安全的Supabase客户端
-export type SupabaseClient = typeof supabase 
+} 

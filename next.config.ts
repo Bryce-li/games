@@ -39,6 +39,15 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    // 环境变量配置
+    env: {
+        // 支持代理配置
+        HTTP_PROXY: process.env.HTTP_PROXY || '',
+        HTTPS_PROXY: process.env.HTTPS_PROXY || '',
+        NO_PROXY: process.env.NO_PROXY || '',
+    },
+    // 服务器外部包配置
+    serverExternalPackages: ['undici'],
 };
 
 export default nextConfig;

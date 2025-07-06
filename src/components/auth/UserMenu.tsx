@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { User } from '@/lib/supabase'
-import { isAdmin } from '@/lib/auth'
+import Image from 'next/image'
+import { LogOut, UserCircle2 } from 'lucide-react'
+import type { User } from '@/lib/supabase/client'
+import { isAdmin } from '@/lib/auth-utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,22 +48,22 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           {user.avatar_url ? (
-            <img
+            <Image
               src={user.avatar_url}
-              alt={user.name}
+              alt={user.name || '用户头像'}
+              width={32}
+              height={32}
               className="h-8 w-8 rounded-full object-cover"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
+            <UserCircle2 className="h-8 w-8" />
           )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">{user.name || '用户'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>

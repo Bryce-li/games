@@ -3,6 +3,7 @@
 import { MainLayout } from "./MainLayout"
 import { HeroSection } from "./HeroSection"
 import { HorizontalGamesList } from "./HorizontalGamesList"
+import { AuthErrorAlert } from "./AuthErrorAlert"
 import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
 import { BaseGame, HeroGame, HomepageCategoryConfig } from "@/lib/games"
@@ -63,7 +64,11 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
   }, [newGames, homepageCategoryData])
 
   return (
-    <MainLayout onSearch={handleSearch}>
+    <>
+      {/* 错误提示组件 */}
+      <AuthErrorAlert />
+      
+      <MainLayout onSearch={handleSearch}>
         {/* 主要内容 */}
         <div className="container mx-auto px-4 py-8">
           {/* Hero 轮播区域 */}
@@ -119,5 +124,6 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
           </div>
         </footer>
       </MainLayout>
+    </>
   )
 } 

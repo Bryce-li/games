@@ -1,77 +1,49 @@
 "use client"
 
+import Link from "next/link"
 import { SearchBar } from "./SearchBar"
 import { ThemeToggle } from "./ThemeToggle"
-import { LanguageSelector } from "./LanguageSelector"
-import { Logo } from "./Logo"
-import { LoginButton } from "./auth/LoginButton"
-import { UserMenu } from "./auth/UserMenu"
+import { UserCircle2 } from "lucide-react"
 import { useAuth } from "./auth/AuthProvider"
-import { useTranslation } from "react-i18next"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { UserMenu } from "./auth/UserMenu"
+import { useGoogleLogin } from "@/hooks/useGoogleLogin"
 
-interface HeaderProps {
-  onSearch?: (query: string) => void
-  onToggleSidebar?: () => void
-  isSidebarCollapsed?: boolean
-}
-
-export function Header({ onSearch, onToggleSidebar, isSidebarCollapsed }: HeaderProps) {
-  const { t } = useTranslation()
+export function Header() {
   const { user, loading } = useAuth()
-  const [searchQuery, setSearchQuery] = useState("")
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    console.log("搜索查询:", query)
-    onSearch?.(query)
-  }
+  const { triggerLogin, isLoading: isLoginLoading } = useGoogleLogin()
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 transition-colors duration-200">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
-          {/* 左侧：侧边栏切换按钮 + Logo */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {/* 侧边栏切换按钮 */}
-            <button
-              onClick={onToggleSidebar}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-              aria-label={isSidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
-              title={isSidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
-            >
-              {isSidebarCollapsed ? (
-                <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              ) : (
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              )}
-            </button>
-
-            {/* Logo - 使用新的SVG图标 */}
-            <Logo href="/" size="md" showText={true} />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <span className="hidden font-bold sm:inline-block">
+              MiniPlayGame
+            </span>
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link href="/new-games">New</Link>
+            <Link href="/hot-games">Hot</Link>
+          </nav>
+        </div>
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            <SearchBar />
           </div>
-
-          {/* 中央搜索栏 */}
-          <div className="flex-1 max-w-2xl mx-4">
-            <SearchBar 
-              onSearch={handleSearch}
-              className="w-full"
-            />
-          </div>
-
-          {/* 右侧工具栏 */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <ThemeToggle />
-            <LanguageSelector />
-            
-            {/* 用户认证区域 */}
-            {loading ? (
-              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+          <ThemeToggle />
+          <div className="flex items-center">
+            {loading || isLoginLoading ? (
+              <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
             ) : user ? (
               <UserMenu user={user} />
             ) : (
-              <LoginButton />
+              <button
+                onClick={triggerLogin}
+                className="p-2 rounded-full hover:bg-muted"
+                aria-label="登录"
+              >
+                <UserCircle2 className="h-6 w-6" />
+              </button>
             )}
           </div>
         </div>

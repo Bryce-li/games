@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser, isAdmin } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth-server'
+import { isAdmin } from '@/lib/auth-utils'
+
+// 定义需要保护的管理员路由
+const ADMIN_ROUTES = ['/admin', '/data-upload']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

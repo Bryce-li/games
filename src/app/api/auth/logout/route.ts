@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { signOut, clearSessionCookie } from '@/lib/auth'
+import { signOut, clearSessionCookie, SESSION_COOKIE_NAME } from '@/lib/auth'
 import { cookies } from 'next/headers'
 
 // 处理用户注销
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const sessionToken = cookieStore.get('miniplaygame-session')?.value
+    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value
 
     if (sessionToken) {
       // 删除数据库中的会话记录

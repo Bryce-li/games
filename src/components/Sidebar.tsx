@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { usePathname } from 'next/navigation';
 import { useAuth } from "./auth/AuthProvider";
-import { isAdmin } from "@/lib/auth";
+import { isAdmin } from "@/lib/auth-utils";
+import { Home, Gamepad2, Upload, Settings, BarChart } from "lucide-react";
 
 interface NavItemProps {
   icon: string;

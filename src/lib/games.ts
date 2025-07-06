@@ -81,5 +81,5 @@ console.log('📊 游戏数据系统已升级：现在使用Supabase数据库存
 console.log('🔄 如需回滚到静态数据，请使用 games-static-backup.ts')
 console.log('📚 新的数据库查询函数可在 games-db.ts 中找到')
 
-// 导出数据库相关类型以便在其他地方使用
-export type { Database } from './supabase' 
+// 重新导出数据库类型，方便在其他地方使用
+export type { Database } from './supabase/client' 

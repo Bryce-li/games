@@ -2048,6 +2048,141 @@ ADMIN_EMAIL=your-email@gmail.com
 
 详细配置请参考：`AUTH_SETUP_GUIDE.md`
 
+### [v1.4.3] - 2025-01-23 代理网络环境支持和语法错误修复
+
+#### 🐛 关键错误修复
+**问题**: 代理网络环境下Google OAuth登录失败，出现语法错误和网络连接问题
+- **错误1**: `SyntaxError: Invalid left-hand side in assignment` 在 `proxy-fetch.ts` 文件中
+- **错误2**: `TypeError: fetch failed` 和 `Connect Timeout Error (timeout: 10000ms)`
+- **原因**: 代理环境下Node.js服务器端无法访问Google OAuth API，且代理支持代码存在语法错误
+- **位置**: `src/lib/proxy-fetch.ts:65` 和 `src/app/api/auth/google/callback/route.ts`
+
+#### ✅ 修复措施
+
+1. **🔧 代理支持实现**
+   - 创建跨平台代理配置脚本
+   - 添加 `cross-env` 依赖支持环境变量设置
+   - 实现PowerShell和批处理启动脚本
+   - 简化代理检测逻辑，移除复杂的语法结构
+
+2. **📊 代理诊断工具**
+   - 新增 `/proxy-test` 页面进行代理连接测试
+   - 测试Google OAuth Token API在代理环境下的连接性
+   - 代理配置检查和状态验证
+   - 环境变量自动检测和设置
+
+3. **🚨 语法错误修复**
+   - 重写 `proxy-fetch.ts` 文件，移除不兼容的语法
+   - 简化OAuth回调处理，移除复杂的代理检测逻辑
+   - 保留基本的超时和重试机制
+   - 添加详细的错误日志记录
+
+4. **💡 启动脚本优化**
+   - 创建 `start-with-proxy.ps1` PowerShell脚本
+   - 创建 `start-with-proxy.bat` 批处理脚本
+   - 添加 `npm run dev:proxy` 命令
+   - 支持多种代理配置方式
+
+#### 🛠️ 新增文件
+
+```
+├── start-with-proxy.ps1        # PowerShell启动脚本
+├── start-with-proxy.bat        # 批处理启动脚本
+├── PROXY_SETUP_GUIDE.md        # 代理设置指南
+├── app/proxy-test/             # 代理测试页面
+│   └── page.tsx
+├── app/api/proxy-test/         # 代理测试API
+│   ├── config/route.ts         # 代理配置测试
+│   └── google-token/route.ts   # Google API代理测试
+└── lib/proxy-fetch.ts          # 重写的代理支持库
+```
+
+#### 🚀 技术改进
+- **代理支持**: 自动检测和配置常见代理端口 (7890, 1080, 8080, 3128)
+- **环境变量**: 支持 HTTP_PROXY 和 HTTPS_PROXY 环境变量
+- **跨平台**: 同时支持Windows PowerShell和批处理脚本
+- **诊断工具**: 一键检测代理配置和连接状态
+
+#### 📋 使用方法
+1. **方案1**: 运行 `.\start-with-proxy.ps1` (推荐)
+2. **方案2**: 运行 `npm run dev:proxy`
+3. **方案3**: 手动设置环境变量后运行 `npm run dev`
+4. **方案4**: 创建 `.env.local` 文件添加代理配置
+
+#### 🎯 解决的问题
+- ✅ 代理环境下Google OAuth API连接超时
+- ✅ proxy-fetch.ts 文件语法错误
+- ✅ 缺乏代理环境诊断工具
+- ✅ 跨平台代理配置支持
+
+### [v1.4.2] - 2025-01-16 Google登录网络超时问题修复
+
+#### 🐛 关键错误修复
+**问题**: Google OAuth登录回调失败，出现网络连接超时错误
+- **错误**: `TypeError: fetch failed` 和 `Connect Timeout Error (timeout: 10000ms)`
+- **原因**: 访问Google OAuth API时网络连接超时，默认超时时间过短
+- **位置**: `src/app/api/auth/google/callback/route.ts:28`
+
+#### ✅ 修复措施
+
+1. **🔧 增强网络配置**
+   - 将超时时间从10秒延长到30秒
+   - 添加重试机制，最多重试3次
+   - 实现指数退避重试策略
+   - 添加请求中断控制器
+
+2. **📊 网络诊断工具**
+   - 新增 `/network-test` 页面进行网络连接诊断
+   - 测试Google OAuth Token API连接性
+   - 测试Google UserInfo API连接性  
+   - DNS解析状态检查
+   - 环境变量配置验证
+
+3. **🚨 错误处理优化**
+   - 详细的错误日志记录
+   - 特定网络超时错误识别
+   - 用户友好的错误提示界面
+   - 错误分类和解决方案建议
+
+4. **💡 用户体验提升**
+   - 新增错误提示组件 `AuthErrorAlert`
+   - 针对网络超时提供快速诊断链接
+   - 集成配置检查和网络测试入口
+   - 自动错误类型识别和分类显示
+
+#### 🛠️ 新增文件
+
+```
+src/
+├── app/network-test/           # 网络诊断页面
+│   └── page.tsx
+├── app/api/network-test/       # 网络测试API
+│   ├── token/route.ts         # Token API测试
+│   ├── userinfo/route.ts      # UserInfo API测试  
+│   ├── dns/route.ts           # DNS解析测试
+│   └── env/route.ts           # 环境变量检查
+└── components/
+    └── AuthErrorAlert.tsx      # 错误提示组件
+```
+
+#### 🚀 技术改进
+- **网络请求**: 添加 AbortController 超时控制
+- **重试机制**: 指数退避算法，避免服务器压力
+- **错误分类**: 区分网络错误、配置错误和服务器错误
+- **诊断工具**: 一键检测所有潜在问题
+
+#### 📋 使用方法
+1. 如果遇到登录超时，页面会自动显示错误提示
+2. 点击"网络诊断"按钮进行连接测试
+3. 访问 `/network-test` 页面进行完整诊断
+4. 访问 `/config-check` 页面验证配置
+
+#### 🎯 解决的问题
+- ✅ Google OAuth API连接超时
+- ✅ 网络不稳定导致的登录失败  
+- ✅ 缺乏有效的错误诊断工具
+- ✅ 用户无法了解具体失败原因
+
 ### [v1.4.1] - 2025-06-30 Excel解析错误修复
 
 #### 🐛 关键错误修复

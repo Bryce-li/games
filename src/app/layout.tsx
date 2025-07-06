@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { I18nProvider } from "../components/I18nProvider";
 import { AuthProvider } from "../components/auth/AuthProvider";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
     subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head />
             <body
                 className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
                 suppressHydrationWarning
@@ -47,9 +49,17 @@ export default function RootLayout({
 
                 <I18nProvider>
                     <AuthProvider>
-                        {children}
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            {children}
+                        </ThemeProvider>
                     </AuthProvider>
                 </I18nProvider>
+                <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
             </body>
         </html>
     );

@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@/lib/supabase'
+import type { User } from '@/lib/supabase/client'
 
 interface AuthContextType {
   user: User | null
