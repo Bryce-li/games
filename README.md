@@ -76,6 +76,110 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🚨 Vercel 构建失败修复 - Webpack 兼容性问题 (2025-01-07)
+
+#### 🎯 **问题背景**:
+项目在 Vercel 部署时遇到 webpack 构建错误：
+```
+HookWebpackError: _webpack.WebpackError is not a constructor
+TypeError: _webpack.WebpackError is not a constructor
+at buildError (/vercel/path0/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:24:16)
+```
+
+#### ✅ **核心修复内容**:
+
+1. **🔧 Next.js 配置优化**:
+   ```typescript
+   // ✅ next.config.ts - 添加 webpack 配置
+   webpack: (config, { dev, isServer }) => {
+     const isVercel = process.env.VERCEL === '1';
+     
+     if (!dev && !isServer) {
+       if (isVercel) {
+         // Vercel 环境中使用保守的压缩配置
+         config.optimization = {
+           ...config.optimization,
+           minimize: true,
+           minimizer: ['...'], // 使用默认的 SWC minifier
+         };
+       } else {
+         // 本地环境禁用压缩以加快构建速度
+         config.optimization = {
+           ...config.optimization,
+           minimize: false,
+         };
+       }
+     }
+     return config;
+   }
+   ```
+
+2. **🛠️ 字体加载问题修复**:
+   ```typescript
+   // ✅ src/app/layout.tsx - 移除 Google Fonts 依赖
+   // 旧: 使用 next/font/google
+   // 新: 使用系统字体作为后备
+   style={{
+     fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+     '--font-geist-sans': 'system-ui, ...',
+     '--font-geist-mono': 'ui-monospace, ...'
+   }}
+   ```
+
+3. **🔄 TypeScript 错误修复**:
+   ```typescript
+   // ✅ 修复多个文件中的 TypeScript 错误
+   // - 移除 `any` 类型，使用具体类型定义
+   // - 添加 Suspense 边界包装 useSearchParams
+   // - 修复组件接口不匹配问题
+   
+   // 修复文件列表:
+   // ✅ src/app/proxy-test/page.tsx
+   // ✅ src/hooks/useGoogleLogin.ts  
+   // ✅ src/components/AuthErrorAlert.tsx
+   // ✅ src/components/LanguageSwitcher.tsx
+   // ✅ src/app/search/SearchPageContent.tsx
+   // ✅ src/components/MainLayout.tsx
+   // ✅ src/components/PageContent.tsx
+   ```
+
+4. **⚡ Next.js 15 兼容性更新**:
+   ```typescript
+   // ✅ 添加 Suspense 边界 - Next.js 15 要求
+   function AuthErrorAlert() {
+     return (
+       <Suspense fallback={null}>
+         <AuthErrorAlertContent />
+       </Suspense>
+     )
+   }
+   
+   // ✅ Google Identity Services 类型定义
+   interface GoogleCredentialResponse {
+     credential: string
+   }
+   ```
+
+#### 🚀 **修复效果**:
+- ✅ **本地构建**: 成功通过，构建时间 ~20秒
+- ✅ **类型检查**: 所有 TypeScript 错误已修复  
+- ✅ **Vercel 兼容**: 配置了环境特定的构建策略
+- ✅ **字体加载**: 移除网络依赖，使用稳定的系统字体
+- ✅ **性能优化**: 在不同环境使用不同的压缩策略
+
+#### 📋 **涉及的文件**:
+- ✅ `next.config.ts` - webpack 和构建配置优化
+- ✅ `src/app/layout.tsx` - 字体加载策略修改
+- ✅ `src/components/AuthErrorAlert.tsx` - 添加 Suspense 边界
+- ✅ `src/components/LanguageSwitcher.tsx` - 添加 Suspense 边界
+- ✅ `src/hooks/useGoogleLogin.ts` - TypeScript 类型定义
+- ✅ `src/app/proxy-test/page.tsx` - TypeScript 错误修复
+- ✅ `src/app/search/SearchPageContent.tsx` - 组件接口修复
+- ✅ `src/components/MainLayout.tsx` - 移除不支持的属性
+- ✅ `src/components/PageContent.tsx` - 搜索功能重构
+
+---
+
 ### 🎨 网站Logo更新 - 应用新的SVG图标 (2025-01-23)
 
 #### 🎯 **更新背景**:
