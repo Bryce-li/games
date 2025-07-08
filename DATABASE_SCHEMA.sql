@@ -16,7 +16,7 @@ CREATE TABLE users (
 CREATE TABLE user_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    session_token VARCHAR(255) UNIQUE NOT NULL,
+    session_token TEXT UNIQUE NOT NULL,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     ip_address INET,
     user_agent TEXT,
