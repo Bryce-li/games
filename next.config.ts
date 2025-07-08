@@ -11,15 +11,22 @@ const nextConfig: NextConfig = {
         // 在生产环境中配置压缩策略
         if (!dev && !isServer) {
             if (isVercel) {
-                // Vercel 环境中使用更保守的压缩配置
+                // Vercel 环境中完全禁用 webpack minify 插件，防止构造函数错误
                 config.optimization = {
                     ...config.optimization,
-                    minimize: true,
-                    minimizer: [
-                        // 只使用 SWC minifier，避免使用可能有问题的 webpack minimizer
-                        '...',
-                    ],
+                    minimize: false, // 禁用 webpack minify 插件
                 };
+                
+                // 移除可能有问题的 minify 插件
+                if (config.optimization.minimizer) {
+                    config.optimization.minimizer = config.optimization.minimizer.filter(
+                        (plugin: any) => {
+                            // 过滤掉webpack的minify插件，保留其他插件
+                            const pluginName = plugin.constructor?.name || '';
+                            return !pluginName.includes('Minify') && !pluginName.includes('TerserPlugin');
+                        }
+                    );
+                }
             } else {
                 // 本地环境禁用压缩以加快构建速度
                 config.optimization = {
