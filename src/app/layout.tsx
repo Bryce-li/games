@@ -1,20 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { I18nProvider } from "../components/I18nProvider";
 import { AuthProvider } from "../components/auth/AuthProvider";
 import { ThemeProvider } from "next-themes";
-
-const geistSans = Geist({
-    subsets: ["latin"],
-    variable: "--font-geist-sans",
-});
-
-const geistMono = Geist_Mono({
-    subsets: ["latin"],
-    variable: "--font-geist-mono",
-});
 
 export const metadata: Metadata = {
     title: "MiniPlayGame",
@@ -30,8 +19,13 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head />
             <body
-                className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+                className="font-sans antialiased"
                 suppressHydrationWarning
+                style={{
+                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    '--font-geist-sans': 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    '--font-geist-mono': 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
+                } as React.CSSProperties}
             >
                 {/* Google Analytics 脚本 - 在整个应用中生效 */}
                 <Script

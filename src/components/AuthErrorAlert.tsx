@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { X, AlertCircle, Wifi, Settings, ExternalLink } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -69,7 +69,7 @@ const ERROR_MESSAGES = {
   }
 }
 
-export function AuthErrorAlert() {
+function AuthErrorAlertContent() {
   const [isVisible, setIsVisible] = useState(false)
   const [errorInfo, setErrorInfo] = useState<typeof ERROR_MESSAGES[keyof typeof ERROR_MESSAGES] | null>(null)
   const searchParams = useSearchParams()
@@ -168,5 +168,13 @@ export function AuthErrorAlert() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export function AuthErrorAlert() {
+  return (
+    <Suspense fallback={null}>
+      <AuthErrorAlertContent />
+    </Suspense>
   )
 } 

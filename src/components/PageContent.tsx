@@ -17,13 +17,6 @@ interface PageContentProps {
 
 export function PageContent({ newGames, homepageCategoryData, heroGames }: PageContentProps) {
   const { t } = useTranslation()
-  const [searchQuery, setSearchQuery] = useState("")
-
-  // 处理搜索查询
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    console.log("首页搜索查询:", query)
-  }
 
   // 使用useMemo优化精选游戏的计算
   const featuredGames = useMemo(() => {
@@ -68,7 +61,7 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
       {/* 错误提示组件 */}
       <AuthErrorAlert />
       
-      <MainLayout onSearch={handleSearch}>
+      <MainLayout>
         {/* 主要内容 */}
         <div className="container mx-auto px-4 py-8">
           {/* Hero 轮播区域 */}
@@ -100,19 +93,6 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
               />
             ))}
           </div>
-
-          {/* 搜索结果 (如果有搜索查询) */}
-          {searchQuery && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Search Results for "{searchQuery}"
-              </h2>
-              <div className="text-gray-600 dark:text-gray-400">
-                {/* 这里可以添加搜索结果组件 */}
-                Searching for games matching "{searchQuery}"...
-              </div>
-            </div>
-          )}
         </div>
 
         {/* 页脚 */}

@@ -9,14 +9,20 @@ interface TestResult {
   status: 'pending' | 'success' | 'error'
   message: string
   duration?: number
-  details?: any
+  details?: Record<string, unknown>
 }
 
 export default function ProxyTestPage() {
   const [tests, setTests] = useState<TestResult[]>([])
   const [isRunning, setIsRunning] = useState(false)
 
-  const updateTest = (name: string, status: TestResult['status'], message: string, duration?: number, details?: any) => {
+  const updateTest = (
+    name: string, 
+    status: TestResult['status'], 
+    message: string, 
+    duration?: number, 
+    details?: Record<string, unknown>
+  ) => {
     setTests(prev => {
       const existing = prev.find(t => t.name === name)
       if (existing) {

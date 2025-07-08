@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
@@ -17,7 +18,7 @@ const languages = [
   { code: 'en', label: 'English' }
 ];
 
-export default function LanguageSwitcher() {
+function LanguageSwitcherContent() {
   const { i18n } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -73,5 +74,17 @@ export default function LanguageSwitcher() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export default function LanguageSwitcher() {
+  return (
+    <Suspense fallback={
+      <Button variant="outline" size="sm" className="w-[120px]" disabled>
+        <Languages className="h-4 w-4" />
+      </Button>
+    }>
+      <LanguageSwitcherContent />
+    </Suspense>
   );
 } 

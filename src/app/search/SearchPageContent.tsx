@@ -66,17 +66,13 @@ export function SearchPageContent({ query: initialQuery, category: initialCatego
     performSearch();
   }, [searchQuery, selectedCategory]);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
   const handleCategoryFilter = (category: string) => {
     setSelectedCategory(category === selectedCategory ? '' : category);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header onSearch={handleSearch} />
+      <Header />
       
       <main className="container mx-auto px-4 py-8 pt-24">
         {/* 搜索结果标题 */}

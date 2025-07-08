@@ -6,11 +6,10 @@ import { Sidebar } from './Sidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  onSearch?: (query: string) => void;
   className?: string;
 }
 
-export function MainLayout({ children, onSearch, className = "" }: MainLayoutProps) {
+export function MainLayout({ children, className = "" }: MainLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -20,11 +19,7 @@ export function MainLayout({ children, onSearch, className = "" }: MainLayoutPro
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* 固定头部 */}
-      <Header 
-        onSearch={onSearch}
-        onToggleSidebar={toggleSidebar}
-        isSidebarCollapsed={isSidebarCollapsed}
-      />
+      <Header />
 
       {/* 主内容区域 */}
       <div className="flex pt-16"> {/* pt-16 为头部留出空间 */}

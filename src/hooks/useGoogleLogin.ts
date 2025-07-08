@@ -2,10 +2,31 @@
 
 import { useEffect, useState, useCallback } from 'react'
 
+// Google Identity Services 的类型定义
+interface GoogleCredentialResponse {
+  credential: string
+}
+
+interface GoogleNotification {
+  isNotDisplayed(): boolean
+  isDismissedMoment(): boolean
+  getNotDisplayedReason(): string
+  getDismissedReason(): string
+}
+
+interface GoogleAccounts {
+  id: {
+    initialize(config: { client_id: string; callback: (response: GoogleCredentialResponse) => void }): void
+    prompt(callback: (notification: GoogleNotification) => void): void
+  }
+}
+
 // 声明 window.google 对象，因为它是从外部脚本动态加载的
 declare global {
   interface Window {
-    google: any;
+    google?: {
+      accounts?: GoogleAccounts
+    }
   }
 }
 
@@ -17,7 +38,7 @@ export function useGoogleLogin() {
   const [isInitialized, setIsInitialized] = useState(false)
 
   // 处理从 Google 返回的凭证的回调函数
-  const handleCredentialResponse = useCallback(async (response: any) => {
+  const handleCredentialResponse = useCallback(async (response: GoogleCredentialResponse) => {
     // setIsLoading is already true from triggerLogin
     console.log("接收到 Google 凭证，正在发送到后端验证...")
 
@@ -89,7 +110,7 @@ export function useGoogleLogin() {
       fallbackToRedirect()
     }, 8000)
 
-    window.google.accounts.id.prompt((notification: any) => {
+    window.google?.accounts?.id.prompt((notification: GoogleNotification) => {
       // 只要GSI有任何回调（无论成功或失败），就说明它没有完全卡死，我们可以清除超时
       clearTimeout(timeoutId) 
 
@@ -110,7 +131,7 @@ export function useGoogleLogin() {
         }
       }
     })
-  }, [isInitialized, isLoading, handleCredentialResponse])
+  }, [isInitialized, isLoading])
 
   return { triggerLogin, isLoading }
 } 
