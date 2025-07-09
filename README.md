@@ -76,6 +76,98 @@ src/
 
 ## 🔧 最新错误修复和更新
 
+### 🚨 **终极修复** - Vercel 构建失败：彻底禁用webpack压缩插件 (2025-01-07)
+
+#### 🎯 **问题升级**:
+之前的修复方案仍然无法解决 Vercel 构建错误，错误依然是：
+```
+HookWebpackError: _webpack.WebpackError is not a constructor
+TypeError: _webpack.WebpackError is not a constructor
+at buildError (/vercel/path0/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:24:16)
+```
+
+#### ✅ **终极解决方案**:
+
+1. **🔧 彻底重写 webpack 配置**:
+   ```typescript
+   // ✅ next.config.ts - 完全禁用压缩插件
+   webpack: (config, { dev, isServer, webpack }) => {
+     const isVercel = process.env.VERCEL === '1';
+     
+     if (!dev && !isServer) {
+       if (isVercel) {
+         // Vercel 环境中完全重写优化配置，避免构造函数错误
+         config.optimization = {
+           ...config.optimization,
+           minimize: false, // 完全禁用压缩
+           minimizer: [], // 清空所有压缩器
+           splitChunks: false, // 禁用代码分割
+           runtimeChunk: false, // 禁用运行时代码分割
+           sideEffects: false, // 禁用副作用检测
+           usedExports: false, // 禁用 tree shaking
+           concatenateModules: false, // 禁用模块连接
+           mangleExports: false, // 禁用导出名称压缩
+         };
+         
+         // 完全清空插件列表中的压缩相关插件
+         if (config.plugins) {
+           config.plugins = config.plugins.filter((plugin) => {
+             if (!plugin || !plugin.constructor) return true;
+             const pluginName = plugin.constructor.name || '';
+             const isMinifyPlugin = pluginName.includes('Minify') || 
+                                  pluginName.includes('TerserPlugin') ||
+                                  pluginName.includes('CompressionPlugin') ||
+                                  pluginName.includes('OptimizeCssAssetsPlugin') ||
+                                  pluginName.includes('CssMinimizerPlugin');
+             return !isMinifyPlugin;
+           });
+         }
+       }
+     }
+     return config;
+   }
+   ```
+
+2. **🌐 Vercel 配置文件更新**:
+   ```json
+   // ✅ vercel.json - 添加构建环境变量
+   {
+     "buildCommand": "npm run build",
+     "env": {
+       "DISABLE_WEBPACK_MINIFY": "1",
+       "WEBPACK_MINIFY_DISABLED": "true",
+       "NODE_OPTIONS": "--max-old-space-size=4096"
+     },
+     "build": {
+       "env": {
+         "DISABLE_WEBPACK_MINIFY": "1",
+         "WEBPACK_MINIFY_DISABLED": "true"
+       }
+     }
+   }
+   ```
+
+3. **📦 构建脚本优化**:
+   ```json
+   // ✅ package.json - 添加环境变量到构建脚本
+   "scripts": {
+     "build": "cross-env DISABLE_WEBPACK_MINIFY=1 WEBPACK_MINIFY_DISABLED=true next build"
+   }
+   ```
+
+#### 🚀 **修复策略**:
+- **🎯 核心思路**: 完全禁用 webpack 的压缩插件，避免构造函数错误
+- **⚡ 性能权衡**: 牺牲压缩优化，换取构建稳定性
+- **🔄 环境区分**: Vercel 环境使用保守策略，本地环境正常开发
+- **🛡️ 多层保护**: 配置文件、环境变量、构建脚本三重保护
+
+#### 📋 **涉及的文件**:
+- ✅ `next.config.ts` - 完全重写 webpack 配置
+- ✅ `vercel.json` - 添加构建环境变量配置
+- ✅ `package.json` - 修改构建脚本
+
+---
+
 ### 🚨 Vercel 构建失败修复 - Webpack 兼容性问题 (2025-01-07)
 
 #### 🎯 **问题背景**:
