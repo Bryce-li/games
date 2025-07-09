@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:proxy": "cross-env HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=http://127.0.0.1:7890 next dev",
-    "build": "cross-env DISABLE_WEBPACK_MINIFY=1 WEBPACK_MINIFY_DISABLED=true next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:init": "node scripts/init-database-direct.js",
