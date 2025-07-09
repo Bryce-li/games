@@ -3,7 +3,18 @@ import { NextRequest, NextResponse } from 'next/server'
 // Google OAuth配置
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/auth/google/callback'
+
+function getGoogleRedirectUri() {
+  if (process.env.GOOGLE_REDIRECT_URI) {
+    return process.env.GOOGLE_REDIRECT_URI;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/google/callback`;
+  }
+  return 'http://localhost:3000/api/auth/google/callback';
+}
+
+const GOOGLE_REDIRECT_URI = getGoogleRedirectUri()
 
 // 生成Google OAuth授权URL
 export async function GET() {
