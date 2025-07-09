@@ -1,5 +1,24 @@
 {
   "regions": ["hkg1"],
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "DISABLE_WEBPACK_MINIFY": "1",
+    "WEBPACK_MINIFY_DISABLED": "true",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  },
+  "build": {
+    "env": {
+      "DISABLE_WEBPACK_MINIFY": "1",
+      "WEBPACK_MINIFY_DISABLED": "true"
+    }
+  },
+  "functions": {
+    "app/**/*.js": {
+      "maxDuration": 60
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
