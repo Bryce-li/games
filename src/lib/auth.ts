@@ -178,12 +178,12 @@ export function setSessionCookie(token: string) {
     expires,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
+    sameSite: 'none' as const,
     path: '/'
   }
 }
 
-// 清除会话cookie的配置
+// 清除会話cookie的配置
 export function clearSessionCookie() {
   return {
     name: SESSION_COOKIE_NAME,
@@ -191,7 +191,7 @@ export function clearSessionCookie() {
     expires: new Date(0),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
+    sameSite: 'none' as const,
     path: '/'
   }
 }
