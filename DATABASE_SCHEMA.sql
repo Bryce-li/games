@@ -12,10 +12,10 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 用户会话表 - 存储登录会话信息
+-- 用户会话表 - 存储登录会话信息，确保每个用户只有一条会话记录
 CREATE TABLE user_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE, -- 确保每个用户ID是唯一的
     session_token TEXT UNIQUE NOT NULL,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     ip_address INET,
@@ -27,9 +27,9 @@ CREATE TABLE user_sessions (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_google_id ON users(google_id);
 CREATE INDEX idx_user_sessions_token ON user_sessions(session_token);
-CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
+-- 索引已被 UNIQUE(user_id) 约束隐式创建，无需重复定义
+-- CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id); 
 CREATE INDEX idx_user_sessions_expires ON user_sessions(expires_at);
-
 -- 设置管理员账号 (请将 'your-email@gmail.com' 替换为你的实际Google邮箱)
 -- 注意：这个语句需要在用户首次通过Google登录后执行
 -- UPDATE users SET role = 'admin' WHERE email = 'your-email@gmail.com';

@@ -2432,3 +2432,165 @@ src/
 - 重新测试Excel上传功能完整流程
 - 验证分类和标签数据处理准确性
 - 完善错误处理和用户反馈机制
+
+## 📝 **2024年更新日志**
+
+### 🔧 **2024年12月 - 头部导航栏和分类命名优化**
+
+#### **问题修复**:
+
+1. **✅ 头部导航栏完善**:
+   - 添加了左侧的侧边栏切换按钮
+   - 优化了布局，让两边的组件完全靠边，提升视觉效果
+   - 修复了 `MainLayout` 和 `Header` 组件之间的状态传递
+   - 新增了 `HeaderProps` 接口，支持侧边栏控制
+
+2. **✅ 游戏分类命名统一**:
+   - **问题**: 项目中多处分类标题定义不一致，有些带"Games"后缀，有些不带
+   - **解决方案**: 统一使用基础分类名（如"Action", "Adventure"），在显示时智能添加"Games"后缀
+   - **修改文件**:
+     - `src/app/games/category/[slug]/CategoryPageContent.tsx`
+     - `src/app/games/category/[slug]/page.tsx`
+   - **逻辑优化**: 特殊分类（如"Trending Now", ".io"）保持原命名，普通分类自动添加"Games"后缀
+
+#### **技术改进**:
+
+```typescript
+// 新增 Header 组件接口
+interface HeaderProps {
+  onToggleSidebar?: () => void
+  isSidebarCollapsed?: boolean
+}
+
+// 优化分类标题生成逻辑
+const pageTitle = (() => {
+  const baseTitle = categoryTitles[categorySlug];
+  if (baseTitle) {
+    // 特殊分类保持原样，普通分类添加"Games"后缀
+    if (baseTitle.includes('Games') || baseTitle === 'Trending Now' || baseTitle === '.io') {
+      return baseTitle;
+    }
+    return `${baseTitle} Games`;
+  }
+  return `${categorySlug} Games`;
+})();
+```
+
+#### **用户体验提升**:
+- 🎯 **导航一致性**: 侧边栏切换按钮让用户可以自由控制界面布局
+- 🎯 **命名规范性**: 统一的分类命名提升了用户认知一致性
+- 🎯 **视觉优化**: 头部两边组件完全靠边，增强了视觉平衡感
+
+---
+
+### 🌐 **2024年12月 - 分类标题国际化优化**
+
+#### **问题识别**:
+
+1. **分类命名不一致**: 项目中分类标题有些带"Games"后缀有些不带，导致用户体验混乱
+2. **国际化不完整**: 带"Games"后缀的分类无法完全国际化，部分内容仍为英文
+3. **维护困难**: 多处硬编码的分类标题映射，修改时需要同步多个文件
+
+#### **解决方案**: 
+
+**🔧 创建统一的国际化工具系统**:
+
+1. **新增国际化工具函数**:
+   ```typescript
+   // src/lib/i18n/utils.ts
+   export function getCategoryFullTitle(t: TFunction, categoryKey: string, fallbackTitle?: string)
+   export function getCategoryBaseName(t: TFunction, categoryKey: string, fallbackTitle?: string)
+   export function generateCategoryTitle(t: TFunction, categoryKey: string, options: {...})
+   ```
+
+2. **优化国际化文件结构**:
+   ```json
+   // 英文和中文国际化文件新增
+   "categories": {
+     "gamesTitle": "Games" | "游戏",  // 可单独国际化的"Games"后缀
+     "featured": "Featured" | "精选",
+     "new": "New" | "新",
+     // ... 其他分类名称
+   }
+   ```
+
+3. **智能标题生成逻辑**:
+   - **分离处理**: 分类名和"Games"后缀分开处理，独立国际化
+   - **特殊分类支持**: 对"Trending Now"、".io"等特殊分类使用专门逻辑
+   - **灵活配置**: 支持选择是否添加"Games"后缀
+
+#### **技术实现**:
+
+```typescript
+// 使用示例：智能生成完全国际化的分类标题
+const title = getCategoryFullTitle(t, "action")  
+// 英文: "Action Games"
+// 中文: "动作游戏"
+
+// 特殊分类自动处理
+const trending = getCategoryFullTitle(t, "trending")
+// 英文: "Trending Now" (不添加Games)
+// 中文: "热门趋势"
+```
+
+#### **文件修改清单**:
+
+- ✅ `src/lib/i18n/locales/en.json` - 新增分离式分类翻译
+- ✅ `src/lib/i18n/locales/zh.json` - 新增分离式分类翻译
+- ✅ `src/lib/i18n/utils.ts` - 新增国际化工具函数
+- ✅ `src/components/PageContent.tsx` - 使用新的国际化函数
+- ✅ `src/app/games/category/[slug]/CategoryPageContent.tsx` - 移除硬编码，使用国际化
+- ✅ `src/app/games/category/[slug]/page.tsx` - 优化元数据生成
+
+#### **用户体验提升**:
+
+- 🌐 **完整国际化**: 所有分类标题都能完全国际化，包括"Games"后缀
+- 🔄 **命名一致**: 统一的标题生成逻辑，消除了带/不带"Games"的不一致问题
+- 🛠️ **易维护**: 集中化的标题管理，修改时只需更新国际化文件
+- 🎯 **智能适配**: 自动处理特殊分类，如"Trending Now"保持原样
+
+---
+
+### 🔧 **2024年12月 - 头部导航栏和分类命名优化**
+
+// ... existing code ...
+
+### 🎯 分类键值国际化统一优化 (2025-01-23)
+
+#### ✨ **核心改进**:
+完成了数据库分类键值与国际化文件的完全统一，建立了一致的命名规范。
+
+#### 🔧 **主要修正**:
+
+1. **分类键值标准化**:
+   - ✅ **`dressUp` → `dress-up`**: 统一使用连字符命名
+   - ✅ **`towerDefense` → `tower-defense`**: 统一使用连字符命名
+   - ✅ **完整国际化支持**: 英文/中文完全支持
+   - ✅ **URL路由一致**: 分类页面路由与数据库键值完全匹配
+
+2. **国际化按钮优化**:
+   - ✅ **宽度统一**: 按钮和下拉框都使用 `w-[100px]` 统一宽度
+   - ✅ **文本适配**: 添加 `truncate` 类名处理长文本
+   - ✅ **图标优化**: 使用 `flex-shrink-0` 保持图标不变形
+   - ✅ **字体大小**: 统一使用 `text-sm` 确保一致性
+
+#### 📂 **修改文件清单**:
+- `src/lib/i18n/locales/en.json` - 英文分类键值更新
+- `src/lib/i18n/locales/zh.json` - 中文分类键值更新  
+- `src/lib/games-db.ts` - 静态分类映射更新
+- `src/components/LanguageSwitcher.tsx` - 按钮宽度统一
+- `scripts/update-category-keys.js` - 数据库修正脚本
+- `scripts/insert-categories.js` - 分类插入脚本更新
+- `scripts/sync-categories.js` - 分类同步脚本更新
+
+#### 🎯 **技术优势**:
+1. **命名一致性**: 分类键值在代码、数据库、URL中完全统一
+2. **国际化完整**: 分类名称支持完整的多语言切换
+3. **维护简化**: 统一的命名规范降低了维护复杂度
+4. **用户体验**: 界面元素宽度一致，视觉更协调
+
+#### ✅ **验证结果**:
+- 所有分类页面路由正常访问
+- 中英文切换显示正确
+- 数据库查询功能正常
+- 界面元素对齐一致

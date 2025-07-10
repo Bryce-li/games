@@ -7,6 +7,7 @@ import { AuthErrorAlert } from "./AuthErrorAlert"
 import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
 import { BaseGame, HeroGame, HomepageCategoryConfig } from "@/lib/games"
+import { getCategoryFullTitle } from "@/lib/i18n/utils"
 
 // 定义组件的props类型
 interface PageContentProps {
@@ -69,25 +70,25 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
 
           {/* 游戏分类列表 */}
           <div className="space-y-6">
-            {/* 精选游戏 */}
+            {/* 精选游戏 - 使用新的国际化函数 */}
             <HorizontalGamesList
-              title={t("categories.featured", "Featured Games")}
+              title={getCategoryFullTitle(t, "featured")}
               games={featuredGames}
               viewMoreHref="/games"
             />
 
-            {/* 新游戏 */}
+            {/* 新游戏 - 使用新的国际化函数 */}
             <HorizontalGamesList
-              title={t("categories.new", "New Games")}
+              title={getCategoryFullTitle(t, "new")}
               games={newGames}
               viewMoreHref="/games/category/new"
             />
 
-            {/* 动态渲染启用的分类游戏 */}
+            {/* 动态渲染启用的分类游戏 - 使用新的国际化函数 */}
             {Object.entries(homepageCategoryData).map(([categoryKey, categoryData]) => (
               <HorizontalGamesList
                 key={categoryKey}
-                title={t(`categories.${categoryKey}`, categoryData.config.title)}
+                title={getCategoryFullTitle(t, categoryKey, categoryData.config.title)}
                 games={categoryData.games}
                 viewMoreHref={`/games/category/${categoryKey}`}
               />

@@ -18,8 +18,11 @@ export function MainLayout({ children, className = "" }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* 固定头部 */}
-      <Header />
+      {/* 固定头部 - 传递侧边栏控制函数 */}
+      <Header 
+        onToggleSidebar={toggleSidebar}
+        isSidebarCollapsed={isSidebarCollapsed}
+      />
 
       {/* 主内容区域 */}
       <div className="flex pt-16"> {/* pt-16 为头部留出空间 */}

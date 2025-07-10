@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
-import { LogOut, UserCircle2 } from 'lucide-react'
-import type { User } from '@/lib/supabase/client'
+import { UserCircle2 } from 'lucide-react'
+import { useAuth } from './AuthProvider' // 导入 useAuth
 import { isAdmin } from '@/lib/auth-utils'
 import {
   DropdownMenu,
@@ -16,13 +16,16 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
-interface UserMenuProps {
-  user: User
-}
-
-export function UserMenu({ user }: UserMenuProps) {
+// 不再需要 props，因为我们直接从 context 获取 user
+export function UserMenu() {
+  const { user } = useAuth() // 从 AuthContext 获取权威的用户信息
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
+  // 如果没有用户信息（例如正在加载或未登录），不渲染任何内容
+  if (!user) {
+    return null
+  }
+  
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
@@ -71,12 +74,11 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        {/* 管理员功能 */}
+        {/* 管理员功能 - 使用来自 context 的 user 对象 */}
         {isAdmin(user) && (
           <>
             <DropdownMenuItem asChild>
-              <Link href="/admin/upload" className="cursor-pointer">
-                <span className="mr-2">📤</span>
+              <Link href="/data-upload" className="cursor-pointer">
                 Data Upload
               </Link>
             </DropdownMenuItem>
@@ -84,13 +86,12 @@ export function UserMenu({ user }: UserMenuProps) {
           </>
         )}
         
-        {/* 注销功能 */}
+        {/* 注销功能 - 移除图标 */}
         <DropdownMenuItem 
           onClick={handleLogout}
           disabled={isLoggingOut}
           className="cursor-pointer"
         >
-          <span className="mr-2">🚪</span>
           {isLoggingOut ? 'Signing out...' : 'Sign out'}
         </DropdownMenuItem>
       </DropdownMenuContent>

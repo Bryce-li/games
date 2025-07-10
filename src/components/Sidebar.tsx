@@ -7,6 +7,11 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from "./auth/AuthProvider";
 import { isAdmin } from "@/lib/auth-utils";
 import { Home, Gamepad2, Upload, Settings, BarChart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+} from "@/components/ui/sidebar-menu";
 
 interface NavItemProps {
   icon: string;
@@ -186,7 +191,7 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
           />
           <NavItem 
             icon="👗" 
-            label={t("categories.dressUp", "Dress Up")} 
+            label={t("categories.dress-up", "Dress Up")} 
             href="/games/category/dress-up"
             active={pathname === "/games/category/dress-up"}
           />
@@ -276,7 +281,7 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
           />
           <NavItem 
             icon="🗼" 
-            label={t("categories.towerDefense", "Tower Defense")} 
+            label={t("categories.tower-defense", "Tower Defense")} 
             href="/games/category/tower-defense"
             active={pathname === "/games/category/tower-defense"}
           />

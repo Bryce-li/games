@@ -1,61 +1,69 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { MainLayout } from '@/components/MainLayout';
-import { CategoryPageContent } from './CategoryPageContent';
+import { Metadata } from 'next'
+import { CategoryPageContent } from './CategoryPageContent'
 
 interface CategoryPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-  searchParams?: Promise<{
-    tag?: string;
-  }>;
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ tag?: string }>
 }
 
-// 分类标题映射
-const categoryTitles: Record<string, string> = {
-  // 主要导航
-  'new': 'New Games',
-  'trending': 'Trending Now', 
-  'updated': 'Updated Games',
-  'multiplayer': 'Multiplayer Games',
-  'two-player': '2 Player Games',
-  
-  // 游戏分类
-  'action': 'Action Games',
-  'adventure': 'Adventure Games',
-  'basketball': 'Basketball Games',
-  'beauty': 'Beauty Games',
-  'bike': 'Bike Games',
-  'car': 'Car Games',
-  'card': 'Card Games',
-  'casual': 'Casual Games',
-  'clicker': 'Clicker Games',
-  'controller': 'Controller Games',
-  'dress-up': 'Dress Up Games',
-  'driving': 'Driving Games',
-  'escape': 'Escape Games',
-  'flash': 'Flash Games',
-  'fps': 'FPS Games',
-  'horror': 'Horror Games',
-  'io': '.io Games',
-  'mahjong': 'Mahjong Games',
-  'minecraft': 'Minecraft Games',
-  'pool': 'Pool Games',
-  'puzzle': 'Puzzle Games',
-  'shooting': 'Shooting Games',
-  'soccer': 'Soccer Games',
-  'sports': 'Sports Games',
-  'stickman': 'Stickman Games',
-  'tower-defense': 'Tower Defense Games',
-};
+// 服务端元数据生成的简化分类映射
+// 由于在服务端无法使用 useTranslation，我们使用静态映射
+const getCategoryTitleForMeta = (categorySlug: string): string => {
+  const specialCategories: Record<string, string> = {
+    'new': 'New Games',
+    'trending': 'Trending Now',
+    'updated': 'Updated Games',
+    'multiplayer': 'Multiplayer Games',
+    'two-player': '2 Player Games',
+    'featured': 'Featured Games'
+  }
+
+  if (specialCategories[categorySlug]) {
+    return specialCategories[categorySlug]
+  }
+
+  // 普通分类的映射
+  const categoryNames: Record<string, string> = {
+    'action': 'Action',
+    'adventure': 'Adventure',
+    'basketball': 'Basketball',
+    'beauty': 'Beauty',
+    'bike': 'Bike',
+    'car': 'Car',
+    'card': 'Card',
+    'casual': 'Casual',
+    'clicker': 'Clicker',
+    'controller': 'Controller',
+    'dress-up': 'Dress Up',
+    'driving': 'Driving',
+    'escape': 'Escape',
+    'flash': 'Flash',
+    'fps': 'FPS',
+    'horror': 'Horror',
+    'io': '.io',
+    'mahjong': 'Mahjong',
+    'minecraft': 'Minecraft',
+    'pool': 'Pool',
+    'puzzle': 'Puzzle',
+    'shooting': 'Shooting',
+    'soccer': 'Soccer',
+    'sports': 'Sports',
+    'stickman': 'Stickman',
+    'tower-defense': 'Tower Defense',
+  }
+
+  const categoryName = categoryNames[categorySlug] || categorySlug
+  return `${categoryName} Games`
+}
 
 export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const categorySlug = resolvedParams.slug;
   const tag = resolvedSearchParams?.tag;
-  const categoryTitle = categoryTitles[categorySlug] || `${categorySlug} Games`;
+  
+  // 使用简化的标题生成函数
+  const categoryTitle = getCategoryTitleForMeta(categorySlug);
   
   const title = tag 
     ? `${tag} Games - ${categoryTitle} - MiniPlayGame`
@@ -76,24 +84,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const resolvedSearchParams = await searchParams;
   
   return (
-    <MainLayout>
-      <Suspense fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {Array(15).fill(0).map((_, i) => (
-                <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      }>
-        <CategoryPageContent 
-          categorySlug={resolvedParams.slug}
-          tag={resolvedSearchParams?.tag}
-        />
-      </Suspense>
-    </MainLayout>
+    <CategoryPageContent 
+      categorySlug={resolvedParams.slug}
+      tag={resolvedSearchParams?.tag}
+    />
   );
 } 

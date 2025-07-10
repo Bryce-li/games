@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js')
+import { createClient } from '@supabase/supabase-js'
 require('dotenv').config({ path: '.env.local' })
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -26,7 +26,7 @@ const categoriesData = [
   { category_key: 'card', category_title: 'Card Games', show_on_homepage: false, display_order: 11, max_games: 6 },
   { category_key: 'clicker', category_title: 'Clicker Games', show_on_homepage: false, display_order: 12, max_games: 6 },
   { category_key: 'controller', category_title: 'Controller Games', show_on_homepage: false, display_order: 13, max_games: 6 },
-  { category_key: 'dressUp', category_title: 'Dress Up Games', show_on_homepage: false, display_order: 14, max_games: 6 },
+  { category_key: 'dress-up', category_title: 'Dress Up Games', show_on_homepage: false, display_order: 14, max_games: 6 },
   { category_key: 'driving', category_title: 'Driving Games', show_on_homepage: false, display_order: 15, max_games: 6 },
   { category_key: 'escape', category_title: 'Escape Games', show_on_homepage: false, display_order: 16, max_games: 6 },
   { category_key: 'flash', category_title: 'Flash Games', show_on_homepage: false, display_order: 17, max_games: 6 },
@@ -38,7 +38,7 @@ const categoriesData = [
   { category_key: 'pool', category_title: 'Pool Games', show_on_homepage: false, display_order: 23, max_games: 6 },
   { category_key: 'soccer', category_title: 'Soccer Games', show_on_homepage: false, display_order: 24, max_games: 6 },
   { category_key: 'stickman', category_title: 'Stickman Games', show_on_homepage: false, display_order: 25, max_games: 6 },
-  { category_key: 'towerDefense', category_title: 'Tower Defense Games', show_on_homepage: false, display_order: 26, max_games: 6 }
+  { category_key: 'tower-defense', category_title: 'Tower Defense Games', show_on_homepage: false, display_order: 26, max_games: 6 }
 ]
 
 async function insertCategories() {

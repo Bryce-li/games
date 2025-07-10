@@ -83,46 +83,52 @@ export async function createOrUpdateUser(googleUser: GoogleUser): Promise<User |
   }
 }
 
-// 创建用户会话
+// 创建或更新用户会话
 export async function createUserSession(
-  userId: string, 
-  ipAddress?: string, 
+  userId: string,
+  ipAddress?: string,
   userAgent?: string
 ): Promise<UserSession | null> {
   try {
-    // 生成JWT token
+    // 生成新的JWT token
     const sessionToken = sign(
       { userId, timestamp: Date.now() },
       JWT_SECRET,
       { expiresIn: '30d' } // 30天过期
-    )
+    );
 
-    // 计算过期时间
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 30)
+    // 计算新的过期时间
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
 
-    // 在数据库中创建会话记录 - 【重要】使用 admin 客户端
+    // 使用 upsert 更新或创建会话
+    // 如果 user_id 已存在，则更新该行记录；否则，插入新行。
     const { data: session, error } = await supabaseAdmin
       .from('user_sessions')
-      .insert({
-        user_id: userId,
-        session_token: sessionToken,
-        expires_at: expiresAt.toISOString(),
-        ip_address: ipAddress,
-        user_agent: userAgent
-      })
+      .upsert(
+        {
+          user_id: userId, // 冲突检查的目标列
+          session_token: sessionToken,
+          expires_at: expiresAt.toISOString(),
+          ip_address: ipAddress,
+          user_agent: userAgent,
+        },
+        {
+          onConflict: 'user_id', // 当 user_id 发生冲突时，执行更新
+        }
+      )
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('创建会话失败:', error)
-      return null
+      console.error('创建或更新会话失败:', error);
+      return null;
     }
 
-    return session
+    return session;
   } catch (error) {
-    console.error('会话创建过程失败:', error)
-    return null
+    console.error('会话创建或更新过程失败:', error);
+    return null;
   }
 }
 

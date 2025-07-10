@@ -56,18 +56,18 @@ function LanguageSwitcherContent() {
         <Button 
           variant="outline" 
           size="sm"
-          className="w-[120px] flex justify-between items-center"
+          className="w-[100px] flex justify-between items-center text-sm"
         >
-          <span>{getCurrentLanguageLabel()}</span>
-          <Languages className="h-4 w-4" />
+          <span className="truncate">{getCurrentLanguageLabel()}</span>
+          <Languages className="h-4 w-4 ml-1 flex-shrink-0" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[120px]">
+      <DropdownMenuContent align="end" className="w-[100px] min-w-[100px]">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
-            className="justify-center"
+            className="justify-center text-sm"
           >
             {lang.label}
           </DropdownMenuItem>
@@ -80,7 +80,7 @@ function LanguageSwitcherContent() {
 export default function LanguageSwitcher() {
   return (
     <Suspense fallback={
-      <Button variant="outline" size="sm" className="w-[120px]" disabled>
+      <Button variant="outline" size="sm" className="w-[100px]" disabled>
         <Languages className="h-4 w-4" />
       </Button>
     }>

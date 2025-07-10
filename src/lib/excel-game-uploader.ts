@@ -563,22 +563,22 @@ export class ExcelGameDataUploader {
    */
   private generateCategoryTitle(categoryKey: string): string {
     // 将category_key转换为友好的显示标题
-    const titleMap: Record<string, string> = {
-      'art': 'Art Games',
-      'match-3': 'Match-3 Games',
-      'simulation': 'Simulation Games',
-      'strategy': 'Strategy Games',
-      'role-playing': 'Role Playing Games',
-      'tower-defense': 'Tower Defense Games',
-      'racing': 'Racing Games',
-      'fighting': 'Fighting Games',
-      'platformer': 'Platform Games',
-      'arcade': 'Arcade Games'
-    };
+    // const titleMap: Record<string, string> = {
+    //   'art': 'Art Games',
+    //   'match-3': 'Match-3 Games',
+    //   'simulation': 'Simulation Games',
+    //   'strategy': 'Strategy Games',
+    //   'role-playing': 'Role Playing Games',
+    //   'tower-defense': 'Tower Defense Games',
+    //   'racing': 'Racing Games',
+    //   'fighting': 'Fighting Games',
+    //   'platformer': 'Platform Games',
+    //   'arcade': 'Arcade Games'
+    // };
 
-    if (titleMap[categoryKey]) {
-      return titleMap[categoryKey];
-    }
+    // if (titleMap[categoryKey]) {
+    //   return titleMap[categoryKey];
+    // }
 
     // 自动生成标题：首字母大写 + " Games"
     const words = categoryKey.split('-');

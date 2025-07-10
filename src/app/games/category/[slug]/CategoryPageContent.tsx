@@ -4,49 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameCard } from '@/components/GameCard';
 import { getAllGames, getGamesByCategory, BaseGame } from '@/lib/games';
+import { getCategoryFullTitle } from '@/lib/i18n/utils';
 
 interface CategoryPageContentProps {
   categorySlug: string;
   tag?: string;
 }
-
-// 分类标题映射
-const categoryTitles: Record<string, string> = {
-  // 主要导航
-  'new': 'New Games',
-  'trending': 'Trending Now', 
-  'updated': 'Updated Games',
-  'multiplayer': 'Multiplayer Games',
-  'two-player': '2 Player Games',
-  
-  // 游戏分类
-  'action': 'Action Games',
-  'adventure': 'Adventure Games',
-  'basketball': 'Basketball Games',
-  'beauty': 'Beauty Games',
-  'bike': 'Bike Games',
-  'car': 'Car Games',
-  'card': 'Card Games',
-  'casual': 'Casual Games',
-  'clicker': 'Clicker Games',
-  'controller': 'Controller Games',
-  'dress-up': 'Dress Up Games',
-  'driving': 'Driving Games',
-  'escape': 'Escape Games',
-  'flash': 'Flash Games',
-  'fps': 'FPS Games',
-  'horror': 'Horror Games',
-  'io': '.io Games',
-  'mahjong': 'Mahjong Games',
-  'minecraft': 'Minecraft Games',
-  'pool': 'Pool Games',
-  'puzzle': 'Puzzle Games',
-  'shooting': 'Shooting Games',
-  'soccer': 'Soccer Games',
-  'sports': 'Sports Games',
-  'stickman': 'Stickman Games',
-  'tower-defense': 'Tower Defense Games',
-};
 
 export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentProps) {
   const { t } = useTranslation();
@@ -136,9 +99,10 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
     loadGames();
   }, [categorySlug, tag]);
 
+  // 使用新的国际化函数生成页面标题
   const pageTitle = tag 
-    ? `${tag} Games`
-    : categoryTitles[categorySlug] || `${categorySlug} Games`;
+    ? `${tag} ${t('categories.gamesTitle', 'Games')}`
+    : getCategoryFullTitle(t, categorySlug);
 
   if (loading) {
     return (
@@ -195,7 +159,7 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
             {tag 
-              ? `No games found with tag "${tag}" in ${categoryTitles[categorySlug] || categorySlug}`
+              ? `No games found with tag "${tag}" in ${getCategoryFullTitle(t, categorySlug)}`
               : `No games found in ${pageTitle}`
             }
           </p>

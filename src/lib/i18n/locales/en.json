@@ -19,6 +19,7 @@
     "mouseControls": "Mouse Controls",
     "keyboardControls": "Keyboard Controls",
     "gameControls": "Game Controls",
+    "games": "Games",
     "header": {
       "title": "MiniPlayGame"
     }
@@ -34,6 +35,9 @@
     "twoPlayer": "2 Player"
   },
   "categories": {
+    "gamesTitle": "Games",
+    "featured": "Featured",
+    "new": "New",
     "action": "Action",
     "adventure": "Adventure",
     "basketball": "Basketball",
@@ -44,7 +48,7 @@
     "casual": "Casual",
     "clicker": "Clicker",
     "controller": "Controller",
-    "dressUp": "Dress Up",
+    "dress-up": "Dress Up",
     "driving": "Driving",
     "escape": "Escape",
     "flash": "Flash",
@@ -59,7 +63,7 @@
     "soccer": "Soccer",
     "sports": "Sports",
     "stickman": "Stickman",
-    "towerDefense": "Tower Defense"
+    "tower-defense": "Tower Defense"
   },
   "home": {
     "welcome": "Welcome to MiniPlayGame!",

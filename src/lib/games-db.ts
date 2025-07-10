@@ -84,7 +84,7 @@ export const gameCategories = {
   casual: "Casual",
   clicker: "Clicker",
   controller: "Controller",
-  dressUp: "Dress Up",
+  "dress-up": "Dress Up",
   driving: "Driving",
   escape: "Escape",
   flash: "Flash",
@@ -99,7 +99,7 @@ export const gameCategories = {
   soccer: "Soccer",
   sports: "Sports",
   stickman: "Stickman",
-  towerDefense: "Tower Defense"
+  "tower-defense": "Tower Defense"
 } as const;
 
 /**
