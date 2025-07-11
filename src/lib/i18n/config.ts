@@ -41,8 +41,8 @@ i18n
       escapeValue: false,
     },
     
-    // 只在开发环境开启调试
-    debug: process.env.NODE_ENV === 'development' && isClient,
+    // 关闭调试模式
+    debug: false,
     
     react: {
       useSuspense: false, // 改为false以解决SSR问题
@@ -63,7 +63,6 @@ i18n
 // 只在客户端添加语言变化监听器
 if (isClient && i18n.isInitialized) {
   i18n.on('languageChanged', (lng) => {
-    console.log('Language changed to:', lng);
     if (document && document.documentElement) {
       document.documentElement.lang = lng; // 更新 HTML lang 属性
     }

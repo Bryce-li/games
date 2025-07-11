@@ -31,7 +31,6 @@ function detectProxyConfig(): ProxyConfig {
   
   // 检测常见代理端口 - 假设7890端口是活跃的
   const port = 7890
-  console.log(`检测到代理端口: ${port}`)
   return {
     enabled: true,
     host: '127.0.0.1',
@@ -48,7 +47,6 @@ export async function proxyFetch(
 ): Promise<Response> {
   
   const proxyConfig = detectProxyConfig()
-  console.log('代理配置:', proxyConfig)
   
   // 如果检测到代理，设置环境变量
   if (proxyConfig.enabled && proxyConfig.host && proxyConfig.port) {
@@ -63,8 +61,6 @@ export async function proxyFetch(
       process.env.HTTPS_PROXY = proxyUrl  
       process.env.https_proxy = proxyUrl
     }
-    
-    console.log(`设置代理: ${proxyUrl}`)
   }
   
   // 创建超时控制器
@@ -72,8 +68,6 @@ export async function proxyFetch(
   const timeoutId = setTimeout(() => controller.abort(), timeout)
   
   try {
-    console.log(`发送代理请求到: ${url}`)
-    
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
@@ -85,7 +79,6 @@ export async function proxyFetch(
     })
     
     clearTimeout(timeoutId)
-    console.log(`代理请求成功: ${url}, 状态: ${response.status}`)
     return response
     
   } catch (error) {
@@ -106,15 +99,13 @@ export async function retryProxyFetch(
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`代理请求尝试 ${attempt}/${maxRetries}: ${url}`)
       return await proxyFetch(url, options)
     } catch (error) {
       lastError = error as Error
-      console.error(`第${attempt}次代理请求失败:`, error)
+      console.error(`代理请求失败 (第${attempt}次):`, error)
       
       if (attempt < maxRetries) {
         const delay = baseDelay * attempt
-        console.log(`等待 ${delay}ms 后重试...`)
         await new Promise(resolve => setTimeout(resolve, delay))
       }
     }

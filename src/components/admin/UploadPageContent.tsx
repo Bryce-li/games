@@ -43,31 +43,9 @@ export function UploadPageContent() {
     setUploadResult(null);
 
     try {
-      // 暂时禁用上传功能，待后端API完善后再启用
-      alert('上传功能暂时不可用，请联系管理员');
-      
-      /* 原上传代码暂时注释
-      const uploader = new ExcelGameDataUploader();
-      
-      // 设置进度回调
-      uploader.onProgress = (progress: UploadProgress) => {
-        setProgress(progress);
-      };
-
-      // 设置日志回调
-      uploader.onLog = (level: string, message: string) => {
-        setLogs(prev => [...prev, `[${level.toUpperCase()}] ${message}`]);
-      };
-
-      const result = await uploader.uploadFromFile(file);
-      setUploadResult(result);
-
-      if (result.success) {
-        alert(`上传成功！成功导入 ${result.stats?.successCount || 0} 个游戏`);
-      } else {
-        alert(`上传失败：${result.error}`);
-      }
-      */
+      // TODO: 实现Excel文件上传功能
+      // 核心逻辑：文件解析 -> 数据验证 -> 批量导入 -> 进度反馈
+      alert('上传功能开发中，请联系管理员');
 
     } catch (error) {
       console.error('上传出错:', error);

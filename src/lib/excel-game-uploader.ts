@@ -1009,7 +1009,10 @@ export class ExcelGameDataUploader {
 
   private log(level: string, message: string) {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`);
+    // 只输出错误级别的日志到控制台
+    if (level === 'error') {
+      console.error(`[${timestamp}] [${level.toUpperCase()}] ${message}`);
+    }
   }
 
   private generateFinalReport(parseResult: ParseResult, preprocessResult: PreprocessResult, uploadResult: UploadResult, validationResult: { success: boolean; details?: unknown; recommendations?: string[]; error?: string }) {
