@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameCard } from '@/components/GameCard';
+import { MainLayout } from '@/components/MainLayout';
 import { getAllGames, getGamesByCategory, BaseGame } from '@/lib/games';
 import { getCategoryFullTitle } from '@/lib/i18n/utils';
 
@@ -106,65 +107,71 @@ export function CategoryPageContent({ categorySlug, tag }: CategoryPageContentPr
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {Array(15).fill(0).map((_, i) => (
-              <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-            ))}
+      <MainLayout>
+        <div className="w-full px-1 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {Array(15).fill(0).map((_, i) => (
+                <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Error Loading Games
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">{error}</p>
+      <MainLayout>
+        <div className="w-full px-1 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Error Loading Games
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">{error}</p>
+          </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* 页面标题 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {pageTitle}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {games.length} games found
-        </p>
-      </div>
-
-      {/* 游戏网格 */}
-      {games.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {games.map((game) => (
-            <GameCard key={game.id} game={game} showTags />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">🎮</div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            No Games Found
-          </h2>
+    <MainLayout>
+      <div className="w-full px-1 py-8">
+        {/* 页面标题 */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {pageTitle}
+          </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {tag 
-              ? `No games found with tag "${tag}" in ${getCategoryFullTitle(t, categorySlug)}`
-              : `No games found in ${pageTitle}`
-            }
+            {games.length} games found
           </p>
         </div>
-      )}
-    </div>
+
+        {/* 游戏网格 */}
+        {games.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {games.map((game) => (
+              <GameCard key={game.id} game={game} showTags />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🎮</div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              No Games Found
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              {tag 
+                ? `No games found with tag "${tag}" in ${getCategoryFullTitle(t, categorySlug)}`
+                : `No games found in ${pageTitle}`
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    </MainLayout>
   );
 } 

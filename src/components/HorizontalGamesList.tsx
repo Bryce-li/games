@@ -94,35 +94,38 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
 
   return (
     <section className="mb-4">
-      {/* 标题栏 */}
+      {/* 标题栏 - 调整布局让View More靠近分类名 */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* 分类名字体减小一半 */}
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+          {/* View More按钮靠近分类名 */}
           {viewMoreHref && (
             <Link
               href={viewMoreHref}
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium text-sm mr-4"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium text-sm"
             >
               View More
             </Link>
           )}
-          {/* 滚动控制按钮 */}
-          <div className="hidden md:flex items-center gap-1">
-            <button
-              onClick={scrollLeft}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={scrollRight}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-            </button>
-          </div>
+        </div>
+        
+        {/* 滚动控制按钮保持在右侧 */}
+        <div className="hidden md:flex items-center gap-1">
+          <button
+            onClick={scrollLeft}
+            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          </button>
+          <button
+            onClick={scrollRight}
+            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          </button>
         </div>
       </div>
 

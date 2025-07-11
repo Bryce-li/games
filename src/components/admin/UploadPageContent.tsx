@@ -1,540 +1,280 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Upload, 
-  FileSpreadsheet, 
-  CheckCircle, 
-  XCircle, 
-  RefreshCw, 
-  Database,
-  Settings,
-  BarChart3,
-  AlertTriangle
-} from 'lucide-react';
+// import { ExcelGameDataUploader } from '@/lib/excel-game-uploader';
 
-interface UploadConfig {
-  batchSize: number;
-  maxRetries: number;
-}
-
-interface DatabaseStats {
-  totalGames: number;
-  totalCategories: number;
-  totalTags: number;
-}
-
-interface ValidationDetails {
-  success: boolean;
-  details: {
-    games: {
-      expected: number;
-      processed: number;
-      errors: number;
-      status: string;
-    };
-    categories: {
-      expected: number;
-      processed: number;
-      errors: number;
-      status: string;
-    };
-    database: {
-      totalGames: number;
-      totalCategories: number;
-      totalTags: number;
-    };
-  };
-  recommendations: string[];
-}
-
-interface UploadResult {
-  success: boolean;
-  summary?: {
-    status: string;
-    duration: string;
-    totalProcessed: number;
-    totalErrors: number;
-    successRate: string;
-  };
-  details?: {
-    parsing: {
-      totalRows: number;
-      validRows: number;
-      updateRows: number;
-      estimatedGames: number;
-      estimatedCategories: number;
-      estimatedTags: number;
-    };
-    uploading: {
-      games: { processed: number; errors: number; skipped: number };
-      tags: { processed: number; errors: number };
-    };
-    validation: ValidationDetails;
-  };
-  recommendations?: string[];
-  error?: string;
-  errorDetails?: string;
+interface UploadProgress {
+  stage: string;
+  current: number;
+  total: number;
+  message: string;
 }
 
 export function UploadPageContent() {
-  // 状态管理
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
-  const [databaseStats, setDatabaseStats] = useState<DatabaseStats | null>(null);
-  
-  // 配置状态
-  const [config, setConfig] = useState<UploadConfig>({
-    batchSize: 10,
-    maxRetries: 3
-  });
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [uploadResult, setUploadResult] = useState<{
+    success?: boolean;
+    error?: string;
+    stats?: {
+      successCount?: number;
+      totalProcessed?: number;
+      errorCount?: number;
+      duplicateCount?: number;
+    };
+    errors?: Array<{ row: number; error: string }>;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 拖拽上传配置
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
-      setUploadResult(null);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'application/vnd.ms-excel': ['.xls']
-    },
-    maxSize: 10 * 1024 * 1024, // 10MB
-    multiple: false
-  });
-
-  // 获取数据库状态
-  const loadDatabaseStats = async () => {
-    try {
-      const response = await fetch('/api/upload-games');
-      if (response.ok) {
-        const data = await response.json();
-        setDatabaseStats(data.database);
-      }
-    } catch (error) {
-      console.error('Failed to load database stats:', error);
-    }
-  };
-
-  // 组件挂载时加载数据库状态
-  React.useEffect(() => {
-    loadDatabaseStats();
-  }, []);
-
-  // 处理文件上传
-  const handleUpload = async () => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
-    setUploadProgress(0);
+    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      alert('请选择Excel文件 (.xlsx 或 .xls)');
+      return;
+    }
+
+    setIsUploading(true);
+    setProgress(null);
+    setLogs([]);
     setUploadResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('batchSize', config.batchSize.toString());
-      formData.append('maxRetries', config.maxRetries.toString());
+      // 暂时禁用上传功能，待后端API完善后再启用
+      alert('上传功能暂时不可用，请联系管理员');
+      
+      /* 原上传代码暂时注释
+      const uploader = new ExcelGameDataUploader();
+      
+      // 设置进度回调
+      uploader.onProgress = (progress: UploadProgress) => {
+        setProgress(progress);
+      };
 
-      // 模拟进度更新
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) return prev;
-          return prev + Math.random() * 10;
-        });
-      }, 1000);
+      // 设置日志回调
+      uploader.onLog = (level: string, message: string) => {
+        setLogs(prev => [...prev, `[${level.toUpperCase()}] ${message}`]);
+      };
 
-      const response = await fetch('/api/upload-games', {
-        method: 'POST',
-        body: formData
-      });
+      const result = await uploader.uploadFromFile(file);
+      setUploadResult(result);
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setUploadResult({
-          success: true,
-          summary: result.result.summary,
-          details: result.result.details,
-          recommendations: result.result.recommendations
-        });
-        
-        // 刷新数据库状态
-        await loadDatabaseStats();
+      if (result.success) {
+        alert(`上传成功！成功导入 ${result.stats?.successCount || 0} 个游戏`);
       } else {
-        setUploadResult({
-          success: false,
-          error: result.error || 'Upload failed',
-          errorDetails: result.details || ''
-        });
+        alert(`上传失败：${result.error}`);
       }
+      */
 
     } catch (error) {
-      setUploadResult({
-        success: false,
-        error: 'Network error',
-        errorDetails: error instanceof Error ? error.message : 'Unknown error'
-      });
+      console.error('上传出错:', error);
+      alert(`上传出错：${error instanceof Error ? error.message : '未知错误'}`);
     } finally {
-      setUploading(false);
-      setTimeout(() => setUploadProgress(0), 2000);
+      setIsUploading(false);
+      setProgress(null);
+      
+      // 清空文件输入
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
-  // 重置上传状态
-  const resetUpload = () => {
-    setFile(null);
-    setUploadResult(null);
-    setUploadProgress(0);
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Excel Game Data Upload</h1>
-        <p className="text-gray-600">
-          Upload game data from Excel files with automated processing and validation
-        </p>
-      </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="w-full px-1 py-8 max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            游戏数据上传
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            上传Excel文件批量导入游戏数据到数据库
+          </p>
+        </div>
 
-      <Tabs defaultValue="upload" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="upload" className="flex items-center gap-2">
-            <Upload className="w-4 h-4" />
-            Upload
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            Settings
-          </TabsTrigger>
-          <TabsTrigger value="stats" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Database Stats
-          </TabsTrigger>
-        </TabsList>
-
-        {/* 上传标签页 */}
-        <TabsContent value="upload" className="space-y-6">
-          {/* 文件上传区域 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5" />
-                Select Excel File
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
-                  ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
-                  ${file ? 'border-green-400 bg-green-50' : ''}
-                `}
+        {/* 文件选择区域 */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            选择文件
+          </h2>
+          
+          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
+            <div className="space-y-4">
+              <div className="mx-auto w-12 h-12 text-gray-400">
+                <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              
+              <div>
+                <p className="text-lg font-medium text-gray-900 dark:text-white">
+                  选择Excel文件上传
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  支持 .xlsx 和 .xls 格式，最大文件大小 10MB
+                </p>
+              </div>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleFileSelect}
+                disabled={isUploading}
+                className="hidden"
+                id="file-upload"
+              />
+              
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-6 py-2"
               >
-                <input {...getInputProps()} />
+                {isUploading ? '上传中...' : '选择文件'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* 上传进度 */}
+        {progress && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              上传进度
+            </h2>
+            
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <span>{progress.stage}</span>
+                  <span>{progress.current}/{progress.total}</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(progress.current / progress.total) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {progress.message}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 日志输出 */}
+        {logs.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              上传日志
+            </h2>
+            
+            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-64 overflow-y-auto">
+              {logs.map((log, index) => (
+                <div key={index} className="mb-1">
+                  {log}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 上传结果 */}
+        {uploadResult && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              上传结果
+            </h2>
+            
+            <div className="space-y-4">
+              <div className={`p-4 rounded-lg ${uploadResult.success ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
+                <p className={`font-medium ${uploadResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                  {uploadResult.success ? '✅ 上传成功' : '❌ 上传失败'}
+                </p>
                 
-                {file ? (
-                  <div className="space-y-2">
-                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-                    <p className="text-lg font-medium">{file.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Size: {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        resetUpload();
-                      }}
-                    >
-                      Change File
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto" />
-                    <p className="text-lg">
-                      {isDragActive ? 'Drop the Excel file here' : 'Drag & drop or click to select'}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Supports .xlsx and .xls files (max 10MB)
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* 上传按钮和进度 */}
-              <div className="mt-6 space-y-4">
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Batch Size: <Badge variant="outline">{config.batchSize} games</Badge>
-                    {' '} Max Retries: <Badge variant="outline">{config.maxRetries}</Badge>
-                  </div>
-                  
-                  <Button
-                    onClick={handleUpload}
-                    disabled={!file || uploading}
-                    className="min-w-32"
-                  >
-                    {uploading ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Start Upload
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                {uploading && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Upload Progress</span>
-                      <span>{uploadProgress.toFixed(1)}%</span>
-                    </div>
-                    <Progress value={uploadProgress} className="w-full" />
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 上传结果显示 */}
-          {uploadResult && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {uploadResult.success ? (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
-                  Upload Result
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {uploadResult.success ? (
-                  <div className="space-y-4">
-                    {/* 成功摘要 */}
-                    {uploadResult.summary && (
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">
-                            {uploadResult.summary.totalProcessed}
-                          </div>
-                          <div className="text-sm text-gray-600">Games Processed</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600">
-                            {uploadResult.summary.successRate}
-                          </div>
-                          <div className="text-sm text-gray-600">Success Rate</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-purple-600">
-                            {uploadResult.summary.duration}
-                          </div>
-                          <div className="text-sm text-gray-600">Duration</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-orange-600">
-                            {uploadResult.summary.totalErrors}
-                          </div>
-                          <div className="text-sm text-gray-600">Errors</div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 详细信息 */}
-                    {uploadResult.details && (
-                      <div className="space-y-4">
-                        <h4 className="font-semibold">Detailed Results</h4>
-                        
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <h5 className="font-medium">File Parsing</h5>
-                            <ul className="text-sm space-y-1">
-                              <li>Total Rows: {uploadResult.details.parsing.totalRows}</li>
-                              <li>Valid Rows: {uploadResult.details.parsing.validRows}</li>
-                              <li>Update Rows: {uploadResult.details.parsing.updateRows}</li>
-                            </ul>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <h5 className="font-medium">Upload Results</h5>
-                            <ul className="text-sm space-y-1">
-                              <li>Games: {uploadResult.details.uploading.games.processed} processed, {uploadResult.details.uploading.games.errors} errors</li>
-                              <li>Tags: {uploadResult.details.uploading.tags.processed} processed, {uploadResult.details.uploading.tags.errors} errors</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 建议 */}
-                    {uploadResult.recommendations && uploadResult.recommendations.length > 0 && (
-                      <Alert>
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertDescription>
-                          <strong>Recommendations:</strong>
-                          <ul className="mt-2 space-y-1">
-                            {uploadResult.recommendations.map((rec, index) => (
-                              <li key={index} className="text-sm">• {rec}</li>
-                            ))}
-                          </ul>
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                ) : (
-                  // 错误显示
-                  <Alert variant="destructive">
-                    <XCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>Upload Failed:</strong> {uploadResult.error}
-                      {uploadResult.errorDetails && (
-                        <div className="mt-2 text-sm font-mono bg-red-50 p-2 rounded">
-                          {uploadResult.errorDetails}
-                        </div>
-                      )}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        {/* 设置标签页 */}
-        <TabsContent value="settings" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Configuration</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="batchSize">Batch Size (games per batch)</Label>
-                  <Input
-                    id="batchSize"
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={config.batchSize}
-                    onChange={(e) => setConfig(prev => ({
-                      ...prev,
-                      batchSize: parseInt(e.target.value) || 10
-                    }))}
-                  />
-                  <p className="text-sm text-gray-600">
-                    Number of games to process in each batch (1-50)
+                {uploadResult.error && (
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+                    错误信息：{uploadResult.error}
                   </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="maxRetries">Max Retries</Label>
-                  <Input
-                    id="maxRetries"
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={config.maxRetries}
-                    onChange={(e) => setConfig(prev => ({
-                      ...prev,
-                      maxRetries: parseInt(e.target.value) || 3
-                    }))}
-                  />
-                  <p className="text-sm text-gray-600">
-                    Maximum retry attempts for failed operations (1-5)
-                  </p>
-                </div>
+                )}
               </div>
 
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Important:</strong> Only rows with "是" in the "是否更新" column will be processed.
-                  Smaller batch sizes are more reliable but slower.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 数据库状态标签页 */}
-        <TabsContent value="stats" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="w-5 h-5" />
-                Current Database Status
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={loadDatabaseStats}
-                  className="ml-auto"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Refresh
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {databaseStats ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600">
-                      {databaseStats.totalGames.toLocaleString()}
+              {uploadResult.stats && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {uploadResult.stats.totalProcessed}
                     </div>
-                    <div className="text-gray-600">Total Games</div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400">
+                      总计处理
+                    </div>
                   </div>
                   
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">
-                      {databaseStats.totalCategories.toLocaleString()}
+                  <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {uploadResult.stats.successCount}
                     </div>
-                    <div className="text-gray-600">Categories</div>
+                    <div className="text-sm text-green-600 dark:text-green-400">
+                      成功导入
+                    </div>
                   </div>
                   
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600">
-                      {databaseStats.totalTags.toLocaleString()}
+                  <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                      {uploadResult.stats.errorCount}
                     </div>
-                    <div className="text-gray-600">Tags</div>
+                    <div className="text-sm text-red-600 dark:text-red-400">
+                      失败数量
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <RefreshCw className="w-8 h-8 text-gray-400 mx-auto mb-2 animate-spin" />
-                  <p className="text-gray-600">Loading database statistics...</p>
+                  
+                  <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                      {uploadResult.stats.duplicateCount || 0}
+                    </div>
+                    <div className="text-sm text-purple-600 dark:text-purple-400">
+                      重复跳过
+                    </div>
+                  </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+
+              {uploadResult.errors && uploadResult.errors.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+                    错误详情：
+                  </h3>
+                  <div className="space-y-2">
+                    {uploadResult.errors.slice(0, 10).map((error: { row: number; error: string }, index: number) => (
+                      <div key={index} className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                        行 {error.row}: {error.error}
+                      </div>
+                    ))}
+                    {uploadResult.errors.length > 10 && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        ... 还有 {uploadResult.errors.length - 10} 个错误
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

@@ -34,7 +34,7 @@ function HeroGameCard({ game, isActive }: { game: HeroGame; isActive: boolean })
 
       {/* 内容 */}
       <div className="relative z-10 h-full flex items-center">
-        <div className="container mx-auto px-6 md:px-8">
+        <div className="w-full px-2 md:px-4">
           <div className="max-w-2xl">
             {/* 徽章 */}
             <div className="flex items-center gap-2 mb-4">

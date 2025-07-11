@@ -5,7 +5,7 @@ import { HeroSection } from "./HeroSection"
 import { HorizontalGamesList } from "./HorizontalGamesList"
 import { AuthErrorAlert } from "./AuthErrorAlert"
 import { useTranslation } from "react-i18next"
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { BaseGame, HeroGame, HomepageCategoryConfig } from "@/lib/games"
 import { getCategoryFullTitle } from "@/lib/i18n/utils"
 
@@ -63,8 +63,8 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
       <AuthErrorAlert />
       
       <MainLayout>
-        {/* 主要内容 */}
-        <div className="container mx-auto px-4 py-8">
+        {/* 主要内容 - 响应式布局，紧贴左右边缘 */}
+        <div className="w-full px-1 py-8">
           {/* Hero 轮播区域 */}
           <HeroSection games={heroGames} />
 
@@ -84,11 +84,11 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
               viewMoreHref="/games/category/new"
             />
 
-            {/* 动态渲染启用的分类游戏 - 使用新的国际化函数 */}
+            {/* 动态渲染启用的分类游戏 - 完全使用category_key国际化，废弃category_title */}
             {Object.entries(homepageCategoryData).map(([categoryKey, categoryData]) => (
               <HorizontalGamesList
                 key={categoryKey}
-                title={getCategoryFullTitle(t, categoryKey, categoryData.config.title)}
+                title={getCategoryFullTitle(t, categoryKey)}
                 games={categoryData.games}
                 viewMoreHref={`/games/category/${categoryKey}`}
               />
@@ -98,7 +98,7 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
 
         {/* 页脚 */}
         <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16 transition-colors duration-200">
-          <div className="container mx-auto px-4 py-8">
+          <div className="w-full px-1 py-8">
             <div className="text-center text-gray-600 dark:text-gray-400">
               <p>&copy; 2024 MiniPlayGame. All rights reserved.</p>
             </div>

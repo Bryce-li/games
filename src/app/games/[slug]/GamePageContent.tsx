@@ -13,7 +13,7 @@ interface GamePageContentProps {
 
 export function GamePageContent({ game, recommendedGames }: GamePageContentProps) {
   return (
-    <div className="container mx-auto px-4 py-6">
+          <div className="w-full px-1 py-6">
       {/* 页面标题 */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{game.title}</h1>
@@ -48,7 +48,7 @@ export function GamePageContent({ game, recommendedGames }: GamePageContentProps
 
       {/* 页脚 */}
       <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16 transition-colors duration-200">
-        <div className="container mx-auto px-4 py-8">
+        <div className="w-full px-1 py-8">
           <div className="text-center text-gray-600 dark:text-gray-400">
             <p>&copy; 2024 MiniPlayGame. All rights reserved.</p>
           </div>

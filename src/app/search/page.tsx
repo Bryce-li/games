@@ -3,10 +3,7 @@ import { Suspense } from 'react';
 import { SearchPageContent } from './SearchPageContent';
 
 interface SearchPageProps {
-  searchParams: Promise<{
-    q?: string;
-    category?: string;
-  }>;
+  searchParams: Promise<{ q?: string; category?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
@@ -26,28 +23,33 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   };
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const resolvedSearchParams = await searchParams;
-  
+function SearchPageFallback() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {Array(10).fill(0).map((_, i) => (
-                <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              ))}
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-4"></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {Array(10).fill(0).map((_, i) => (
+            <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+          ))}
         </div>
       </div>
-    }>
-      <SearchPageContent 
-        query={resolvedSearchParams.q || ''} 
-        category={resolvedSearchParams.category || ''}
-      />
+    </div>
+  );
+}
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const resolvedParams = await searchParams;
+  const query = resolvedParams?.q || '';
+  const category = resolvedParams?.category || '';
+
+  return (
+    <Suspense fallback={<SearchPageFallback />}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="w-full px-1 py-8">
+          <SearchPageContent query={query} category={category} />
+        </div>
+      </div>
     </Suspense>
   );
 }

@@ -32,13 +32,14 @@ export function MainLayout({ children, className = "" }: MainLayoutProps) {
           className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-40"
         />
 
-        {/* 主内容区域 */}
+        {/* 主内容区域 - 调整左侧间距 */}
         <main 
           className={`flex-1 transition-all duration-300 ${
-            isSidebarCollapsed ? 'ml-0' : 'ml-64'
+            isSidebarCollapsed ? 'ml-2' : 'ml-64'
           } ${className}`}
           style={{ 
-            paddingLeft: isSidebarCollapsed ? '0' : '8px' // 8px 间距
+            paddingLeft: isSidebarCollapsed ? '4px' : '4px', // 减少到4px左间距
+            paddingRight: '4px' // 添加右侧4px间距
           }}
         >
           {children}

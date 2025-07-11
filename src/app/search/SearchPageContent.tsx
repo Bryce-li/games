@@ -1,71 +1,88 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { SearchResults } from '@/components/SearchResults';
-import { searchGames, getGamesByCategory, getAllCategories, SearchResult } from '@/lib/search-utils';
-import { getGameConfig } from '@/lib/games';
-import { useTranslation } from 'react-i18next';
+import { searchGames, getAllCategories, SearchResult } from '@/lib/search-utils';
+import { getGamesByCategory, getAllGames } from '@/lib/games';
 
 interface SearchPageContentProps {
-  query: string;
-  category: string;
+  query?: string;
+  category?: string;
 }
 
 export function SearchPageContent({ query: initialQuery, category: initialCategory }: SearchPageContentProps) {
-  const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [searchQuery, setSearchQuery] = useState(initialQuery || '');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || '');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 执行搜索
-  useEffect(() => {
-    const performSearch = async () => {
-      setIsLoading(true);
+  // 执行搜索的函数
+  const performSearch = useCallback(async (query: string, category: string) => {
+    setIsLoading(true);
+    try {
+      let filteredResults: SearchResult[] = [];
       
-      let searchResults: SearchResult[] = [];
-      
-      if (searchQuery.trim()) {
-        // 文本搜索
-        searchResults = await searchGames(searchQuery, 50);
-        
-        // 如果还选择了分类，进一步筛选
-        if (selectedCategory) {
-          searchResults = searchResults.filter(result => 
-            result.category.toLowerCase() === selectedCategory.toLowerCase()
-          );
-        }
-      } else if (selectedCategory) {
-        // 只按分类筛选
-        const categoryGames = await getGamesByCategory(selectedCategory);
-
-        // 批量获取游戏配置以提高性能
-        const gameConfigPromises = categoryGames.map(async (game) => {
-          const gameConfig = await getGameConfig(game.id);
-          return {
-            id: game.id,
-            title: game.title,
-            description: gameConfig?.description,
-            image: game.image,
-            category: game.category,
-            isNew: game.isNew,
-            isHot: game.isHot,
-            isOriginal: game.isOriginal,
-            matchType: 'category' as const
-          };
-        });
-
-        searchResults = await Promise.all(gameConfigPromises);
+      if (query.trim()) {
+        // 如果有搜索词，使用搜索函数
+        filteredResults = await searchGames(query, 100);
+      } else if (category) {
+        // 如果没有搜索词但有分类，按分类获取
+        const categoryGames = await getGamesByCategory(category);
+        filteredResults = categoryGames.map(game => ({
+          id: game.id,
+          title: game.title,
+          description: '',
+          image: game.image,
+          category: game.category,
+          isNew: game.isNew,
+          isHot: game.isHot,
+          isOriginal: game.isOriginal,
+          matchType: 'category' as const
+        }));
+      } else {
+        // 如果既没有搜索词也没有分类，获取所有游戏
+        const allGames = await getAllGames();
+        filteredResults = allGames.map(game => ({
+          id: game.id,
+          title: game.title,
+          description: '',
+          image: game.image,
+          category: game.category,
+          isNew: game.isNew,
+          isHot: game.isHot,
+          isOriginal: game.isOriginal,
+          matchType: 'title' as const
+        }));
       }
-      
-      setResults(searchResults);
+
+      // 如果选择了分类且有搜索词，进一步过滤结果
+      if (category && query.trim()) {
+        filteredResults = filteredResults.filter(game => 
+          game.category.toLowerCase() === category.toLowerCase()
+        );
+      }
+
+      setResults(filteredResults);
+    } catch (error) {
+      console.error('搜索出错:', error);
+      setResults([]);
+    } finally {
       setIsLoading(false);
-    };
+    }
+  }, []);
 
-    performSearch();
-  }, [searchQuery, selectedCategory]);
+  // 当查询参数变化时，执行搜索
+  useEffect(() => {
+    performSearch(searchQuery, selectedCategory);
+  }, [searchQuery, selectedCategory, performSearch]);
 
+  // 处理搜索输入变化
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // 处理分类筛选
   const handleCategoryFilter = (category: string) => {
     setSelectedCategory(category === selectedCategory ? '' : category);
   };
@@ -74,7 +91,7 @@ export function SearchPageContent({ query: initialQuery, category: initialCatego
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       
-      <main className="container mx-auto px-4 py-8 pt-24">
+      <main className="w-full px-1 py-8 pt-24">
         {/* 搜索结果标题 */}
         <div className="mb-6">
           {searchQuery ? (
@@ -102,7 +119,7 @@ export function SearchPageContent({ query: initialQuery, category: initialCatego
         </div>
 
         {/* 分类筛选器 */}
-        <div className="mb-6">
+        <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
             按分类筛选
           </h2>

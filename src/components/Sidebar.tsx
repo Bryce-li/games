@@ -8,10 +8,7 @@ import { useAuth } from "./auth/AuthProvider";
 import { isAdmin } from "@/lib/auth-utils";
 import { Home, Gamepad2, Upload, Settings, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from "@/components/ui/sidebar-menu";
+
 
 interface NavItemProps {
   icon: string;
