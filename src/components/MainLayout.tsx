@@ -17,7 +17,7 @@ export function MainLayout({ children, className = "" }: MainLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
       {/* 固定头部 - 传递侧边栏控制函数 */}
       <Header 
         onToggleSidebar={toggleSidebar}
@@ -25,21 +25,21 @@ export function MainLayout({ children, className = "" }: MainLayoutProps) {
       />
 
       {/* 主内容区域 */}
-      <div className="flex pt-16"> {/* pt-16 为头部留出空间 */}
+      <div className="flex h-[calc(100vh-4rem)]"> {/* 固定高度，减去头部高度 */}
         {/* 左侧侧边栏 */}
         <Sidebar 
           isCollapsed={isSidebarCollapsed}
           className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-40"
         />
 
-        {/* 主内容区域 - 调整左侧间距 */}
+        {/* 主内容区域 - 修复滚动问题 */}
         <main 
-          className={`flex-1 transition-all duration-300 ${
+          className={`flex-1 transition-all duration-300 overflow-y-auto ${
             isSidebarCollapsed ? 'ml-2' : 'ml-64'
           } ${className}`}
           style={{ 
-            paddingLeft: isSidebarCollapsed ? '4px' : '4px', // 减少到4px左间距
-            paddingRight: '4px' // 添加右侧4px间距
+            paddingLeft: isSidebarCollapsed ? '4px' : '4px',
+            paddingRight: '4px'
           }}
         >
           {children}

@@ -948,7 +948,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       const gameData = gamesData.find(game => game.id === hero.game_id);
       if (gameData) {
         result.push({
-          id: gameData.id,
+          id: gameData.game_id, // 使用game_id作为业务标识符
           title: gameData.title,
           description: gameData.description || '',
           image: gameData.image_url || gameData.thumbnail_url || '',

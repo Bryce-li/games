@@ -18,55 +18,7 @@ function getGoogleRedirectUri() {
 const GOOGLE_REDIRECT_URI = getGoogleRedirectUri()
 
 // 网络配置常量
-const FETCH_TIMEOUT = 30000 // 30秒超时
-const MAX_RETRIES = 3 // 最大重试次数
-const RETRY_DELAY = 2000 // 重试延迟2秒
-
-// 创建带超时的fetch请求
-async function fetchWithTimeout(url: string, options: RequestInit, timeout: number = FETCH_TIMEOUT) {
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeout)
-  
-  try {
-    console.log(`发送请求到: ${url}, 超时时间: ${timeout}ms`)
-    
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    })
-    
-    clearTimeout(timeoutId)
-    console.log(`请求成功: ${url}, 状态码: ${response.status}`)
-    return response
-  } catch (error) {
-    clearTimeout(timeoutId)
-    console.error(`请求失败: ${url}`, error)
-    throw error
-  }
-}
-
-// 重试函数
-async function retryFetch(url: string, options: RequestInit, maxRetries: number = MAX_RETRIES) {
-  let lastError: Error
-  
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`尝试第${attempt}次请求: ${url}`)
-      return await fetchWithTimeout(url, options)
-    } catch (error) {
-      lastError = error as Error
-      console.error(`第${attempt}次请求失败:`, error)
-      
-      if (attempt < maxRetries) {
-        const delay = RETRY_DELAY * attempt
-        console.log(`等待${delay}ms后重试...`)
-        await new Promise(resolve => setTimeout(resolve, delay))
-      }
-    }
-  }
-  
-  throw lastError!
-}
+const FETCH_TIMEOUT = 15000 // 15秒超时
 
 // 处理Google OAuth回调
 export async function GET(request: NextRequest) {
@@ -76,12 +28,6 @@ export async function GET(request: NextRequest) {
     const error = searchParams.get('error')
 
     console.log('=== Google OAuth回调开始 ===')
-    
-    // 检查代理环境变量
-    console.log('环境变量检查:', {
-      HTTP_PROXY: process.env.HTTP_PROXY || '未设置',
-      HTTPS_PROXY: process.env.HTTPS_PROXY || '未设置'
-    })
     
     // 检查是否有错误
     if (error) {
@@ -94,11 +40,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/?error=no_code', request.url))
     }
 
-    console.log('开始处理Google OAuth回调，授权码:', code.substring(0, 10) + '...')
+    console.log('开始处理Google OAuth回调')
 
-    // 用授权码换取访问令牌 - 使用重试机制
-    console.log('正在获取访问令牌...')
-    const tokenResponse = await retryFetch('https://oauth2.googleapis.com/token', {
+    // 用授权码换取访问令牌
+    const controller1 = new AbortController()
+    const timeoutId1 = setTimeout(() => controller1.abort(), FETCH_TIMEOUT)
+    
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -110,7 +58,10 @@ export async function GET(request: NextRequest) {
         grant_type: 'authorization_code',
         redirect_uri: GOOGLE_REDIRECT_URI,
       }),
+      signal: controller1.signal
     })
+
+    clearTimeout(timeoutId1)
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
@@ -122,13 +73,18 @@ export async function GET(request: NextRequest) {
     const accessToken = tokenData.access_token
     console.log('成功获取访问令牌')
 
-    // 使用访问令牌获取用户信息 - 使用重试机制
-    console.log('正在获取用户信息...')
-    const userResponse = await retryFetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    // 使用访问令牌获取用户信息
+    const controller2 = new AbortController()
+    const timeoutId2 = setTimeout(() => controller2.abort(), FETCH_TIMEOUT)
+    
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      signal: controller2.signal
     })
+
+    clearTimeout(timeoutId2)
 
     if (!userResponse.ok) {
       const errorText = await userResponse.text()
@@ -194,7 +150,7 @@ export async function GET(request: NextRequest) {
       if (error.message.includes('timeout') || error.message.includes('TIMEOUT') || 
           error.name === 'AbortError' || error.message.includes('UND_ERR_CONNECT_TIMEOUT') ||
           error.message.includes('ECONNREFUSED') || error.message.includes('ENOTFOUND')) {
-        console.error('检测到网络连接错误，可能需要配置代理')
+        console.error('检测到网络连接错误')
         return NextResponse.redirect(new URL('/?error=network_timeout', request.url))
       }
     }

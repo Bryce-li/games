@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,17 +19,25 @@ interface HorizontalGamesListProps {
   viewMoreHref?: string;
 }
 
-function GameCard({ game }: { game: Game }) {
+function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
   return (
     <Link href={`/games/${game.id}`} className="block flex-shrink-0 w-48 group">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
         <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
-          {game.image ? (
+          {game.image && isVisible ? (
             <img
+              ref={imgRef}
               src={game.image}
               alt={game.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-200 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
               loading="lazy"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(false)}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600" />
@@ -66,6 +74,43 @@ function GameCard({ game }: { game: Game }) {
 
 export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGamesListProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [visibleCards, setVisibleCards] = useState<Set<string>>(new Set());
+
+  // Intersection Observer 实现懒加载
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const observeCard = useCallback((cardElement: Element, gameId: string) => {
+    if (!observerRef.current) {
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const gameId = entry.target.getAttribute('data-game-id');
+            if (gameId) {
+              if (entry.isIntersecting) {
+                setVisibleCards(prev => new Set(prev).add(gameId));
+              }
+            }
+          });
+        },
+        {
+          rootMargin: '50px', // 提前50px开始加载
+          threshold: 0.1
+        }
+      );
+    }
+    
+    if (observerRef.current && cardElement) {
+      observerRef.current.observe(cardElement);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -137,7 +182,20 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {games.map((game) => (
-            <GameCard key={`${keyPrefix}-${game.id}`} game={game} />
+            <div
+              key={`${keyPrefix}-${game.id}`}
+              data-game-id={game.id}
+              ref={(el) => {
+                if (el) {
+                  observeCard(el, game.id);
+                }
+              }}
+            >
+              <GameCard 
+                game={game} 
+                isVisible={visibleCards.has(game.id)}
+              />
+            </div>
           ))}
         </div>
       </div>
