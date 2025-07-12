@@ -1,8 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { GameConfig } from '@/lib/games';
+import { useRouter } from 'next/navigation';
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
 
 interface GameSidebarProps {
   games: GameConfig[];
@@ -10,14 +12,19 @@ interface GameSidebarProps {
 }
 
 function GameCard({ game, size = "normal" }: { game: GameConfig; size?: "normal" | "small" }) {
+  const { handleClickWithLoading } = useNavigationWithLoading();
+
   const cardClass = size === "small" 
     ? "w-full h-[85px]" // 153*85px 比例保持
     : "w-[153px] h-[85px]";
     
   return (
-    <Link 
-      href={`/games/${game.id}`}
-      className={`${cardClass} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group`}
+    <div 
+      onClick={handleClickWithLoading(`/games/${game.id}`, {
+        loadingMessage: `正在加载 ${game.title}...`,
+        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
+      })}
+      className={`${cardClass} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer relative`}
     >
       <div className="relative w-full h-full">
         <img
@@ -41,7 +48,7 @@ function GameCard({ game, size = "normal" }: { game: GameConfig; size?: "normal"
           <div className="truncate">{game.title}</div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -86,4 +93,4 @@ export function GameSidebar({ games, className = "" }: GameSidebarProps) {
       </div>
     </>
   );
-} 
+}

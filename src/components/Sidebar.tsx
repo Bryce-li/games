@@ -8,6 +8,7 @@ import { useAuth } from "./auth/AuthProvider";
 import { isAdmin } from "@/lib/auth-utils";
 import { Home, Gamepad2, Upload, Settings, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
 
 
 interface NavItemProps {
@@ -20,6 +21,7 @@ interface NavItemProps {
 }
 
 function NavItem({ icon, label, href, active, badge, onClick }: NavItemProps) {
+  const { handleClickWithLoading } = useNavigationWithLoading();
   const baseClasses = "flex items-center gap-2 px-2 py-1.5 text-xs rounded-md transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
   const activeClasses = active 
     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium" 
@@ -37,9 +39,15 @@ function NavItem({ icon, label, href, active, badge, onClick }: NavItemProps) {
 
   if (href) {
     return (
-      <Link href={href} className={`${baseClasses} ${activeClasses}`}>
+      <div 
+        onClick={handleClickWithLoading(href, {
+          loadingMessage: `正在加载 ${label}...`,
+          errorMessage: `加载页面失败，请重试`
+        })}
+        className={`${baseClasses} ${activeClasses}`}
+      >
         {content}
-      </Link>
+      </div>
     );
   }
 

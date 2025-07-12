@@ -4,6 +4,7 @@ import "./globals.css";
 import { I18nProvider } from "../components/I18nProvider";
 import { AuthProvider } from "../components/auth/AuthProvider";
 import { ThemeProvider } from "next-themes";
+import { GlobalLoadingProvider } from "../components/GlobalLoading";
 
 export const metadata: Metadata = {
     title: "MiniPlayGame",
@@ -49,7 +50,9 @@ export default function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            {children}
+                            <GlobalLoadingProvider>
+                                {children}
+                            </GlobalLoadingProvider>
                         </ThemeProvider>
                     </AuthProvider>
                 </I18nProvider>

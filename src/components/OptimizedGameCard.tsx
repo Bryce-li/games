@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading'
 
 interface Game {
   id: string
@@ -29,6 +29,7 @@ export function OptimizedGameCard({
   className = '' 
 }: OptimizedGameCardProps) {
   const [imageError, setImageError] = useState(false)
+  const { handleClickWithLoading } = useNavigationWithLoading()
   
   // 根据尺寸设置容器大小
   const sizeClasses = {
@@ -48,27 +49,31 @@ export function OptimizedGameCard({
   const gameImageUrl = game.image || game.thumbnail || '/images/game-placeholder.jpg'
 
   return (
-    <Link 
-      href={`/games/${game.id}`} 
-      className={`block ${sizeClasses[size]} group ${className}`}
+    <div 
+      onClick={handleClickWithLoading(`/games/${game.id}`, {
+        loadingMessage: `正在加载 ${game.title}...`,
+        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
+      })}
+      className={`block ${sizeClasses[size]} group ${className} cursor-pointer relative`}
     >
+      
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
         
         {/* 游戏图片区域 */}
         <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
           {!imageError ? (
-                         <Image
-               src={gameImageUrl}
-               alt={game.title}
-               width={width}
-               height={height}
-               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-               onError={() => setImageError(true)}
-               placeholder="blur"
-               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-               loading="lazy"
-               decoding="async"
+            <Image
+              src={gameImageUrl}
+              alt={game.title}
+              width={width}
+              height={height}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              onError={() => setImageError(true)}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             // 备用占位符
@@ -108,7 +113,7 @@ export function OptimizedGameCard({
           </h3>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

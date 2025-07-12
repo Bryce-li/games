@@ -576,14 +576,40 @@ export async function getRelatedGames(category: string, currentGameId: string, l
 }
 
 /**
- * 获取游戏配置 - 通过game_id查询（业务标识符）
+ * 获取游戏配置 - 通过game_id查询
  */
 export async function getGameConfig(gameId: string): Promise<GameConfig | null> {
   try {
+    // URL解码处理，确保特殊字符正确解析
+    const decodedGameId = decodeURIComponent(gameId);
+    
+    // 首先检查是否存在重复的game_id
+    const { data: checkData, error: checkError } = await supabase
+      .from('games')
+      .select('id, game_id')
+      .eq('game_id', decodedGameId);
+    
+    if (checkError) {
+      console.error('检查游戏ID失败:', checkError.message);
+      return null;
+    }
+    
+    if (!checkData || checkData.length === 0) {
+      console.error(`游戏ID不存在: ${gameId} (解码后: ${decodedGameId})`);
+      return null;
+    }
+    
+    if (checkData.length > 1) {
+      console.error(`发现重复的游戏ID: ${decodedGameId}，共有 ${checkData.length} 条记录`);
+      // 如果有重复记录，使用第一个
+      console.warn(`使用第一个记录: ${checkData[0].id}`);
+    }
+    
+    // 使用UUID查询具体记录
     const { data, error } = await supabase
       .from('games')
       .select('*')
-      .eq('game_id', gameId) // 改为使用game_id字段查询
+      .eq('id', checkData[0].id) // 使用第一个记录的UUID
       .single();
     
     if (error) {
@@ -927,7 +953,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       return [];
     }
     
-    console.log('英雄区配置数据:', heroData);
+    // 英雄区配置数据已获取
     
     // 第二步：获取对应的游戏数据 - 修复：使用game_id字段而不是id字段
     const gameIds = heroData.map(hero => hero.game_id);
@@ -946,7 +972,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       return [];
     }
     
-    console.log('英雄区游戏数据:', gamesData);
+    // 英雄区游戏数据已获取
     
     // 第三步：批量获取标签 - 使用UUID获取标签
     const gameUUIDs = gamesData.map(game => game.id);
@@ -972,7 +998,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       }
     }
     
-    console.log('最终英雄区游戏结果:', result);
+    // 英雄区游戏数据处理完成
     return result;
   } catch (error) {
     console.error('获取英雄区游戏时出错:', error);

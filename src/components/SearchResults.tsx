@@ -1,8 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { SearchResult } from '@/lib/search-utils';
+import { useRouter } from 'next/navigation';
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -32,11 +34,13 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 }
 
 function GameCard({ result, query }: { result: SearchResult; query: string }) {
+  const { handleClickWithLoading } = useNavigationWithLoading();
+
   return (
-    <Link 
-      href={`/games/${result.id}`} 
-      className="group block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200"
-    >
+    <div onClick={handleClickWithLoading(`/games/${result.id}`, {
+      loadingMessage: `正在加载 ${result.title}...`,
+      errorMessage: `加载游戏 "${result.title}" 失败，请重试`
+    })} className="group block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer">
       {/* 游戏图片 */}
       <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
         {result.image ? (
@@ -71,7 +75,7 @@ function GameCard({ result, query }: { result: SearchResult; query: string }) {
       </div>
       
       {/* 游戏信息 */}
-      <div className="p-4">
+      <div className="p-3">
         <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 transition-colors line-clamp-2 mb-2">
           <HighlightText text={result.title} query={query} />
         </h3>
@@ -104,7 +108,7 @@ function GameCard({ result, query }: { result: SearchResult; query: string }) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

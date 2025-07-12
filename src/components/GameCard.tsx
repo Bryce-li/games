@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
 import type { BaseGame } from '@/lib/games';
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
 
 interface GameCardProps {
   game: BaseGame;
@@ -12,16 +12,21 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, size = "normal", className = "", showTags = false }: GameCardProps) {
+  const { handleClickWithLoading } = useNavigationWithLoading();
+
   const sizeClasses = {
     small: "w-full h-20",
     normal: "w-full aspect-video", 
     large: "w-full aspect-video"
   };
 
-  const cardClass = `${sizeClasses[size]} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group ${className}`;
+  const cardClass = `${sizeClasses[size]} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group ${className} cursor-pointer`;
 
   return (
-    <Link href={`/games/${game.id}`} className={cardClass}>
+    <div onClick={handleClickWithLoading(`/games/${game.id}`, {
+      loadingMessage: `正在加载 ${game.title}...`,
+      errorMessage: `加载游戏 "${game.title}" 失败，请重试`
+    })} className={cardClass}>
       <div className="relative w-full h-full">
         {/* 游戏图片 */}
         <div className="relative w-full h-full overflow-hidden">
@@ -83,6 +88,6 @@ export function GameCard({ game, size = "normal", className = "", showTags = fal
           </h3>
         </div>
       </div>
-    </Link>
+    </div>
   );
 } 

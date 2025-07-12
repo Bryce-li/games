@@ -3,6 +3,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
 
 interface Game {
   id: string;
@@ -22,9 +24,13 @@ interface HorizontalGamesListProps {
 function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const { handleClickWithLoading } = useNavigationWithLoading();
 
   return (
-    <Link href={`/games/${game.id}`} className="block flex-shrink-0 w-40 group">
+    <div onClick={handleClickWithLoading(`/games/${game.id}`, {
+      loadingMessage: `正在加载 ${game.title}...`,
+      errorMessage: `加载游戏 "${game.title}" 失败，请重试`
+    })} className="block w-full group cursor-pointer">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 relative">
         <div className="aspect-[4/3] bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
           {game.image && isVisible ? (
@@ -70,7 +76,7 @@ function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -176,11 +182,11 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
         </div>
       </div>
 
-      {/* 游戏列表 - 更紧凑的间距 */}
+      {/* 游戏列表 - 自适应宽度，最小180px，最多12个游戏 */}
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="flex gap-1.5 overflow-x-auto scrollbar-hide"
+          className="grid grid-flow-col auto-cols-[max(180px,calc((100%-11*6px)/12))] gap-1.5 overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {games.map((game) => (

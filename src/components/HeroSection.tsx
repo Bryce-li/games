@@ -3,7 +3,7 @@
 import type { HeroGame as Game } from "@/lib/games";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useNavigationWithLoading } from "@/hooks/useNavigationWithLoading";
 
 // 帮助 TypeScript 理解 Swiper.js 的自定义 Web Components 元素
 // 这使得我们可以在 JSX 中安全地使用 <swiper-container> 和 <swiper-slide>
@@ -25,8 +25,13 @@ declare global {
  * @param game - 游戏数据
  */
 function HeroGameCard({ game }: { game: Game }) {
+    const { handleClickWithLoading } = useNavigationWithLoading();
+
     return (
-      <Link href={`/games/${game.id}`} className="block w-full h-full group">
+      <div onClick={handleClickWithLoading(`/games/${game.id}`, {
+        loadingMessage: `正在加载 ${game.title}...`,
+        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
+      })} className="block w-full h-full group cursor-pointer">
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md min-h-[180px]">
            <Image
               src={game.image || "/placeholder.png"}
@@ -42,7 +47,7 @@ function HeroGameCard({ game }: { game: Game }) {
             </h3>
           </div>
         </div>
-      </Link>
+      </div>
     );
 }
 
