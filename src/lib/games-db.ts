@@ -906,7 +906,7 @@ export async function getAllHomepageCategoryData(): Promise<Record<string, { con
 }
 
 /**
- * 获取英雄区游戏 - 已优化：使用UUID关联（手动JOIN查询）
+ * 获取英雄区游戏 - 修复：使用正确的字段关联
  */
 export async function getHeroGames(): Promise<HeroGame[]> {
   try {
@@ -922,30 +922,41 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       return [];
     }
     
-    if (!heroData || heroData.length === 0) return [];
+    if (!heroData || heroData.length === 0) {
+      console.warn('没有找到激活的英雄区游戏配置');
+      return [];
+    }
     
-    // 第二步：获取对应的游戏数据
+    console.log('英雄区配置数据:', heroData);
+    
+    // 第二步：获取对应的游戏数据 - 修复：使用game_id字段而不是id字段
     const gameIds = heroData.map(hero => hero.game_id);
     const { data: gamesData, error: gamesError } = await supabase
       .from('games')
       .select('*')
-      .in('id', gameIds);
+      .in('game_id', gameIds); // 修复：使用game_id字段查询
     
     if (gamesError) {
       console.error('获取英雄区游戏数据失败:', gamesError.message);
       return [];
     }
     
-    if (!gamesData || gamesData.length === 0) return [];
+    if (!gamesData || gamesData.length === 0) {
+      console.warn('没有找到对应的游戏数据，游戏IDs:', gameIds);
+      return [];
+    }
     
-    // 第三步：批量获取标签
-    const tagsMap = await getBatchGameTags(gameIds);
+    console.log('英雄区游戏数据:', gamesData);
+    
+    // 第三步：批量获取标签 - 使用UUID获取标签
+    const gameUUIDs = gamesData.map(game => game.id);
+    const tagsMap = await getBatchGameTags(gameUUIDs);
     
     // 第四步：按照hero_games的顺序重新排列并转换数据
     const result: HeroGame[] = [];
     
     for (const hero of heroData) {
-      const gameData = gamesData.find(game => game.id === hero.game_id);
+      const gameData = gamesData.find(game => game.game_id === hero.game_id); // 修复：使用game_id匹配
       if (gameData) {
         result.push({
           id: gameData.game_id, // 使用game_id作为业务标识符
@@ -953,7 +964,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
           description: gameData.description || '',
           image: gameData.image_url || gameData.thumbnail_url || '',
           category: gameCategories[gameData.category as keyof typeof gameCategories] || gameData.category,
-          tags: tagsMap[gameData.id] || [],
+          tags: tagsMap[gameData.id] || [], // 使用UUID获取标签
           isOriginal: gameData.is_original,
           isNew: gameData.is_new,
           isHot: gameData.is_hot
@@ -961,6 +972,7 @@ export async function getHeroGames(): Promise<HeroGame[]> {
       }
     }
     
+    console.log('最终英雄区游戏结果:', result);
     return result;
   } catch (error) {
     console.error('获取英雄区游戏时出错:', error);

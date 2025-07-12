@@ -19,6 +19,18 @@ interface PageContentProps {
 export function PageContent({ newGames, homepageCategoryData, heroGames }: PageContentProps) {
   const { t } = useTranslation()
 
+  // 英雄区游戏fallback逻辑
+  const heroGamesForDisplay = useMemo(() => {
+    if (heroGames && heroGames.length > 0) {
+      return heroGames;
+    }
+    // 如果没有英雄区数据，使用新游戏的前3个作为fallback
+    return newGames.slice(0, 3).map(game => ({
+      ...game,
+      description: `Experience the exciting ${game.title}! A great ${game.category} game.`
+    }));
+  }, [heroGames, newGames]);
+
   // 使用useMemo优化精选游戏的计算
   const featuredGames = useMemo(() => {
     // 为避免重复key，我们为精选游戏创建一个去重的列表
@@ -63,13 +75,13 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
       <AuthErrorAlert />
       
       <MainLayout>
-        {/* 主要内容 - 响应式布局，紧贴左右边缘 */}
-        <div className="w-full px-1 py-8">
+        {/* 主要内容 - 紧凑布局，减少内边距 */}
+        <div className="w-full px-1 py-2">
           {/* Hero 轮播区域 */}
-          <HeroSection games={heroGames} />
+          <HeroSection games={heroGamesForDisplay} />
 
-          {/* 游戏分类列表 */}
-          <div className="space-y-6">
+          {/* 游戏分类列表 - 减少间距 */}
+          <div className="space-y-3">
             {/* 精选游戏 - 使用新的国际化函数 */}
             <HorizontalGamesList
               title={getCategoryFullTitle(t, "featured")}
@@ -96,11 +108,11 @@ export function PageContent({ newGames, homepageCategoryData, heroGames }: PageC
           </div>
         </div>
 
-        {/* 页脚 */}
-        <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16 transition-colors duration-200">
-          <div className="w-full px-1 py-8">
+        {/* 页脚 - 减少顶部间距 */}
+        <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8 transition-colors duration-200">
+          <div className="w-full px-1 py-4">
             <div className="text-center text-gray-600 dark:text-gray-400">
-              <p>&copy; 2024 MiniPlayGame. All rights reserved.</p>
+              <p className="text-sm">&copy; 2024 MiniPlayGame. All rights reserved.</p>
             </div>
           </div>
         </footer>

@@ -20,17 +20,17 @@ interface NavItemProps {
 }
 
 function NavItem({ icon, label, href, active, badge, onClick }: NavItemProps) {
-  const baseClasses = "flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
+  const baseClasses = "flex items-center gap-2 px-2 py-1.5 text-xs rounded-md transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
   const activeClasses = active 
     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium" 
     : "text-gray-700 dark:text-gray-300";
 
   const content = (
     <>
-      <span className="text-lg">{icon}</span>
-      <span className="flex-1">{label}</span>
+      <span className="text-sm">{icon}</span>
+      <span className="flex-1 truncate">{label}</span>
       {badge && (
-        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+        <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
       )}
     </>
   );
@@ -63,12 +63,12 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
   return (
     <aside
       className={`${
-        isCollapsed ? "w-0 opacity-0" : "w-64 opacity-100"
+        isCollapsed ? "w-0 opacity-0" : "w-48 opacity-100"
       } transition-all duration-300 overflow-hidden bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 ${className}`}
     >
-      <nav className="h-full overflow-y-auto p-4 scrollbar-light dark:scrollbar-dark">
+      <nav className="h-full overflow-y-auto p-2 scrollbar-light dark:scrollbar-dark">
         {/* Primary Navigation */}
-        <div className="space-y-1 mb-6">
+        <div className="space-y-0.5 mb-4">
           <NavItem 
             icon="🏠" 
             label={t("navigation.home", "Home")} 
@@ -118,11 +118,9 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
           />
         </div>
 
-
-
         {/* Categories */}
-        <div className="space-y-1">
-          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+        <div className="space-y-0.5">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 px-2">
             {t("common.categories", "Categories")}
           </h3>
           
@@ -286,8 +284,8 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
 
         {/* Admin Section - 只有管理员可见 */}
         {isAdmin(user) && (
-          <div className="space-y-1 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+          <div className="space-y-0.5 mt-6 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 px-2">
               Admin Functions
             </h3>
             <NavItem 

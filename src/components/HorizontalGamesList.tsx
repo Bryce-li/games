@@ -24,9 +24,9 @@ function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
   const imgRef = useRef<HTMLImageElement>(null);
 
   return (
-    <Link href={`/games/${game.id}`} className="block flex-shrink-0 w-48 group">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
-        <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
+    <Link href={`/games/${game.id}`} className="block flex-shrink-0 w-40 group">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 relative">
+        <div className="aspect-[4/3] bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
           {game.image && isVisible ? (
             <img
               ref={imgRef}
@@ -45,27 +45,29 @@ function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
           
           {/* 徽章显示 - 根据布尔值参数动态显示，按优先级排序 */}
           {game.isNew && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-semibold">
+            <div className="absolute top-1.5 left-1.5 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded font-semibold">
               NEW
             </div>
           )}
           
           {game.isHot && !game.isNew && (
-            <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-semibold">
+            <div className="absolute top-1.5 left-1.5 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded font-semibold">
               HOT
             </div>
           )}
           
           {game.isOriginal && !game.isNew && !game.isHot && (
-            <div className="absolute top-2 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold">
+            <div className="absolute top-1.5 left-1.5 bg-yellow-400 text-black text-xs px-1.5 py-0.5 rounded font-semibold">
               ORIGINAL
             </div>
           )}
-        </div>
-        <div className="p-3">
-          <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate group-hover:text-purple-600 transition-colors">
-            {game.title}
-          </h3>
+          
+          {/* 游戏标题 - 悬停时显示 */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+            <h3 className="font-semibold text-xs text-white truncate">
+              {game.title}
+            </h3>
+          </div>
         </div>
       </div>
     </Link>
@@ -114,13 +116,13 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -240, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 240, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
 
@@ -138,47 +140,47 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
   }, [title, viewMoreHref]);
 
   return (
-    <section className="mb-4">
-      {/* 标题栏 - 调整布局让View More靠近分类名 */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          {/* 分类名字体减小一半 */}
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+    <section className="mb-3">
+      {/* 标题栏 - 紧凑布局 */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {/* 分类名字体更小 */}
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
           {/* View More按钮靠近分类名 */}
           {viewMoreHref && (
             <Link
               href={viewMoreHref}
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium text-sm"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium text-xs"
             >
               View More
             </Link>
           )}
         </div>
         
-        {/* 滚动控制按钮保持在右侧 */}
+        {/* 滚动控制按钮保持在右侧，尺寸更小 */}
         <div className="hidden md:flex items-center gap-1">
           <button
             onClick={scrollLeft}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <ChevronLeft className="w-3 h-3 text-gray-600 dark:text-gray-300" />
           </button>
           <button
             onClick={scrollRight}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Scroll right"
           >
-            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <ChevronRight className="w-3 h-3 text-gray-600 dark:text-gray-300" />
           </button>
         </div>
       </div>
 
-      {/* 游戏列表 */}
+      {/* 游戏列表 - 更紧凑的间距 */}
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="flex gap-2 overflow-x-auto scrollbar-hide"
+          className="flex gap-1.5 overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {games.map((game) => (
@@ -198,6 +200,9 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
             </div>
           ))}
         </div>
+
+        {/* 渐变边缘效果 */}
+        <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent pointer-events-none"></div>
       </div>
     </section>
   );

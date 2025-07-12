@@ -21,6 +21,13 @@ export default async function Home() {
     getHeroGames()
   ])
 
+  // 添加调试信息
+  console.log('=== 主页数据加载完成 ===')
+  console.log('新游戏数量:', newGames.length)
+  console.log('分类数据:', Object.keys(homepageCategoryData))
+  console.log('英雄区游戏数量:', heroGames.length)
+  console.log('英雄区游戏详情:', heroGames)
+
   // 将数据传递给客户端组件
   return (
     <PageContent 

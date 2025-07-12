@@ -32,14 +32,15 @@ export function MainLayout({ children, className = "" }: MainLayoutProps) {
           className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-40"
         />
 
-        {/* 主内容区域 - 修复滚动问题 */}
+        {/* 主内容区域 - 紧凑布局，适应更窄的侧边栏 */}
         <main 
           className={`flex-1 transition-all duration-300 overflow-y-auto ${
-            isSidebarCollapsed ? 'ml-2' : 'ml-64'
+            isSidebarCollapsed ? 'ml-2' : 'ml-48'
           } ${className}`}
           style={{ 
-            paddingLeft: isSidebarCollapsed ? '4px' : '4px',
-            paddingRight: '4px'
+            paddingLeft: isSidebarCollapsed ? '2px' : '2px',
+            paddingRight: '2px',
+            paddingTop: '2px'
           }}
         >
           {children}
