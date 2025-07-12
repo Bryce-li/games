@@ -27,7 +27,7 @@ declare global {
 function HeroGameCard({ game }: { game: Game }) {
     return (
       <Link href={`/games/${game.id}`} className="block w-full h-full group">
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md min-h-[180px]">
            <Image
               src={game.image || "/placeholder.png"}
               alt={game.title}
@@ -89,7 +89,7 @@ export function HeroSection({ games }: HeroSectionProps) {
     // Swiper.js 的参数配置对象
     const swiperParams = {
       loop: true,
-      spaceBetween: 16, // Slide 之间的间距
+      spaceBetween: 16, // 固定间距，不随屏幕大小变化
       slidesPerGroup: 1, // 每次滚动1个
       // 自动播放配置
       autoplay: {
@@ -101,15 +101,27 @@ export function HeroSection({ games }: HeroSectionProps) {
         prevEl: navigationPrevRef.current,
         nextEl: navigationNextRef.current,
       },
-      // 响应式断点：根据屏幕宽度调整每屏显示的 Slide 数量
+      // 响应式断点：根据屏幕宽度调整每屏显示的完整卡片数量
       breakpoints: {
-        640: { slidesPerView: 3 },
-        768: { slidesPerView: 4 },
-        1024: { slidesPerView: 5 },
-        1280: { slidesPerView: 6 },
+        640: { 
+          slidesPerView: 2, // 小屏幕显示2个完整卡片
+          spaceBetween: 16
+        },
+        768: { 
+          slidesPerView: 3, // 中等屏幕显示3个完整卡片
+          spaceBetween: 16
+        },
+        1024: { 
+          slidesPerView: 4, // 大屏幕显示4个完整卡片
+          spaceBetween: 16
+        },
+        1280: { 
+          slidesPerView: 5, // 超大屏幕显示5个完整卡片
+          spaceBetween: 16
+        },
       },
-       // 默认（移动端）显示2个
-      slidesPerView: 2,
+       // 默认（移动端）显示1个完整卡片
+      slidesPerView: 1,
     };
 
     // 将参数应用到 Swiper 元素上
