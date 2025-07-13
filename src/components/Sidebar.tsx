@@ -40,10 +40,7 @@ function NavItem({ icon, label, href, active, badge, onClick }: NavItemProps) {
   if (href) {
     return (
       <div 
-        onClick={handleClickWithLoading(href, {
-          loadingMessage: `正在加载 ${label}...`,
-          errorMessage: `加载页面失败，请重试`
-        })}
+        onClick={handleClickWithLoading(href)}
         className={`${baseClasses} ${activeClasses}`}
       >
         {content}
@@ -294,11 +291,11 @@ export function Sidebar({ isCollapsed, className = "" }: SidebarProps) {
         {isAdmin(user) && (
           <div className="space-y-0.5 mt-6 pt-3 border-t border-gray-200 dark:border-gray-700">
             <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 px-2">
-              Admin Functions
+              {t('admin.functions', 'Admin Functions')}
             </h3>
             <NavItem 
               icon="📤" 
-              label="Data Upload" 
+              label={t('admin.dataUpload', 'Data Upload')} 
               href="/admin/upload"
               active={pathname === "/admin/upload"}
             />

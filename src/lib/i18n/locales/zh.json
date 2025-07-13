@@ -20,6 +20,9 @@
     "keyboardControls": "键盘控制",
     "gameControls": "游戏控制",
     "games": "游戏",
+    "loadingLanguages": "正在加载语言...",
+    "scrollLeft": "向左滚动",
+    "scrollRight": "向右滚动",
     "header": {
       "title": "迷你游戏"
     }
@@ -92,6 +95,11 @@
       "viewMore": "查看更多"
     }
   },
+  "hero": {
+    "previousGame": "上一个游戏",
+    "nextGame": "下一个游戏",
+    "loadingGames": "正在加载精彩游戏..."
+  },
   "features": {
     "games": "4000+ 游戏",
     "noInstall": "无需安装",
@@ -109,5 +117,14 @@
       "title": "在线多人游戏",
       "description": "在不同设备上游戏"
     }
+  },
+  "admin": {
+    "functions": "管理功能",
+    "dataUpload": "数据上传"
+  },
+  "user": {
+    "defaultName": "用户",
+    "signOut": "退出登录",
+    "signingOut": "正在退出..."
   }
 } 

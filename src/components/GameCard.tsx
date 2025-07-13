@@ -20,13 +20,10 @@ export function GameCard({ game, size = "normal", className = "", showTags = fal
     large: "w-full aspect-video"
   };
 
-  const cardClass = `${sizeClasses[size]} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group ${className} cursor-pointer`;
+  const cardClass = `${sizeClasses[size]} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group ${className} cursor-pointer max-w-[500px]`;
 
   return (
-    <div onClick={handleClickWithLoading(`/games/${game.id}`, {
-      loadingMessage: `正在加载 ${game.title}...`,
-      errorMessage: `加载游戏 "${game.title}" 失败，请重试`
-    })} className={cardClass}>
+    <div onClick={handleClickWithLoading(`/games/${game.id}`)} className={cardClass}>
       <div className="relative w-full h-full">
         {/* 游戏图片 */}
         <div className="relative w-full h-full overflow-hidden">

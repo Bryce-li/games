@@ -4,40 +4,36 @@ import { useRouter } from 'next/navigation';
 import { useGlobalLoading } from '@/components/GlobalLoading';
 
 interface NavigationOptions {
-  loadingMessage?: string;
-  errorMessage?: string;
   delay?: number;
 }
 
 export function useNavigationWithLoading() {
   const router = useRouter();
-  const { showLoading, hideLoading, showError } = useGlobalLoading();
+  const { showLoading } = useGlobalLoading();
 
   const navigateWithLoading = async (
     path: string, 
     options: NavigationOptions = {}
   ) => {
     const {
-      loadingMessage = '正在加载...',
-      errorMessage = '页面加载失败，请重试',
-      delay = 150
+      delay = 500 // 调整延迟时间，与GlobalLoading的最小加载时间配合
     } = options;
 
     try {
       // 显示加载状态
-      showLoading(loadingMessage);
+      showLoading();
 
-      // 添加延迟以显示加载动画
+      // 添加延迟以确保用户能看到加载动画
       await new Promise(resolve => setTimeout(resolve, delay));
 
       // 执行导航
       router.push(path);
       
-      // 导航成功后隐藏加载状态
-      hideLoading();
+      // 不立即隐藏加载状态，让页面加载完成后再隐藏
+      // 页面加载完成后会自动触发新的渲染，此时加载状态会被清除
+      
     } catch (error) {
       console.error('Navigation error:', error);
-      showError(errorMessage);
     }
   };
 

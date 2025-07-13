@@ -4,6 +4,7 @@ import type { HeroGame as Game } from "@/lib/games";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigationWithLoading } from "@/hooks/useNavigationWithLoading";
+import { useTranslation } from "react-i18next";
 
 // 帮助 TypeScript 理解 Swiper.js 的自定义 Web Components 元素
 // 这使得我们可以在 JSX 中安全地使用 <swiper-container> 和 <swiper-slide>
@@ -28,16 +29,16 @@ function HeroGameCard({ game }: { game: Game }) {
     const { handleClickWithLoading } = useNavigationWithLoading();
 
     return (
-      <div onClick={handleClickWithLoading(`/games/${game.id}`, {
-        loadingMessage: `正在加载 ${game.title}...`,
-        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
-      })} className="block w-full h-full group cursor-pointer">
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md min-h-[180px]">
+      <div 
+        onClick={handleClickWithLoading(`/games/${game.id}`)} 
+        className="block w-full h-full cursor-pointer max-w-[500px] mx-auto"
+      >
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md min-h-[180px] hover:scale-105 transition-transform duration-300 ease-in-out">
            <Image
               src={game.image || "/placeholder.png"}
               alt={game.title}
               fill
-              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+              className="object-cover"
               sizes="(min-width: 1280px) 16.66vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
             />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -60,6 +61,7 @@ interface HeroSectionProps {
  * @param games - 要在英雄区域展示的游戏列表
  */
 export function HeroSection({ games }: HeroSectionProps) {
+  const { t } = useTranslation();
   const swiperElRef = useRef<HTMLElement>(null);
   const navigationPrevRef = useRef<HTMLButtonElement>(null);
   const navigationNextRef = useRef<HTMLButtonElement>(null);
@@ -124,9 +126,16 @@ export function HeroSection({ games }: HeroSectionProps) {
           slidesPerView: 5, // 超大屏幕显示5个完整卡片
           spaceBetween: 16
         },
+        2000: { 
+          slidesPerView: 6, // 超宽屏幕显示6个完整卡片
+          spaceBetween: 16
+        },
       },
        // 默认（移动端）显示1个完整卡片
       slidesPerView: 1,
+      // 添加触摸和鼠标事件配置，确保悬停效果正常工作
+      touchEventsTarget: 'container',
+      preventInteractionOnTransition: false,
     };
 
     // 将参数应用到 Swiper 元素上
@@ -139,11 +148,11 @@ export function HeroSection({ games }: HeroSectionProps) {
   if (!games || games.length === 0) return null;
 
   return (
-    // group 类用于控制子元素在父元素 hover 时的样式 (例如，显示导航按钮)
-    <section className="mb-3 overflow-hidden group relative">
+    // 移除group类，避免影响悬停效果
+    <section className="mb-3 overflow-hidden relative">
       {isScriptLoaded ? (
         <>
-          <swiper-container ref={swiperElRef} init="false">
+          <swiper-container ref={swiperElRef} init="false" className="hero-swiper">
             {games.map((game) => (
               <swiper-slide key={game.id}>
                 <HeroGameCard game={game} />
@@ -151,18 +160,18 @@ export function HeroSection({ games }: HeroSectionProps) {
             ))}
           </swiper-container>
 
-          {/* 自定义导航按钮 */}
+          {/* 自定义导航按钮 - 使用独立的hover效果 */}
           <button
             ref={navigationPrevRef}
-            className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100 hover:bg-white/20 active:scale-95"
-            aria-label="上一个游戏"
+            className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-opacity duration-300 opacity-0 hover:opacity-100 hover:bg-white/20 active:scale-95"
+            aria-label={t('hero.previousGame', 'Previous game')}
           >
             &#x2190;
           </button>
           <button
             ref={navigationNextRef}
-            className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100 hover:bg-white/20 active:scale-95"
-            aria-label="下一个游戏"
+            className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center z-10 transition-opacity duration-300 opacity-0 hover:opacity-100 hover:bg-white/20 active:scale-95"
+            aria-label={t('hero.nextGame', 'Next game')}
           >
             &#x2192;
           </button>
@@ -170,7 +179,7 @@ export function HeroSection({ games }: HeroSectionProps) {
       ) : (
         // 在 Swiper.js 加载期间显示占位符，以防止布局抖动
         <div className="h-[25vh] w-full flex items-center justify-center bg-gray-900/50 rounded-lg">
-          <p className="text-gray-400 animate-pulse">正在加载精彩游戏...</p>
+          <p className="text-gray-400 animate-pulse">{t('hero.loadingGames', 'Loading amazing games...')}</p>
         </div>
       )}
     </section>

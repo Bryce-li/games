@@ -45,7 +45,7 @@ export function LanguageSelector() {
 
   // 服务端渲染时返回默认值
   if (!isReady) {
-    return <div>Loading languages...</div>
+    return <div>{t('common.loadingLanguages', 'Loading languages...')}</div>
   }
 
   return (

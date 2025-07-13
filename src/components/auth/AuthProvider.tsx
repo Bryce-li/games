@@ -22,6 +22,7 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
 
   const refreshUser = async () => {
     try {
@@ -41,8 +42,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    setIsClient(true)
     refreshUser()
   }, [])
+
+  // 在客户端渲染之前，返回一个默认的上下文值
+  if (!isClient) {
+    return (
+      <AuthContext.Provider value={{ user: null, loading: true, refreshUser: async () => {} }}>
+        {children}
+      </AuthContext.Provider>
+    )
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>

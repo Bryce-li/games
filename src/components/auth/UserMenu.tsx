@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { UserCircle2 } from 'lucide-react'
 import { useAuth } from './AuthProvider' // 导入 useAuth
 import { isAdmin } from '@/lib/auth-utils'
+import { useTranslation } from 'react-i18next'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import Link from 'next/link'
 
 // 不再需要 props，因为我们直接从 context 获取 user
 export function UserMenu() {
+  const { t } = useTranslation()
   const { user } = useAuth() // 从 AuthContext 获取权威的用户信息
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -53,7 +55,7 @@ export function UserMenu() {
           {user.avatar_url ? (
             <Image
               src={user.avatar_url}
-              alt={user.name || '用户头像'}
+              alt={user.name || t('user.defaultName', 'User')}
               width={32}
               height={32}
               className="h-8 w-8 rounded-full object-cover"
@@ -66,7 +68,7 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name || '用户'}</p>
+            <p className="text-sm font-medium leading-none">{user.name || t('user.defaultName', 'User')}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
@@ -79,7 +81,7 @@ export function UserMenu() {
           <>
             <DropdownMenuItem asChild>
               <Link href="/data-upload" className="cursor-pointer">
-                Data Upload
+                {t('admin.dataUpload', 'Data Upload')}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -92,7 +94,7 @@ export function UserMenu() {
           disabled={isLoggingOut}
           className="cursor-pointer"
         >
-          {isLoggingOut ? 'Signing out...' : 'Sign out'}
+          {isLoggingOut ? t('user.signingOut', 'Signing out...') : t('user.signOut', 'Sign out')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -50,11 +50,8 @@ export function OptimizedGameCard({
 
   return (
     <div 
-      onClick={handleClickWithLoading(`/games/${game.id}`, {
-        loadingMessage: `正在加载 ${game.title}...`,
-        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
-      })}
-      className={`block ${sizeClasses[size]} group ${className} cursor-pointer relative`}
+      onClick={handleClickWithLoading(`/games/${game.id}`)}
+      className={`block ${sizeClasses[size]} group ${className} cursor-pointer relative max-w-[500px]`}
     >
       
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">

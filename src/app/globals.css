@@ -198,11 +198,35 @@
   overflow: hidden;
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* 英雄区样式优化 */
+.hero-swiper {
+  /* 确保Swiper容器不会影响悬停效果 */
+  isolation: isolate;
+}
+
+.hero-swiper swiper-slide {
+  /* 确保每个slide独立处理悬停效果 */
+  isolation: isolate;
+}
+
+/* 游戏卡片宽度限制 - 在浏览器宽度小于2000px时限制最大宽度 */
+@media (max-width: 1999px) {
+  .hero-swiper swiper-slide > div {
+    max-width: 500px !important;
+    margin: 0 auto;
+  }
+}
+
+/* 确保悬停效果只在目标元素上生效 */
+.hero-swiper swiper-slide > div > div:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 导航按钮悬停效果 */
+.hero-swiper:hover .absolute.top-1\/2.left-4,
+.hero-swiper:hover .absolute.top-1\/2.right-4 {
+  opacity: 1;
 }
 
 /* 平滑滚动 */

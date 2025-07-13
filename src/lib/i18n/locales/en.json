@@ -20,6 +20,9 @@
     "keyboardControls": "Keyboard Controls",
     "gameControls": "Game Controls",
     "games": "Games",
+    "loadingLanguages": "Loading languages...",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
     "header": {
       "title": "MiniPlayGame"
     }
@@ -92,6 +95,11 @@
       "viewMore": "View More"
     }
   },
+  "hero": {
+    "previousGame": "Previous game",
+    "nextGame": "Next game",
+    "loadingGames": "Loading amazing games..."
+  },
   "features": {
     "games": "4000+ games",
     "noInstall": "No Install Needed",
@@ -109,5 +117,14 @@
       "title": "Online multiplayer", 
       "description": "Play on separate devices"
     }
+  },
+  "admin": {
+    "functions": "Admin Functions",
+    "dataUpload": "Data Upload"
+  },
+  "user": {
+    "defaultName": "User",
+    "signOut": "Sign out",
+    "signingOut": "Signing out..."
   }
 } 

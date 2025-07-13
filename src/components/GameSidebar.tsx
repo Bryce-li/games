@@ -20,10 +20,7 @@ function GameCard({ game, size = "normal" }: { game: GameConfig; size?: "normal"
     
   return (
     <div 
-      onClick={handleClickWithLoading(`/games/${game.id}`, {
-        loadingMessage: `正在加载 ${game.title}...`,
-        errorMessage: `加载游戏 "${game.title}" 失败，请重试`
-      })}
+      onClick={handleClickWithLoading(`/games/${game.id}`)}
       className={`${cardClass} block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer relative`}
     >
       <div className="relative w-full h-full">

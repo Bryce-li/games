@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useNavigationWithLoading } from '@/hooks/useNavigationWithLoading';
+import { BaseGame } from '@/lib/games';
+import { useTranslation } from 'react-i18next';
 
 interface Game {
   id: string;
@@ -17,7 +19,7 @@ interface Game {
 
 interface HorizontalGamesListProps {
   title: string;
-  games: Game[];
+  games: BaseGame[];
   viewMoreHref?: string;
 }
 
@@ -27,10 +29,7 @@ function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
   const { handleClickWithLoading } = useNavigationWithLoading();
 
   return (
-    <div onClick={handleClickWithLoading(`/games/${game.id}`, {
-      loadingMessage: `正在加载 ${game.title}...`,
-      errorMessage: `加载游戏 "${game.title}" 失败，请重试`
-    })} className="block w-full group cursor-pointer">
+    <div onClick={handleClickWithLoading(`/games/${game.id}`)} className="block w-full group cursor-pointer max-w-[500px]">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 relative">
         <div className="aspect-[4/3] bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
           {game.image && isVisible ? (
@@ -81,6 +80,7 @@ function GameCard({ game, isVisible }: { game: Game; isVisible: boolean }) {
 }
 
 export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGamesListProps) {
+  const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [visibleCards, setVisibleCards] = useState<Set<string>>(new Set());
 
@@ -158,28 +158,30 @@ export function HorizontalGamesList({ title, games, viewMoreHref }: HorizontalGa
               href={viewMoreHref}
               className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium text-xs"
             >
-              View More
+              {t('home.sections.viewMore', 'View More')}
             </Link>
           )}
         </div>
         
         {/* 滚动控制按钮保持在右侧，尺寸更小 */}
-        <div className="hidden md:flex items-center gap-1">
-          <button
-            onClick={scrollLeft}
-            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-3 h-3 text-gray-600 dark:text-gray-300" />
-          </button>
-          <button
-            onClick={scrollRight}
-            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-3 h-3 text-gray-600 dark:text-gray-300" />
-          </button>
-        </div>
+        {games.length > 6 && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={scrollLeft}
+              className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label={t('common.scrollLeft', 'Scroll left')}
+            >
+              <ChevronLeft className="w-3 h-3 text-gray-600 dark:text-gray-300" />
+            </button>
+            <button
+              onClick={scrollRight}
+              className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label={t('common.scrollRight', 'Scroll right')}
+            >
+              <ChevronRight className="w-3 h-3 text-gray-600 dark:text-gray-300" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 游戏列表 - 自适应宽度，最小180px，最多12个游戏 */}

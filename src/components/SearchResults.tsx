@@ -37,10 +37,7 @@ function GameCard({ result, query }: { result: SearchResult; query: string }) {
   const { handleClickWithLoading } = useNavigationWithLoading();
 
   return (
-    <div onClick={handleClickWithLoading(`/games/${result.id}`, {
-      loadingMessage: `正在加载 ${result.title}...`,
-      errorMessage: `加载游戏 "${result.title}" 失败，请重试`
-    })} className="group block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer">
+    <div onClick={handleClickWithLoading(`/games/${result.id}`)} className="group block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer max-w-[500px]">
       {/* 游戏图片 */}
       <div className="aspect-video bg-gradient-to-br from-purple-400 to-purple-600 relative overflow-hidden">
         {result.image ? (
