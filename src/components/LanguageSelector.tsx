@@ -39,7 +39,6 @@ export function LanguageSelector() {
       setIsChanging(true)
       i18n.changeLanguage(lng)
       localStorage.setItem('i18nextLng', lng)
-      console.log('Language changed successfully to:', lng)
     }
   }
 

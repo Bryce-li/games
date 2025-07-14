@@ -25,7 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex-1 max-w-md mx-4">
               <SearchBar 
                 onSearch={(query) => {
-                  console.log('搜索:', query);
                   // 这里可以添加搜索逻辑
                 }}
               />

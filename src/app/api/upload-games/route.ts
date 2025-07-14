@@ -24,16 +24,11 @@ export async function POST(request: NextRequest) {
   let tempFilePath = '';
   
   try {
-    console.log('🚀 API: 开始处理上传请求');
-    
     const formData = await request.formData();
-    console.log('📝 API: FormData解析成功');
     
     const file = formData.get('file') as File;
-    console.log('📁 API: 获取文件对象:', !!file);
     
     if (!file) {
-      console.log('❌ API: 没有文件上传');
       return NextResponse.json(
         { error: 'No file uploaded' },
         { status: 400 }
@@ -124,8 +119,7 @@ export async function POST(request: NextRequest) {
       });
       
     } catch (uploadError) {
-      console.error('❌ API: 上传处理失败:', uploadError);
-      console.error('🔍 API: 错误堆栈:', uploadError instanceof Error ? uploadError.stack : 'No stack');
+      console.error('上传处理失败:', uploadError);
       
       // 确保清理临时文件
       try {
@@ -141,13 +135,11 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('上传API错误:', error);
-    console.error('错误详情:', error instanceof Error ? error.stack : 'No stack');
     
     return NextResponse.json(
       { 
         error: 'Upload failed', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

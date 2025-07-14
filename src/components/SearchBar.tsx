@@ -120,7 +120,6 @@ export function SearchBar({ className = "", onSearch }: SearchBarProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      console.log('执行搜索:', query.trim());
       onSearch?.(query.trim());
       setIsFocused(false);
       setSuggestions([]);

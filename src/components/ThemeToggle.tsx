@@ -19,13 +19,6 @@ export function ThemeToggle() {
       
       const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
       
-      console.log('主题初始化:', {
-        savedTheme,
-        prefersDark,
-        shouldBeDark,
-        currentClasses: document.documentElement.classList.toString()
-      });
-      
       setIsDark(shouldBeDark);
       
       // 应用主题到document
@@ -46,11 +39,6 @@ export function ThemeToggle() {
     try {
       const newTheme = !isDark;
       setIsDark(newTheme);
-      
-      console.log('切换主题:', {
-        from: isDark ? 'dark' : 'light',
-        to: newTheme ? 'dark' : 'light'
-      });
       
       // 保存到本地存储
       localStorage.setItem('theme', newTheme ? 'dark' : 'light');

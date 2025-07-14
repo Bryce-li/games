@@ -40,7 +40,6 @@ export function useGoogleLogin() {
   // 处理从 Google 返回的凭证的回调函数
   const handleCredentialResponse = useCallback(async (response: GoogleCredentialResponse) => {
     // setIsLoading is already true from triggerLogin
-    console.log("接收到 Google 凭证，正在发送到后端验证...")
 
     try {
       const res = await fetch('/api/auth/google/callback/one-tap', {
@@ -54,7 +53,6 @@ export function useGoogleLogin() {
         throw new Error(errorData.error || '后端凭证验证失败')
       }
       
-      console.log("后端验证成功，强制刷新页面以更新会话状态...")
       window.location.reload()
       
     } catch (error) {
@@ -80,7 +78,6 @@ export function useGoogleLogin() {
           client_id: googleClientId,
           callback: handleCredentialResponse,
         })
-        console.log("Google 登录服务已初始化。")
         setIsInitialized(true)
       }
     }, 100) // 每100ms检查一次
@@ -126,7 +123,6 @@ export function useGoogleLogin() {
       else if (isDismissed) {
         // 只有当不是因为成功返回凭证而关闭时（即用户点了'X'），才重置加载状态
         if (notification.getDismissedReason() !== 'credential_returned') {
-          console.log(`Google One-Tap UI 已关闭。原因: ${notification.getDismissedReason()}`)
           setIsLoading(false)
         }
       }

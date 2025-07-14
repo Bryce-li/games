@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       }
     )
 
-    console.log(`用户 ${user.email} 通过一键登录成功`)
     return response
 
   } catch (error) {

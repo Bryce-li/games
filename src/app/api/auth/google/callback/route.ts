@@ -26,8 +26,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
     const error = searchParams.get('error')
-
-    console.log('=== Google OAuth回调开始 ===')
     
     // 检查是否有错误
     if (error) {
@@ -39,8 +37,6 @@ export async function GET(request: NextRequest) {
       console.error('未收到授权码')
       return NextResponse.redirect(new URL('/?error=no_code', request.url))
     }
-
-    console.log('开始处理Google OAuth回调')
 
     // 用授权码换取访问令牌
     const controller1 = new AbortController()
@@ -71,7 +67,6 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json()
     const accessToken = tokenData.access_token
-    console.log('成功获取访问令牌')
 
     // 使用访问令牌获取用户信息
     const controller2 = new AbortController()
@@ -93,7 +88,6 @@ export async function GET(request: NextRequest) {
     }
 
     const googleUser: GoogleUser = await userResponse.json()
-    console.log('成功获取用户信息:', googleUser.email)
 
     // 创建或更新用户
     const user = await createOrUpdateUser(googleUser)
@@ -114,9 +108,6 @@ export async function GET(request: NextRequest) {
       console.error('创建会话失败')
       return NextResponse.redirect(new URL('/?error=session_error', request.url))
     }
-
-    console.log('用户登录成功:', user.email)
-    console.log('=== Google OAuth回调完成 ===')
 
     // 设置会话cookie并重定向到首页
     const response = NextResponse.redirect(new URL('/', request.url))
