@@ -8,16 +8,8 @@ import { useTranslation } from "react-i18next";
 
 // 帮助 TypeScript 理解 Swiper.js 的自定义 Web Components 元素
 // 这使得我们可以在 JSX 中安全地使用 <swiper-container> 和 <swiper-slide>
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'swiper-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        ref: React.RefObject<HTMLElement>;
-        init: string;
-      };
-      'swiper-slide': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    }
-  }
+interface SwiperElement extends HTMLElement {
+  initialize: () => void;
 }
 
 
@@ -91,7 +83,7 @@ export function HeroSection({ games }: HeroSectionProps) {
     // 仅在脚本加载完毕且 swiper-container 元素可用时执行
     if (!isScriptLoaded || !swiperElRef.current) return;
 
-    const swiperEl = swiperElRef.current as any;
+    const swiperEl = swiperElRef.current as SwiperElement;
 
     // Swiper.js 的参数配置对象
     const swiperParams = {

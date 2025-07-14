@@ -36,7 +36,7 @@ export function GlobalLoadingProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     }
-  }, [pathname]);
+  }, [pathname, isLoading]);
 
   const showLoading = () => {
     setIsLoading(true);
